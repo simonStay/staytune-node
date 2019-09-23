@@ -1,15 +1,8 @@
-import {
-  Count,
-  CountSchema,
-  Filter,
-  repository,
-  Where,
-} from '@loopback/repository';
+import {Count, CountSchema, repository, Where} from '@loopback/repository';
 import {
   post,
   param,
   get,
-  getFilterSchemaFor,
   getModelSchemaRef,
   getWhereSchemaFor,
   patch,
@@ -23,7 +16,7 @@ import {AdminRepository} from '../repositories';
 export class AdminController {
   constructor(
     @repository(AdminRepository)
-    public adminRepository : AdminRepository,
+    public adminRepository: AdminRepository,
   ) {}
 
   @post('/admins', {
@@ -61,7 +54,7 @@ export class AdminController {
     return this.adminRepository.count(where);
   }
 
-  @get('/admins', {
+  @get('/admins/{name}', {
     responses: {
       '200': {
         description: 'Array of Admin model instances',
@@ -73,10 +66,19 @@ export class AdminController {
       },
     },
   })
-  async find(
-    @param.query.object('filter', getFilterSchemaFor(Admin)) filter?: Filter<Admin>,
-  ): Promise<Admin[]> {
-    return this.adminRepository.find(filter);
+  async find(@param.path.string('name') name: string): Promise<any> {
+    const data = await this.adminRepository.find({
+      where: {name: name},
+    });
+    if (Object.keys(data).length === 0) {
+      return {
+        response: 'fail',
+      };
+    } else {
+      return {
+        response: 'sucess',
+      };
+    }
   }
 
   @patch('/admins', {

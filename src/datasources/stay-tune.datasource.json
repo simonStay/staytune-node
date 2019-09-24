@@ -1,11 +1,13 @@
 {
   "name": "stay_tune",
   "connector": "mongodb",
-  "url": "mongodb+srv://atxwebdesigner1:t0KWDhCaMlGIV1BL@cluster0-djr6r.mongodb.net/staytune?retryWrites=true&w=majority",
+  "url": "mongodb+srv://atxwebdesigner1:t0KWDhCaMlGIV1BL@staytunenode-tow32.mongodb.net/staytune?retryWrites=true&w=majority",
   "host": "",
   "port": 0,
   "user": "",
   "password": "",
   "database": "",
-  "useNewUrlParser": true
+  "useNewUrlParser": true,
+  "useUnifiedTopology": true
 }
+

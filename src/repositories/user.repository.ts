@@ -8,9 +8,7 @@ export class UserRepository extends DefaultCrudRepository<
   typeof User.prototype.ID,
   UserRelations
 > {
-  constructor(
-    @inject('datasources.stay_tune') dataSource: StayTuneDataSource,
-  ) {
+  constructor(@inject('datasources.stay_tune') dataSource: StayTuneDataSource) {
     super(User, dataSource);
   }
 }

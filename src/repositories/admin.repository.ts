@@ -3,14 +3,17 @@ import {Admin, AdminRelations} from '../models';
 import {StayTuneDataSource} from '../datasources';
 import {inject} from '@loopback/core';
 
+export type Credentials = {
+  name: string;
+  password: string;
+};
+
 export class AdminRepository extends DefaultCrudRepository<
   Admin,
   typeof Admin.prototype.id,
   AdminRelations
 > {
-  constructor(
-    @inject('datasources.stay_tune') dataSource: StayTuneDataSource,
-  ) {
+  constructor(@inject('datasources.stay_tune') dataSource: StayTuneDataSource) {
     super(Admin, dataSource);
   }
 }

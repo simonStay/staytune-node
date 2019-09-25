@@ -1,8 +1,7 @@
 # Check out https://hub.docker.com/_/node to select a new base image
-FROM node:10-slim
+FROM node:8-alpine
 
 WORKDIR /tmp/app
-
 
 COPY package.json .
 RUN yarn
@@ -12,7 +11,3 @@ RUN yarn build && \
   mv dist index.js package.json yarn.lock node_modules /opt/app
 
 WORKDIR /opt/app
-
-RUN yarn --production
-
-

@@ -4,8 +4,9 @@
   "url": "",
   "host": "localhost",
   "port": 27017,
-  "user": "admin",
+  "user": "",
   "password": "",
-  "database": "stay-tune",
+  "database": "user",
   "useNewUrlParser": true
+
 }

@@ -54,7 +54,7 @@ export class AdminController {
     return this.adminRepository.count(where);
   }
 
-  @get('/admins/{name}', {
+  @get('/admins/{name}/', {
     responses: {
       '200': {
         description: 'Array of Admin model instances',
@@ -66,7 +66,7 @@ export class AdminController {
       },
     },
   })
-  async find(@param.path.string('name') name: string): Promise<any> {
+  async find(@param.path.string('name') name: string): Promise<object> {
     const data = await this.adminRepository.find({
       where: {name: name},
     });

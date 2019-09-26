@@ -26,6 +26,11 @@ export class User extends Entity {
   })
   password: string;
 
+  @property({
+    type: 'string',
+  })
+  token: string;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

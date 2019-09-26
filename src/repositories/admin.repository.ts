@@ -3,10 +3,10 @@ import {Admin, AdminRelations} from '../models';
 import {StayTuneDataSource} from '../datasources';
 import {inject} from '@loopback/core';
 
-export type Credentials = {
-  name: string;
-  password: string;
-};
+// export type Credentials = {
+//   name: string;
+//   password: string;
+// };
 
 export class AdminRepository extends DefaultCrudRepository<
   Admin,

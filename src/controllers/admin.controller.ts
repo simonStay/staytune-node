@@ -10,7 +10,7 @@ import {
   del,
   requestBody,
 } from '@loopback/rest';
-import {Admin, User} from '../models';
+import {Admin} from '../models';
 import {AdminRepository} from '../repositories';
 // import {inject} from '@loopback/context';
 // import {AuthenticationBindings, authenticate} from '@loopback/authentication';

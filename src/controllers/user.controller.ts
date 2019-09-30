@@ -32,6 +32,16 @@ import {
 } from './specs/user-controller-specs';
 import {Credentials} from '../repositories/user.repository';
 import {TokenServiceBindings, UserServiceBindings} from '../keys';
+import * as nodemailer from 'nodemailer';
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: 'energyoneestimate@gmail.com',
+    pass: 'NueveSol@9',
+  },
+});
 
 export class UserController {
   constructor(
@@ -61,6 +71,25 @@ export class UserController {
     })
     user: Omit<User, 'id'>,
   ): Promise<User> {
+    const link = 'www.google.com';
+    const mailOptions = {
+      from: 'jayanthaditya1@gmail.com',
+      to: user.email,
+      subject: 'Sending Email using Node.js',
+      html:
+        'Hello,<br> Please Click on the link to verify your email.<br><a href=' +
+        link +
+        '>Click here to verify</a>',
+    };
+
+    transporter.sendMail(mailOptions, function(error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.message);
+      }
+    });
+
     return this.userRepository.create(user);
   }
 
@@ -243,7 +272,6 @@ export class UserController {
 
     // create a JSON Web Token based on the user profile
     const token = await this.jwtService.generateToken(userProfile);
-
-    return {token};
+    return {token}
   }
 }

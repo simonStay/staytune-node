@@ -33,6 +33,7 @@ import {
 import {Credentials} from '../repositories/user.repository';
 import {TokenServiceBindings, UserServiceBindings} from '../keys';
 import * as nodemailer from 'nodemailer';
+import {userInfo} from 'os';
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 465,
@@ -243,6 +244,59 @@ export class UserController {
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.userRepository.deleteById(id);
   }
+
+  @post('/users/{email}/', {
+    responses: {
+      '200': {
+        description: 'Array of Admin model instances',
+        headers: {
+          'content-type': 'application/json',
+        },
+      },
+    },
+  })
+  async update(@param.path.string('email') email: string): Promise<object> {
+    const User1 = await this.userRepository.findOne({where: {email: email}});
+    let Id: string;
+    if (User1 !== null) {
+      Id = User1.id;
+      User1.verified = true;
+      await this.userRepository.updateById(Id, User1);
+      return {
+        data: User1.verified,
+      };
+    }
+    return {
+      data: 'false',
+    };
+  }
+  // @post('/users/{email}/', {
+  //   responses: {
+  //     '200': {
+  //       description: 'Array of Admin model instances',
+  //       headers: {
+  //         'content-type': 'application/json',
+  //       },
+  //     },
+  //   },
+  // })
+  // async update1(@param.path.string('email') email: string): Promise<object> {
+  //   // const User1 = await this.userRepository.findOne({where: {email: email}});
+  //   // let Id: string;
+  //   // if (User1 !== null) {
+  //   //   Id = User1.id;
+  //   //   User1.verified = true;
+
+  //   const  data={$set:{verified:true}}
+  //     await this.userRepository.updateAll(data,{where:{email:email}});
+  //     return {
+  //       data:'false'
+  //     };
+  //   }
+  //   // return {
+  //   //   data: 'false',
+  //   // };
+  // }
 
   @post('/users/login', {
     responses: {

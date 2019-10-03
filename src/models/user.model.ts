@@ -17,6 +17,9 @@ export class User extends Entity {
   @property({
     type: 'string',
     required: true,
+    index: {
+      unique: true,
+    },
   })
   email: string;
 
@@ -28,8 +31,15 @@ export class User extends Entity {
 
   @property({
     type: 'string',
+    default: '',
   })
   token: string;
+
+  @property({
+    type: 'boolean',
+    default: false,
+  })
+  verified: boolean;
 
   // Define well-known properties here
 

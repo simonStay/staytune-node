@@ -6,7 +6,7 @@
   "port": 27017,
   "user": "",
   "password": "",
-  "database": "user",
+  "database": "stay-tune",
   "useNewUrlParser": true,
   "useUnifiedTopology": true
 }

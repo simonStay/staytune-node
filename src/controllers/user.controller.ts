@@ -71,13 +71,15 @@ export class UserController {
     })
     user: Omit<User, 'id'>,
   ): Promise<User> {
-    const link = 'www.google.com';
+    const link = 'http://localhost:3001/email-verification?email=' + user.email;
     const mailOptions = {
-      from: 'jayanthaditya1@gmail.com',
+      from: 'info@staytune.com',
       to: user.email,
-      subject: 'Sending Email using Node.js',
+      subject: 'Email Verification from Staytune',
       html:
-        'Hello,<br> Please Click on the link to verify your email.<br><a href=' +
+        'Hello ' +
+        user.fullname +
+        ', Please Click on the link to verify your email.<br><a href=' +
         link +
         '>Click here to verify</a>',
     };
@@ -263,7 +265,7 @@ export class UserController {
   })
   async login(
     @requestBody(CredentialsRequestBody) credentials: Credentials,
-  ): Promise<{token: string}> {
+  ): Promise<{user: User}> {
     // ensure the user exists, and the password is correct
     const user = await this.userService.verifyCredentials(credentials);
 
@@ -272,6 +274,6 @@ export class UserController {
 
     // create a JSON Web Token based on the user profile
     const token = await this.jwtService.generateToken(userProfile);
-    return {token}
+    return {user};
   }
 }

@@ -186,7 +186,7 @@ export class AdminController {
     });
     if (Object.keys(value).length === 0) {
       return {
-        response: 'fail',
+        response: 'Invalid credentials',
       };
     } else {
       return {

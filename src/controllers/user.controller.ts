@@ -34,6 +34,8 @@ import {Credentials} from '../repositories/user.repository';
 import {TokenServiceBindings, UserServiceBindings} from '../keys';
 import * as nodemailer from 'nodemailer';
 import {userInfo} from 'os';
+import {getMaxListeners} from 'cluster';
+import {stat} from 'fs-extra';
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 465,
@@ -260,6 +262,7 @@ export class UserController {
     let Id: string;
     if (User1 !== null) {
       Id = User1.id;
+
       User1.verified = true;
       await this.userRepository.updateById(Id, User1);
       return {
@@ -270,33 +273,42 @@ export class UserController {
       data: 'false',
     };
   }
-  // @post('/users/{email}/', {
-  //   responses: {
-  //     '200': {
-  //       description: 'Array of Admin model instances',
-  //       headers: {
-  //         'content-type': 'application/json',
-  //       },
-  //     },
-  //   },
-  // })
-  // async update1(@param.path.string('email') email: string): Promise<object> {
-  //   // const User1 = await this.userRepository.findOne({where: {email: email}});
-  //   // let Id: string;
-  //   // if (User1 !== null) {
-  //   //   Id = User1.id;
-  //   //   User1.verified = true;
 
-  //   const  data={$set:{verified:true}}
-  //     await this.userRepository.updateAll(data,{where:{email:email}});
-  //     return {
-  //       data:'false'
-  //     };
-  //   }
-  //   // return {
-  //   //   data: 'false',
-  //   // };
-  // }
+  @post('/user/forgot-password', {
+    responses: {
+      '200': {
+        description: 'Forgot User Password',
+        content: {'application/json': {schema: {'x-ts-type': User}}},
+      },
+    },
+  })
+  async forgotPassword(@requestBody() body: User): Promise<object> {
+    const user = await this.userRepository.findOne({
+      where: {email: body.email},
+    });
+    if (user != null) {
+      const id = Math.random() * 10000;
+      const otp = Math.floor(id);
+      console.log(otp, 'otp');
+
+      const mailOptions = {
+        from: 'info@staytune.com',
+        to: user.email,
+        subject: 'Email Verification from Staytune',
+        html: 'Hello ' + user.fullname + 'your otp is' + otp,
+      };
+
+      const response = await transporter.sendMail(mailOptions);
+
+      return {
+        otp: otp,
+      };
+    } else {
+      return {
+        status: 'no user found',
+      };
+    }
+  }
 
   @post('/users/login', {
     responses: {

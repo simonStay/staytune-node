@@ -216,7 +216,7 @@ export class UserController {
     })
     user: User,
   ): Promise<void> {
-    await this.userRepository.updateById(id, user);
+    await this.userRepository.updateById(id, user.email);
   }
 
   @put('/users/{id}', {

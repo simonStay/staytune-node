@@ -41,6 +41,36 @@ export class User extends Entity {
   })
   verified: boolean;
 
+  @property({
+    type: 'string',
+    default: '',
+  })
+  firstname: string;
+
+  @property({
+    type: 'string',
+    default: '',
+  })
+  lastname: string;
+
+  @property({
+    type: 'string',
+    default: '',
+  })
+  city: string;
+
+  @property({
+    type: 'string',
+    default: '',
+  })
+  state: string;
+
+  @property({
+    type: 'string',
+    default: '',
+  })
+  zip: string;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

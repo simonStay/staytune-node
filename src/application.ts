@@ -82,9 +82,9 @@ export class StayTuneApplication extends BootMixin(
       TokenServiceConstants.TOKEN_SECRET_VALUE,
     );
 
-    this.bind(TokenServiceBindings.TOKEN_EXPIRES_IN).to(
-      TokenServiceConstants.TOKEN_EXPIRES_IN_VALUE,
-    );
+    // this.bind(TokenServiceBindings.TOKEN_EXPIRES_IN).to(
+    //   TokenServiceConstants.TOKEN_EXPIRES_IN_VALUE,
+    // );
 
     this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
 

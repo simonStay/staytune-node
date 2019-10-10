@@ -74,26 +74,26 @@ export class UserController {
     })
     user: Omit<User, 'id'>,
   ): Promise<object> {
-    // const link = 'http://localhost:3001/email-verification?email=' + user.email;
-    // const mailOptions = {
-    //   from: 'info@staytune.com',
-    //   to: user.email,
-    //   subject: 'Email Verification from Staytune',
-    //   html:
-    //     'Hello ' +
-    //     user.fullname +
-    //     ', Please Click on the link to verify your email.<br><a href=' +
-    //     link +
-    //     '>Click here to verify</a>',
-    // };
+    const link = 'http://localhost:3001/email-verification?email=' + user.email;
+    const mailOptions = {
+      from: 'info@staytune.com',
+      to: user.email,
+      subject: 'Email Verification from Staytune',
+      html:
+        'Hello ' +
+        user.fullname +
+        ', Please Click on the link to verify your email.<br><a href=' +
+        link +
+        '>Click here to verify</a>',
+    };
 
-    // transporter.sendMail(mailOptions, function(error, info) {
-    //   if (error) {
-    //     console.log(error);
-    //   } else {
-    //     console.log('Email sent: ' + info.message);
-    //   }
-    // });
+    transporter.sendMail(mailOptions, function(error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.message);
+      }
+    });
     const newUser = await this.userRepository.findOne({
       where: {email: user.email},
     });
@@ -232,8 +232,15 @@ export class UserController {
       },
     })
     user: User,
-  ): Promise<void> {
+  ): Promise<object> {
     await this.userRepository.updateById(id, user);
+    // console.log(checkUser, '5d9ab8211113661189ffb735');
+    // console.log(updatedUser, 'userupdated');
+
+    return {
+      status: 'sucess',
+      message: 'successfully Updated',
+    };
   }
 
   @put('/users/{id}', {

@@ -41,8 +41,8 @@ const transporter = nodemailer.createTransport({
   port: 465,
   secure: true,
   auth: {
-    user: 'energyoneestimate@gmail.com',
-    pass: 'NueveSol@9',
+    user: 'staytune.nueve@gmail.com',
+    pass: 'Staytune@2019',
   },
 });
 
@@ -74,39 +74,40 @@ export class UserController {
     })
     user: Omit<User, 'id'>,
   ): Promise<object> {
-    // const link = 'http://localhost:3001/email-verification?email=' + user.email;
-    // const mailOptions = {
-    //   from: 'info@staytune.com',
-    //   to: user.email,
-    //   subject: 'Email Verification from Staytune',
-    //   html:
-    //     'Hello ' +
-    //     user.fullname +
-    //     ', Please Click on the link to verify your email.<br><a href=' +
-    //     link +
-    //     '>Click here to verify</a>',
-    // };
+    const link = 'http://localhost:3001/email-verification?email=' + user.email;
+    const mailOptions = {
+      from: 'info@staytune.com',
+      to: user.email,
+      subject: 'Email Verification from Staytune',
+      html:
+        'Hello ' +
+        user.fullname +
+        ', Please Click on the link to verify your email.<br><a href=' +
+        link +
+        '>Click here to verify</a>',
+    };
 
-    // transporter.sendMail(mailOptions, function(error, info) {
-    //   if (error) {
-    //     console.log(error);
-    //   } else {
-    //     console.log('Email sent: ' + info.message);
-    //   }
-    // });
-    const data = this.userRepository.findOne({
-      where: {
-        email: user.email,
-      },
+    transporter.sendMail(mailOptions, function(error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.message);
+      }
     });
-    if (data) {
+    const newUser = await this.userRepository.findOne({
+      where: {email: user.email},
+    });
+    if (newUser) {
       return {
-        message: 'user exists',
+        message: 'User already exists, Please login',
+        status: 'failed',
       };
     } else {
       await this.userRepository.create(user);
       return {
-        message: 'user succesfully created',
+        id: user.id,
+        message: 'User has been registered successfully ',
+        status: 'success',
       };
     }
   }
@@ -231,8 +232,15 @@ export class UserController {
       },
     })
     user: User,
-  ): Promise<void> {
+  ): Promise<object> {
     await this.userRepository.updateById(id, user);
+    // console.log(checkUser, '5d9ab8211113661189ffb735');
+    // console.log(updatedUser, 'userupdated');
+
+    return {
+      status: 'sucess',
+      message: 'successfully Updated',
+    };
   }
 
   @put('/users/{id}', {
@@ -353,6 +361,7 @@ export class UserController {
 
     // create a JSON Web Token based on the user profile
     const token = await this.jwtService.generateToken(userProfile);
+    user.token = token;
     return {user};
   }
 }

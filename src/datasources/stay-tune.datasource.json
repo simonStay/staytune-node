@@ -1,13 +1,12 @@
 {
   "name": "stay_tune",
   "connector": "mongodb",
-  "url": "",
-  "host": "localhost",
-  "port": 27017,
+  "url": "mongodb+srv://atxwebdesigner1:t0kwdhcamlgiv1bl@staytunenode-tow32.mongodb.net/staytune?retryWrites=true&w=majority",
+  "host": "",
+  "port": 0,
   "user": "",
   "password": "",
-  "database": "stay-tune",
+  "database": "",
   "useNewUrlParser": true,
   "useUnifiedTopology": true
 }
-

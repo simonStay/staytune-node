@@ -43,8 +43,33 @@ export class User extends Entity {
 
   @property({
     type: 'string',
+    default: '',
   })
-  url: string;
+  firstname: string;
+
+  @property({
+    type: 'string',
+    default: '',
+  })
+  lastname: string;
+
+  @property({
+    type: 'string',
+    default: '',
+  })
+  city: string;
+
+  @property({
+    type: 'string',
+    default: '',
+  })
+  state: string;
+
+  @property({
+    type: 'string',
+    default: '',
+  })
+  zip: string;
 
   // Define well-known properties here
 

@@ -71,6 +71,12 @@ export class User extends Entity {
   })
   zip: string;
 
+  @property({
+    type: 'string',
+    default: '',
+  })
+  profilePic: string;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

@@ -37,12 +37,19 @@ import {userInfo} from 'os';
 import {getMaxListeners} from 'cluster';
 import {stat} from 'fs-extra';
 const transporter = nodemailer.createTransport({
+  // host: 'mail.nuevesolutions.com',
+  // port: 465,
+  // secure: true,
+  // auth: {
+  //   user: 'surya@nuevesolutions.com',
+  //   pass: 'Surya@3220',
+  // },
   host: 'smtp.gmail.com',
   port: 465,
   secure: true,
   auth: {
-    user: 'staytune.nueve@gmail.com',
-    pass: 'Staytune@2019',
+    user: 'staytune.node@gmail.com',
+    pass: 'nuevesol@9',
   },
 });
 

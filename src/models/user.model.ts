@@ -25,7 +25,7 @@ export class User extends Entity {
 
   @property({
     type: 'string',
-    required: true,
+    // required: true,
   })
   password: string;
 
@@ -70,6 +70,12 @@ export class User extends Entity {
     default: '',
   })
   zip: string;
+
+  @property({
+    type: 'string',
+    default: '',
+  })
+  profilePic: string;
 
   // Define well-known properties here
 

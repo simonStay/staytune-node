@@ -41,6 +41,11 @@ export class User extends Entity {
   })
   verified: boolean;
 
+  @property({
+    type: 'string',
+  })
+  url: string;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

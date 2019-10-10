@@ -73,29 +73,42 @@ export class UserController {
       },
     })
     user: Omit<User, 'id'>,
-  ): Promise<User> {
-    const link = 'http://localhost:3001/email-verification?email=' + user.email;
-    const mailOptions = {
-      from: 'info@staytune.com',
-      to: user.email,
-      subject: 'Email Verification from Staytune',
-      html:
-        'Hello ' +
-        user.fullname +
-        ', Please Click on the link to verify your email.<br><a href=' +
-        link +
-        '>Click here to verify</a>',
-    };
+  ): Promise<object> {
+    // const link = 'http://localhost:3001/email-verification?email=' + user.email;
+    // const mailOptions = {
+    //   from: 'info@staytune.com',
+    //   to: user.email,
+    //   subject: 'Email Verification from Staytune',
+    //   html:
+    //     'Hello ' +
+    //     user.fullname +
+    //     ', Please Click on the link to verify your email.<br><a href=' +
+    //     link +
+    //     '>Click here to verify</a>',
+    // };
 
-    transporter.sendMail(mailOptions, function(error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log('Email sent: ' + info.message);
-      }
+    // transporter.sendMail(mailOptions, function(error, info) {
+    //   if (error) {
+    //     console.log(error);
+    //   } else {
+    //     console.log('Email sent: ' + info.message);
+    //   }
+    // });
+    const data = this.userRepository.findOne({
+      where: {
+        email: user.email,
+      },
     });
-
-    return this.userRepository.create(user);
+    if (data) {
+      return {
+        message: 'user exists',
+      };
+    } else {
+      await this.userRepository.create(user);
+      return {
+        message: 'user succesfully created',
+      };
+    }
   }
 
   @get('/users/count', {

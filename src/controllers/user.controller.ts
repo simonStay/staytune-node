@@ -330,6 +330,7 @@ export class UserController {
 
       return {
         otp: otp,
+        id: user.id,
       };
     } else {
       return {

@@ -241,12 +241,15 @@ export class UserController {
     user: User,
   ): Promise<object> {
     await this.userRepository.updateById(id, user);
+    const updatedData = await this.userRepository.findById(id);
     // console.log(checkUser, '5d9ab8211113661189ffb735');
+    console.log(updatedData, 'updateddata');
     // console.log(updatedUser, 'userupdated');
 
     return {
-      status: 'sucess',
+      status: 'success',
       message: 'successfully Updated',
+      data: updatedData,
     };
   }
 

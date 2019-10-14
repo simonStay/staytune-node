@@ -28,4 +28,12 @@ describe('HomePage', () => {
       .expect('Content-Type', /text\/html/)
       .expect(/<title>LoopBack API Explorer/);
   });
+
+  it('exposes self-hosted email-verification', async () => {
+    await client
+      .get('/email-verification/')
+      .expect(200)
+      .expect('Content-Type', /text\/html/)
+      .expect(/<title>Email Verification/);
+  });
 });

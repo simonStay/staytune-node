@@ -53,6 +53,12 @@ export class StayTuneApplication extends BootMixin(
     // Set up the custom sequence
     this.sequence(MyAuthenticationSequence);
 
+    // Set email verification page
+    this.static(
+      '/email-verification',
+      path.join(__dirname, '../emailverification'),
+    );
+
     // Set up default home page
     this.static('/', path.join(__dirname, '../public'));
 

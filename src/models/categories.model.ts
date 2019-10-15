@@ -5,7 +5,11 @@ export class Categories extends Entity {
   @property({
     type: 'string',
     id: true,
-    generated: false,
+  })
+  id: string;
+
+  @property({
+    type: 'string',
   })
   categoryname?: string;
 
@@ -13,6 +17,11 @@ export class Categories extends Entity {
     type: 'string',
   })
   parentcategory?: string;
+
+  @property({
+    type: 'string',
+  })
+  categoryPic: string;
 
   // Define well-known properties here
 

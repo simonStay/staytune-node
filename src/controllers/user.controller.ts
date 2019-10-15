@@ -81,7 +81,11 @@ export class UserController {
     })
     user: Omit<User, 'id'>,
   ): Promise<object> {
-    const link = 'http://localhost:3001/email-verification?email=' + user.email;
+    const link =
+      'https://staytune.austinconversionoptimization.com/email-verification/?email=' +
+      user.email;
+    const id = Math.random() * 10000;
+    const otp = Math.floor(id);
     const mailOptions = {
       from: 'info@staytune.com',
       to: user.email,
@@ -89,9 +93,9 @@ export class UserController {
       html:
         'Hello ' +
         user.fullname +
-        ', Please Click on the link to verify your email.<br><a href=' +
-        link +
-        '>Click here to verify</a>',
+        ', The otp to verify your email address is ' +
+        otp +
+        '<br>',
     };
 
     transporter.sendMail(mailOptions, function(error, info) {
@@ -115,6 +119,7 @@ export class UserController {
         id: user.id,
         message: 'User has been registered successfully ',
         status: 'success',
+        otp: otp,
       };
     }
   }

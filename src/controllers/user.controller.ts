@@ -36,6 +36,9 @@ import * as nodemailer from 'nodemailer';
 import {userInfo} from 'os';
 import {getMaxListeners} from 'cluster';
 import {stat} from 'fs-extra';
+import axios from 'axios';
+import {request} from 'express';
+// import JSON from 'circular-json';
 const transporter = nodemailer.createTransport({
   // host: 'mail.nuevesolutions.com',
   // port: 465,
@@ -340,6 +343,40 @@ export class UserController {
         status: 'no user found',
       };
     }
+  }
+
+  @post('/users/movies/', {
+    responses: {
+      '200': {
+        description: 'Array of Admin model instances',
+        headers: {
+          'content-type': 'application/json',
+        },
+      },
+    },
+  })
+  async movies(@requestBody() body: any): Promise<object> {
+    // const value = data;
+    const {location} = body;
+    const details: any = await axios.get(
+      'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' +
+        location +
+        '&radius=1500&type=university&key=AIzaSyBI_ae3Hvrib8Bao3_WrhXLEHKuGj1J8pQ',
+      {
+        headers: {
+          'content-type': 'application/json',
+        },
+      },
+    );
+
+    // return {
+    //   data: details.data,
+    // };
+    console.log(location, 'location');
+    return {
+      location: body.location,
+      details: details.data,
+    };
   }
 
   @post('/users/login', {

@@ -66,6 +66,10 @@ export class StayTuneApplication extends BootMixin(
     this.bind(RestExplorerBindings.CONFIG).to({
       path: '/explorer',
     });
+
+    // this.bind(RestExplorerBindings.CONFIG).to({
+    //   path: '/email-verification?email=',
+    // });
     this.component(RestExplorerComponent);
 
     this.projectRoot = __dirname;

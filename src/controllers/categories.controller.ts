@@ -16,14 +16,19 @@ import {
   put,
   del,
   requestBody,
+  RestBindings,
+  Response,
 } from '@loopback/rest';
 import {Categories} from '../models';
 import {CategoriesRepository} from '../repositories';
+import {inject} from '@loopback/context';
+const multer = require('multer');
+// const upload = multer({dest: 'uploads/'});
 
 export class CategoriesController {
   constructor(
     @repository(CategoriesRepository)
-    public categoriesRepository : CategoriesRepository,
+    public categoriesRepository: CategoriesRepository,
   ) {}
 
   @post('/categories', {
@@ -56,7 +61,8 @@ export class CategoriesController {
     },
   })
   async count(
-    @param.query.object('where', getWhereSchemaFor(Categories)) where?: Where<Categories>,
+    @param.query.object('where', getWhereSchemaFor(Categories))
+    where?: Where<Categories>,
   ): Promise<Count> {
     return this.categoriesRepository.count(where);
   }
@@ -74,9 +80,68 @@ export class CategoriesController {
     },
   })
   async find(
-    @param.query.object('filter', getFilterSchemaFor(Categories)) filter?: Filter<Categories>,
+    @param.query.object('filter', getFilterSchemaFor(Categories))
+    filter?: Filter<Categories>,
   ): Promise<Categories[]> {
     return this.categoriesRepository.find(filter);
+  }
+
+  @post('/posts/upload', {
+    responses: {
+      200: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+        description: '',
+      },
+    },
+  })
+  async uploadFile(
+    @requestBody({
+      description: 'multipart/form-data value.',
+      required: true,
+      content: {
+        'multipart/form-data': {
+          // Skip body parsing
+          'x-parser': 'stream',
+          schema: {type: 'object'},
+        },
+      },
+    })
+    request: any,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+  ): Promise<Object> {
+    const storage = multer.diskStorage({
+      destination: function(
+        req: any,
+        file: any,
+        cb: (arg0: null, arg1: string) => void,
+      ) {
+        cb(null, 'images/categories');
+      },
+      filename: function(
+        req: any,
+        file: {fieldname: string},
+        cb: (arg0: null, arg1: string) => void,
+      ) {
+        cb(null, file.fieldname + '-' + Date.now());
+      },
+    });
+
+    const upload = multer({storage: storage});
+    return new Promise<object>((resolve, reject) => {
+      upload.any()(request, response, (err: string) => {
+        if (err) return err;
+        resolve({
+          files: request.files,
+          fields: (request as any).fields,
+        });
+      });
+    });
   }
 
   @patch('/categories', {
@@ -96,7 +161,8 @@ export class CategoriesController {
       },
     })
     categories: Categories,
-    @param.query.object('where', getWhereSchemaFor(Categories)) where?: Where<Categories>,
+    @param.query.object('where', getWhereSchemaFor(Categories))
+    where?: Where<Categories>,
   ): Promise<Count> {
     return this.categoriesRepository.updateAll(categories, where);
   }

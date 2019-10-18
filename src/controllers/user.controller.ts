@@ -108,18 +108,18 @@ export class UserController {
         console.log('Email sent: ' + info.message);
       }
     });
-    const newUser = await this.userRepository.findOne({
+    const extUser = await this.userRepository.findOne({
       where: {email: user.email},
     });
-    if (newUser) {
+    if (extUser) {
       return {
         message: 'User already exists, Please login',
         status: 'failed',
       };
     } else {
-      await this.userRepository.create(user);
+      const newUser = await this.userRepository.create(user);
       return {
-        id: user.id,
+        id: newUser.id,
         message: 'User has been registered successfully ',
         status: 'success',
         otp: otp,
@@ -405,16 +405,51 @@ export class UserController {
   })
   async login(
     @requestBody(CredentialsRequestBody) credentials: Credentials,
-  ): Promise<{user: User}> {
+  ): Promise<any> {
     // ensure the user exists, and the password is correct
-    const user = await this.userService.verifyCredentials(credentials);
+    const extUser = await this.userRepository.findOne({
+      where: {email: credentials.email},
+    });
+    let otp = 0;
+    if (extUser) {
+      if (extUser.verified === false) {
+        const id = Math.random() * 10000;
+        otp = Math.floor(id);
+        const mailOptions = {
+          from: 'info@staytune.com',
+          to: credentials.email,
+          subject: 'Email Verification from Staytune',
+          html:
+            'Hello ' +
+            extUser.fullname +
+            ', The otp to verify your email address is ' +
+            otp +
+            '<br>',
+        };
 
-    // convert a User object into a UserProfile object (reduced set of properties)
-    const userProfile = this.userService.convertToUserProfile(user);
+        transporter.sendMail(mailOptions, function(error, info) {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log('Email sent: ' + info.message);
+          }
+        });
+        return {
+          id: extUser.id,
+          message: 'User not verified',
+          otp: otp,
+        };
+      } else {
+        const user = await this.userService.verifyCredentials(credentials);
 
-    // create a JSON Web Token based on the user profile
-    const token = await this.jwtService.generateToken(userProfile);
-    user.token = token;
-    return {user};
+        // convert a User object into a UserProfile object (reduced set of properties)
+        const userProfile = this.userService.convertToUserProfile(user);
+
+        // create a JSON Web Token based on the user profile
+        const token = await this.jwtService.generateToken(userProfile);
+        user.token = token;
+        return user;
+      }
+    }
   }
 }

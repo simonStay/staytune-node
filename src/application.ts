@@ -59,6 +59,8 @@ export class StayTuneApplication extends BootMixin(
       path.join(__dirname, '../emailverification'),
     );
 
+    this.static('/images', path.join(__dirname, '../images'));
+
     // Set up default home page
     this.static('/', path.join(__dirname, '../public'));
 

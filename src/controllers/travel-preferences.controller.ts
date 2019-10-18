@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/await-thenable */
 import {
   Count,
   CountSchema,
@@ -56,19 +57,35 @@ export class TravelPreferencesController {
       where: {parentcategory: ''},
     });
     const categoriesList: Array<object> = [];
-    mainCategories.forEach(async element => {
+    // eslint-disable-next-line @typescript-eslint/await-thenable
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    await mainCategories.map(async element => {
       //console.log(element);
       console.log(element.categoryname);
-      const subCategories = await this.categoriesRepository.find({
+      const subCategories: object = await this.categoriesRepository.find({
         where: {parentcategory: element.categoryname},
       });
       console.log('sub categories', subCategories);
-      categoriesList.push({
+
+      // eslint-disable-next-line @typescript-eslint/await-thenable
+
+      await categoriesList.push({
         id: element.id,
         categoryname: element.categoryname,
         subCategories: subCategories,
       });
     });
+
+    // await setTimeout(() => {
+    //   console.log(categoriesList);
+    // }, 5000);
+    let count = 0;
+    console.log(categoriesList);
+    while (count < 105) {
+      count++;
+      console.log('Number : ', count);
+    }
+    console.log(categoriesList);
     return categoriesList;
   }
 

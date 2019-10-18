@@ -35,6 +35,16 @@ export class TravelPreferences extends Entity {
 
   @property({
     type: 'string',
+  })
+  locationImage?: string;
+
+  @property({
+    type: 'string',
+  })
+  travelDate?: string;
+
+  @property({
+    type: 'string',
     id: true,
     generated: true,
   })

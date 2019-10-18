@@ -37,7 +37,7 @@ export class User extends Entity {
 
   @property({
     type: 'boolean',
-    default: true,
+    default: false,
   })
   verified: boolean;
 

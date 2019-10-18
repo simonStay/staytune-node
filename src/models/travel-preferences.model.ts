@@ -31,7 +31,14 @@ export class TravelPreferences extends Entity {
   @property({
     type: 'string',
   })
-  id?: string;
+  userId?: string;
+
+  @property({
+    type: 'string',
+    id: true,
+    generated: true,
+  })
+  id: string;
 
   // Define well-known properties here
 
@@ -48,4 +55,5 @@ export interface TravelPreferencesRelations {
   // describe navigational properties here
 }
 
-export type TravelPreferencesWithRelations = TravelPreferences & TravelPreferencesRelations;
+export type TravelPreferencesWithRelations = TravelPreferences &
+  TravelPreferencesRelations;

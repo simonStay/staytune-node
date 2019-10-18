@@ -17,20 +17,27 @@ import {
   del,
   requestBody,
 } from '@loopback/rest';
-import {TravelPreferences} from '../models';
-import {TravelPreferencesRepository} from '../repositories';
+import {TravelPreferences, Categories} from '../models';
+import {
+  TravelPreferencesRepository,
+  CategoriesRepository,
+} from '../repositories';
 
 export class TravelPreferencesController {
   constructor(
     @repository(TravelPreferencesRepository)
-    public travelPreferencesRepository : TravelPreferencesRepository,
+    public travelPreferencesRepository: TravelPreferencesRepository,
+    @repository(CategoriesRepository)
+    public categoriesRepository: CategoriesRepository,
   ) {}
 
   @post('/travel-preferences', {
     responses: {
       '200': {
         description: 'TravelPreferences model instance',
-        content: {'application/json': {schema: getModelSchemaRef(TravelPreferences)}},
+        content: {
+          'application/json': {schema: getModelSchemaRef(TravelPreferences)},
+        },
       },
     },
   })
@@ -43,8 +50,26 @@ export class TravelPreferencesController {
       },
     })
     travelPreferences: Omit<TravelPreferences, 'id'>,
-  ): Promise<TravelPreferences> {
-    return this.travelPreferencesRepository.create(travelPreferences);
+  ): Promise<any> {
+    await this.travelPreferencesRepository.create(travelPreferences);
+    const mainCategories = await this.categoriesRepository.find({
+      where: {parentcategory: ''},
+    });
+    const categoriesList: Array<object> = [];
+    mainCategories.forEach(async element => {
+      //console.log(element);
+      console.log(element.categoryname);
+      const subCategories = await this.categoriesRepository.find({
+        where: {parentcategory: element.categoryname},
+      });
+      console.log('sub categories', subCategories);
+      categoriesList.push({
+        id: element.id,
+        categoryname: element.categoryname,
+        subCategories: subCategories,
+      });
+    });
+    return categoriesList;
   }
 
   @get('/travel-preferences/count', {
@@ -56,7 +81,8 @@ export class TravelPreferencesController {
     },
   })
   async count(
-    @param.query.object('where', getWhereSchemaFor(TravelPreferences)) where?: Where<TravelPreferences>,
+    @param.query.object('where', getWhereSchemaFor(TravelPreferences))
+    where?: Where<TravelPreferences>,
   ): Promise<Count> {
     return this.travelPreferencesRepository.count(where);
   }
@@ -67,14 +93,18 @@ export class TravelPreferencesController {
         description: 'Array of TravelPreferences model instances',
         content: {
           'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(TravelPreferences)},
+            schema: {
+              type: 'array',
+              items: getModelSchemaRef(TravelPreferences),
+            },
           },
         },
       },
     },
   })
   async find(
-    @param.query.object('filter', getFilterSchemaFor(TravelPreferences)) filter?: Filter<TravelPreferences>,
+    @param.query.object('filter', getFilterSchemaFor(TravelPreferences))
+    filter?: Filter<TravelPreferences>,
   ): Promise<TravelPreferences[]> {
     return this.travelPreferencesRepository.find(filter);
   }
@@ -96,7 +126,8 @@ export class TravelPreferencesController {
       },
     })
     travelPreferences: TravelPreferences,
-    @param.query.object('where', getWhereSchemaFor(TravelPreferences)) where?: Where<TravelPreferences>,
+    @param.query.object('where', getWhereSchemaFor(TravelPreferences))
+    where?: Where<TravelPreferences>,
   ): Promise<Count> {
     return this.travelPreferencesRepository.updateAll(travelPreferences, where);
   }
@@ -105,11 +136,15 @@ export class TravelPreferencesController {
     responses: {
       '200': {
         description: 'TravelPreferences model instance',
-        content: {'application/json': {schema: getModelSchemaRef(TravelPreferences)}},
+        content: {
+          'application/json': {schema: getModelSchemaRef(TravelPreferences)},
+        },
       },
     },
   })
-  async findById(@param.path.string('id') id: string): Promise<TravelPreferences> {
+  async findById(
+    @param.path.string('id') id: string,
+  ): Promise<TravelPreferences> {
     return this.travelPreferencesRepository.findById(id);
   }
 

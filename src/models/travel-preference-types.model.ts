@@ -15,7 +15,6 @@ export class TravelPreferenceTypes extends Entity {
   @property({
     type: 'string',
     id: true,
-    required: true,
     generated: true,
   })
   id: string;
@@ -35,4 +34,5 @@ export interface TravelPreferenceTypesRelations {
   // describe navigational properties here
 }
 
-export type TravelPreferenceTypesWithRelations = TravelPreferenceTypes & TravelPreferenceTypesRelations;
+export type TravelPreferenceTypesWithRelations = TravelPreferenceTypes &
+  TravelPreferenceTypesRelations;

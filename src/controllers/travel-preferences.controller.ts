@@ -56,6 +56,9 @@ export class TravelPreferencesController {
     const travelData = await this.travelPreferencesRepository.create(
       travelPreferences,
     );
+    let tid = '';
+    tid = travelData.id;
+    console.log('test1', travelData.id);
     travelData.userCheck = '1' + travelData.userId;
     await this.travelPreferencesRepository.updateById(
       travelData.id,
@@ -123,9 +126,10 @@ export class TravelPreferencesController {
       });
 
       if (i === mainCategories.length - 1) {
+        console.log('test2', tid);
         return {
           status: 'Success',
-          id: travelData.id,
+          id: tid,
           categoriesList,
         };
       }

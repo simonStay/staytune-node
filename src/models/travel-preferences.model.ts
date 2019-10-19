@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {User} from '../models';
 
 @model({settings: {strict: false}})
 export class TravelPreferences extends Entity {
@@ -19,19 +20,19 @@ export class TravelPreferences extends Entity {
   daysCount?: number;
 
   @property({
-    type: 'string',
+    type: 'number',
   })
-  totalBudget?: string;
+  totalBudget?: number;
 
   @property({
     type: 'string',
   })
   city?: string;
 
-  @property({
-    type: 'string',
-  })
-  userId?: string;
+  // @property({
+  //   type: 'string',
+  // })
+  // userId?: string;
 
   @property({
     type: 'string',
@@ -50,11 +51,25 @@ export class TravelPreferences extends Entity {
   })
   id: string;
 
+  @property({
+    type: 'array',
+    itemType: 'object',
+  })
+  selectedCategories: Array<object>;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
+
+  @property({
+    type: 'string',
+  })
+  userCheck: string;
+
+  @belongsTo(() => User)
+  userId: string;
 
   constructor(data?: Partial<TravelPreferences>) {
     super(data);

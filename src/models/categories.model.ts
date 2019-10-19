@@ -23,6 +23,12 @@ export class Categories extends Entity {
   })
   categoryPic: string;
 
+  @property({
+    type: 'boolean',
+    default: false,
+  })
+  selected: boolean;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

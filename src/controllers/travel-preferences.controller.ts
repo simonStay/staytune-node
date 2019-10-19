@@ -18,11 +18,12 @@ import {
   del,
   requestBody,
 } from '@loopback/rest';
-import {TravelPreferences, Categories} from '../models';
+import {TravelPreferences, Categories, User} from '../models';
 import {
   TravelPreferencesRepository,
   CategoriesRepository,
 } from '../repositories';
+import {threadId} from 'worker_threads';
 
 export class TravelPreferencesController {
   constructor(
@@ -52,41 +53,83 @@ export class TravelPreferencesController {
     })
     travelPreferences: Omit<TravelPreferences, 'id'>,
   ): Promise<any> {
-    await this.travelPreferencesRepository.create(travelPreferences);
+    const travelData = await this.travelPreferencesRepository.create(
+      travelPreferences,
+    );
+    travelData.userCheck = '1' + travelData.userId;
+    await this.travelPreferencesRepository.updateById(
+      travelData.id,
+      travelData,
+    );
+    console.log(travelPreferences.selectedTravelPreferences);
+    let finalList: Array<string> = [];
+    const Business: Array<string> = ['Culinary'];
+    const Vegan: Array<string> = ['Culinary'];
+    const Shopping: Array<string> = ['Shopping', 'Culinary'];
+    const allCategories: Array<string> = [
+      'Shopping',
+      'Culinary',
+      'Adventure',
+      'Museums',
+      'Entertainment',
+    ];
+    if (travelPreferences.selectedTravelPreferences.includes('Business')) {
+      finalList = finalList.concat(Business);
+    }
+    if (travelPreferences.selectedTravelPreferences.includes('Vegan')) {
+      finalList = finalList.concat(Vegan);
+    }
+    if (travelPreferences.selectedTravelPreferences.includes('Shopping')) {
+      finalList = finalList.concat(Shopping);
+    }
+    if (
+      travelPreferences.selectedTravelPreferences.includes('Local Experience')
+    ) {
+      finalList = finalList.concat(allCategories);
+    }
+    if (
+      travelPreferences.selectedTravelPreferences.includes('Travel on a budget')
+    ) {
+      finalList = finalList.concat(allCategories);
+    }
+    if (travelPreferences.selectedTravelPreferences.includes('Solo Traveler')) {
+      finalList = finalList.concat(allCategories);
+    }
+    if (
+      travelPreferences.selectedTravelPreferences.includes(
+        'Family-oriented trendy',
+      )
+    ) {
+      finalList = finalList.concat(allCategories);
+    }
+
+    console.log(finalList);
+
     const mainCategories = await this.categoriesRepository.find({
-      where: {parentcategory: ''},
+      where: {categoryname: {inq: finalList}},
     });
+
     const categoriesList: Array<object> = [];
-    // eslint-disable-next-line @typescript-eslint/await-thenable
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    await mainCategories.map(async element => {
-      //console.log(element);
-      console.log(element.categoryname);
-      const subCategories: object = await this.categoriesRepository.find({
-        where: {parentcategory: element.categoryname},
+    let i: any;
+    for (i = 0; i < mainCategories.length; i++) {
+      const subCategories = await this.categoriesRepository.find({
+        where: {parentcategory: mainCategories[i].categoryname},
       });
-      console.log('sub categories', subCategories);
-
-      // eslint-disable-next-line @typescript-eslint/await-thenable
-
-      await categoriesList.push({
-        id: element.id,
-        categoryname: element.categoryname,
+      // console.log(subCategories, 'sub');
+      categoriesList.push({
+        id: mainCategories[i].id,
+        categoryname: mainCategories[i].categoryname,
         subCategories: subCategories,
       });
-    });
 
-    // await setTimeout(() => {
-    //   console.log(categoriesList);
-    // }, 5000);
-    let count = 0;
-    console.log(categoriesList);
-    while (count < 105) {
-      count++;
-      console.log('Number : ', count);
+      if (i === mainCategories.length - 1) {
+        return {
+          status: 'Success',
+          id: travelData.id,
+          categoriesList,
+        };
+      }
     }
-    console.log(categoriesList);
-    return categoriesList;
   }
 
   @get('/travel-preferences/count', {
@@ -124,6 +167,25 @@ export class TravelPreferencesController {
     filter?: Filter<TravelPreferences>,
   ): Promise<TravelPreferences[]> {
     return this.travelPreferencesRepository.find(filter);
+  }
+
+  @post('/travel-preferences/userId', {
+    responses: {
+      '200': {
+        description: 'TravelPreferences model instance',
+        content: {
+          'application/json': {schema: getModelSchemaRef(TravelPreferences)},
+        },
+      },
+    },
+  })
+  async findByUserId(@requestBody() body: any): Promise<object> {
+    const userId = '1' + body.userId;
+    const listPreferences = await this.travelPreferencesRepository.find({
+      where: {userCheck: userId},
+    });
+    console.log(listPreferences);
+    return listPreferences;
   }
 
   @patch('/travel-preferences', {
@@ -182,8 +244,18 @@ export class TravelPreferencesController {
       },
     })
     travelPreferences: TravelPreferences,
-  ): Promise<void> {
+  ): Promise<object> {
     await this.travelPreferencesRepository.updateById(id, travelPreferences);
+    const updatedData = await this.travelPreferencesRepository.findById(id);
+    // console.log(checkUser, '5d9ab8211113661189ffb735');
+    console.log(updatedData, 'updateddata');
+    // console.log(updatedUser, 'userupdated');
+
+    return {
+      status: 'success',
+      message: 'successfully Updated',
+      data: updatedData,
+    };
   }
 
   @put('/travel-preferences/{id}', {
@@ -210,4 +282,21 @@ export class TravelPreferencesController {
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.travelPreferencesRepository.deleteById(id);
   }
+
+  // @post('/user/travel-preferences/', {
+  //   responses: {
+  //     '200': {
+  //       description: 'Array of Admin model instances',
+  //       headers: {
+  //         'content-type': 'application/json',
+  //       },
+  //     },
+  //   },
+  // })
+  // async movies(@requestBody() body: any): Promise<object> {
+  //   // const value = data;
+  //   const uid = body.userId;
+  //   console.log('uid', uid);
+  //   return uid;
+  // }
 }

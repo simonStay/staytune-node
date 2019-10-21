@@ -13,6 +13,12 @@ export class TravelPreferenceTypes extends Entity {
   image?: string;
 
   @property({
+    type: 'boolean',
+    default: false,
+  })
+  selected: boolean;
+
+  @property({
     type: 'string',
     id: true,
     generated: true,

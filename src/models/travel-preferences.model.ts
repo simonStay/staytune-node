@@ -5,9 +5,9 @@ import {User} from '../models';
 export class TravelPreferences extends Entity {
   @property({
     type: 'array',
-    itemType: 'string',
+    itemType: 'object',
   })
-  selectedTravelPreferences?: string[];
+  selectedTravelPreferences?: Array<object>;
 
   @property({
     type: 'number',

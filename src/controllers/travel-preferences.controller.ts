@@ -64,7 +64,6 @@ export class TravelPreferencesController {
       travelData.id,
       travelData,
     );
-    console.log(travelPreferences.selectedTravelPreferences);
     let finalList: Array<string> = [];
     const Business: Array<string> = ['Culinary'];
     const Vegan: Array<string> = ['Culinary'];
@@ -76,35 +75,58 @@ export class TravelPreferencesController {
       'Museums',
       'Entertainment',
     ];
-    if (travelPreferences.selectedTravelPreferences.includes('Business')) {
-      finalList = finalList.concat(Business);
-    }
-    if (travelPreferences.selectedTravelPreferences.includes('Vegan')) {
-      finalList = finalList.concat(Vegan);
-    }
-    if (travelPreferences.selectedTravelPreferences.includes('Shopping')) {
-      finalList = finalList.concat(Shopping);
-    }
-    if (
-      travelPreferences.selectedTravelPreferences.includes('Local Experience')
-    ) {
-      finalList = finalList.concat(allCategories);
-    }
-    if (
-      travelPreferences.selectedTravelPreferences.includes('Travel on a budget')
-    ) {
-      finalList = finalList.concat(allCategories);
-    }
-    if (travelPreferences.selectedTravelPreferences.includes('Solo Traveler')) {
-      finalList = finalList.concat(allCategories);
-    }
-    if (
-      travelPreferences.selectedTravelPreferences.includes(
-        'Family-oriented trendy',
-      )
-    ) {
-      finalList = finalList.concat(allCategories);
-    }
+    const selectedData = travelPreferences.selectedTravelPreferences;
+    // console.log(selectedData);
+    selectedData.forEach((dataPreference: any) => {
+      console.log('selected categories by surya', dataPreference);
+      console.log('testdfdfd', dataPreference.name);
+      if (
+        dataPreference.name === 'Business' &&
+        dataPreference.selected === true
+      ) {
+        console.log(dataPreference.name);
+        finalList = finalList.concat(Business);
+      }
+      if (dataPreference.name === 'Vegan' && dataPreference.selected === true) {
+        console.log(dataPreference.name);
+        finalList = finalList.concat(Vegan);
+      }
+      if (
+        dataPreference.name === 'Shopping' &&
+        dataPreference.selected === true
+      ) {
+        console.log(dataPreference.name);
+        finalList = finalList.concat(Shopping);
+      }
+      if (
+        dataPreference.name === 'Local Experience' &&
+        dataPreference.selected === true
+      ) {
+        console.log(dataPreference.name);
+        finalList = finalList.concat(allCategories);
+      }
+      if (
+        dataPreference.name === 'Travel on a budget' &&
+        dataPreference.selected === true
+      ) {
+        console.log(dataPreference.name);
+        finalList = finalList.concat(allCategories);
+      }
+      if (
+        dataPreference.name === 'Solo Traveler' &&
+        dataPreference.selected === true
+      ) {
+        console.log(dataPreference.name);
+        finalList = finalList.concat(allCategories);
+      }
+      if (
+        dataPreference.name === 'Family-oriented trendy' &&
+        dataPreference.selected === true
+      ) {
+        console.log(dataPreference.name);
+        finalList = finalList.concat(allCategories);
+      }
+    });
 
     console.log(finalList);
 
@@ -132,6 +154,9 @@ export class TravelPreferencesController {
           id: tid,
           categoriesList,
         };
+        // return {
+        //   status: 'Success',
+        // };
       }
     }
   }

@@ -434,6 +434,7 @@ export class UserController {
             console.log('Email sent: ' + info.message);
           }
         });
+
         return {
           id: extUser.id,
           message: 'User not verified',
@@ -450,6 +451,11 @@ export class UserController {
         user.token = token;
         return user;
       }
+    } else {
+      return {
+        message: 'User does not exist',
+        status: 'failed',
+      };
     }
   }
 }

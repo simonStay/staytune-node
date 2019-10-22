@@ -23,7 +23,6 @@ const CredentialsSchema = {
     },
     password: {
       type: 'string',
-      minLength: 8,
     },
   },
 };

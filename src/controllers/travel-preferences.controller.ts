@@ -222,29 +222,135 @@ export class TravelPreferencesController {
     return listPreferences;
   }
 
-  // @get('/travelpreferences/{id}/regions', {
-  //   responses: {
-  //     '200': {
-  //       description: "Array of Region's belonging to City",
-  //       content: {
-  //         'application/json': {
-  //           schema: {type: 'array', items: getModelSchemaRef(User)},
-  //         },
-  //       },
-  //     },
-  //   },
-  // })
-  // async findTravel(
-  //   @param.path.string('id') id: string,
-  //   @param.query.object('filter') filter?: Filter<TravelPreferences>,
-  // ): Promise<TravelPreferences[]> {
-  //   return this.travelPreferencesRepository.find(
-  //     {where: {userId: id}},
-  //     {
-  //       strictObjectIDCoercion: true,
-  //     },
-  //   );
-  // }
+  @post('/travel-preferences/update', {
+    responses: {
+      '200': {
+        description: 'TravelPreferences model instance',
+        content: {
+          'application/json': {schema: getModelSchemaRef(TravelPreferences)},
+        },
+      },
+    },
+  })
+  async edit(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(TravelPreferences),
+        },
+      },
+    })
+    travelPreferences: TravelPreferences,
+  ): Promise<any> {
+    const travelData = await this.travelPreferencesRepository.findById(
+      travelPreferences.id,
+    );
+    console.log(travelData, 'data');
+
+    // let tid = '';
+    // tid = travelData.id;
+    // console.log('test1', travelData.id);
+    // travelData.userCheck = '1' + travelData.userId;
+    // await this.travelPreferencesRepository.updateById(
+    //   travelData.id,
+    //   travelData,
+    // );
+    // let finalList: Array<string> = [];
+    // const Business: Array<string> = ['Culinary'];
+    // const Vegan: Array<string> = ['Culinary'];
+    // const Shopping: Array<string> = ['Shopping', 'Culinary'];
+    // const allCategories: Array<string> = [
+    //   'Shopping',
+    //   'Culinary',
+    //   'Adventure',
+    //   'Museums',
+    //   'Entertainment',
+    // ];
+    // const selectedData = travelPreferences.selectedTravelPreferences;
+    // // console.log(selectedData);
+    // selectedData.forEach((dataPreference: any) => {
+    //   console.log('selected categories by surya', dataPreference);
+    //   console.log('testdfdfd', dataPreference.name);
+    //   if (
+    //     dataPreference.name === 'Business' &&
+    //     dataPreference.selected === true
+    //   ) {
+    //     console.log(dataPreference.name);
+    //     finalList = finalList.concat(Business);
+    //   }
+    //   if (dataPreference.name === 'Vegan' && dataPreference.selected === true) {
+    //     console.log(dataPreference.name);
+    //     finalList = finalList.concat(Vegan);
+    //   }
+    //   if (
+    //     dataPreference.name === 'Shopping' &&
+    //     dataPreference.selected === true
+    //   ) {
+    //     console.log(dataPreference.name);
+    //     finalList = finalList.concat(Shopping);
+    //   }
+    //   if (
+    //     dataPreference.name === 'Local Experience' &&
+    //     dataPreference.selected === true
+    //   ) {
+    //     console.log(dataPreference.name);
+    //     finalList = finalList.concat(allCategories);
+    //   }
+    //   if (
+    //     dataPreference.name === 'Travel on a budget' &&
+    //     dataPreference.selected === true
+    //   ) {
+    //     console.log(dataPreference.name);
+    //     finalList = finalList.concat(allCategories);
+    //   }
+    //   if (
+    //     dataPreference.name === 'Solo Traveler' &&
+    //     dataPreference.selected === true
+    //   ) {
+    //     console.log(dataPreference.name);
+    //     finalList = finalList.concat(allCategories);
+    //   }
+    //   if (
+    //     dataPreference.name === 'Family-oriented trendy' &&
+    //     dataPreference.selected === true
+    //   ) {
+    //     console.log(dataPreference.name);
+    //     finalList = finalList.concat(allCategories);
+    //   }
+    // });
+
+    // console.log(finalList);
+
+    // const mainCategories = await this.categoriesRepository.find({
+    //   where: {categoryname: {inq: finalList}},
+    // });
+
+    // const categoriesList: Array<object> = [];
+    // let i: any;
+    // for (i = 0; i < mainCategories.length; i++) {
+    //   const subCategories = await this.categoriesRepository.find({
+    //     where: {parentcategory: mainCategories[i].categoryname},
+    //   });
+    //   // console.log(subCategories, 'sub');
+    //   categoriesList.push({
+    //     id: mainCategories[i].id,
+    //     categoryname: mainCategories[i].categoryname,
+    //     subCategories: subCategories,
+    //   });
+
+    //   if (i === mainCategories.length - 1) {
+    //     console.log('test2', tid);
+    //     return {
+    //       status: 'Success',
+    //       id: tid,
+    //       categoriesList,
+    //     };
+    //     // return {
+    //     //   status: 'Success',
+    //     // };
+    //   }
+    // }
+  }
 
   @patch('/travel-preferences', {
     responses: {

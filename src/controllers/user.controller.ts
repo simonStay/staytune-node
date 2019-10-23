@@ -220,11 +220,7 @@ export class UserController {
       },
     },
   })
-  async findById(
-    currentUserProfile: UserProfile,
-    @param.path.string('id') id: string,
-  ): Promise<User> {
-    currentUserProfile.id = currentUserProfile[securityId];
+  async findById(@param.path.string('id') id: string): Promise<User> {
     return this.userRepository.findById(id);
   }
 

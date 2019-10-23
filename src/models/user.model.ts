@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, hasMany} from '@loopback/repository';
+import {TravelPreferences} from './travel-preferences.model';
 
 @model({settings: {strict: false}})
 export class User extends Entity {
@@ -76,6 +77,9 @@ export class User extends Entity {
     default: '',
   })
   profilePic: string;
+
+  @hasMany(() => TravelPreferences, {keyTo: 'userId'})
+  travelpreferences: TravelPreferences[];
 
   // Define well-known properties here
 

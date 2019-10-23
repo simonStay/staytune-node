@@ -203,19 +203,48 @@ export class TravelPreferencesController {
       '200': {
         description: 'TravelPreferences model instance',
         content: {
-          'application/json': {schema: getModelSchemaRef(TravelPreferences)},
+          'application/json': {schema: getModelSchemaRef(User)},
         },
       },
     },
   })
-  async findByUserId(@requestBody() body: any): Promise<object> {
-    const userId = '1' + body.userId;
-    const listPreferences = await this.travelPreferencesRepository.find({
-      where: {userCheck: userId},
-    });
+  async findByUserId(@requestBody() body: any): Promise<TravelPreferences[]> {
+    const userId = body.userId;
+    const listPreferences = await this.travelPreferencesRepository.find(
+      {
+        where: {userId: userId},
+      },
+      {
+        strictObjectIDCoercion: true,
+      },
+    );
     console.log(listPreferences);
     return listPreferences;
   }
+
+  // @get('/travelpreferences/{id}/regions', {
+  //   responses: {
+  //     '200': {
+  //       description: "Array of Region's belonging to City",
+  //       content: {
+  //         'application/json': {
+  //           schema: {type: 'array', items: getModelSchemaRef(User)},
+  //         },
+  //       },
+  //     },
+  //   },
+  // })
+  // async findTravel(
+  //   @param.path.string('id') id: string,
+  //   @param.query.object('filter') filter?: Filter<TravelPreferences>,
+  // ): Promise<TravelPreferences[]> {
+  //   return this.travelPreferencesRepository.find(
+  //     {where: {userId: id}},
+  //     {
+  //       strictObjectIDCoercion: true,
+  //     },
+  //   );
+  // }
 
   @patch('/travel-preferences', {
     responses: {

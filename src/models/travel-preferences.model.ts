@@ -1,5 +1,5 @@
 import {Entity, model, property, belongsTo} from '@loopback/repository';
-import {User} from '../models';
+import {User} from './user.model';
 
 @model({settings: {strict: false}})
 export class TravelPreferences extends Entity {

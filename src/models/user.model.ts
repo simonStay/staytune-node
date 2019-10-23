@@ -77,6 +77,17 @@ export class User extends Entity {
   })
   profilePic: string;
 
+  @property({
+    type: 'number',
+  })
+  age: number;
+
+  @property({
+    type: 'string',
+    default: '',
+  })
+  maritalStatus: string;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

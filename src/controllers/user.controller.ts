@@ -220,7 +220,6 @@ export class UserController {
       },
     },
   })
-  @authenticate('jwt')
   async findById(
     @inject(SecurityBindings.USER)
     currentUserProfile: UserProfile,

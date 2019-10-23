@@ -220,9 +220,7 @@ export class UserController {
       },
     },
   })
-  @authenticate('jwt')
   async findById(
-    @inject(SecurityBindings.USER)
     currentUserProfile: UserProfile,
     @param.path.string('id') id: string,
   ): Promise<User> {

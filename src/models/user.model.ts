@@ -80,6 +80,16 @@ export class User extends Entity {
 
   @hasMany(() => TravelPreferences, {keyTo: 'userId'})
   travelpreferences: TravelPreferences[];
+  @property({
+    type: 'number',
+  })
+  age: number;
+
+  @property({
+    type: 'string',
+    default: '',
+  })
+  maritalStatus: string;
 
   // Define well-known properties here
 

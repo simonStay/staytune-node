@@ -82,6 +82,7 @@ export class User extends Entity {
   travelpreferences: TravelPreferences[];
   @property({
     type: 'number',
+    default: 0,
   })
   age: number;
 

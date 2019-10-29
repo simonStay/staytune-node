@@ -245,7 +245,118 @@ export class TravelPreferencesController {
     const travelData = await this.travelPreferencesRepository.findById(
       travelPreferences.id,
     );
-    console.log(travelData, 'data');
+    // console.log('New Data : ', travelPreferences.selectedTravelPreferences);
+    // console.log('Old data : ', travelData.selectedTravelPreferences);
+    const Business: Array<string> = ['Culinary'];
+    const Vegan: Array<string> = ['Culinary'];
+    const Shopping: Array<string> = ['Shopping', 'Culinary'];
+    const allCategories: Array<string> = [
+      'Shopping',
+      'Culinary',
+      'Adventure',
+      'Museums',
+      'Entertainment',
+    ];
+    let oldPreferencesTypes: Array<string> = [];
+    let newPreferencesTypes: Array<string> = [];
+    const oldSelectedData = await travelData.selectedTravelPreferences;
+    const newSelectedData = travelPreferences.selectedTravelPreferences;
+    if (oldSelectedData) {
+      oldSelectedData.forEach((oldDataPreference: any) => {
+        if (
+          oldDataPreference.name === 'Business' &&
+          oldDataPreference.selected === true
+        ) {
+          oldPreferencesTypes = oldPreferencesTypes.concat(Business);
+        }
+        if (
+          oldDataPreference.name === 'Vegan' &&
+          oldDataPreference.selected === true
+        ) {
+          oldPreferencesTypes = oldPreferencesTypes.concat(Vegan);
+        }
+        if (
+          oldDataPreference.name === 'Shopping' &&
+          oldDataPreference.selected === true
+        ) {
+          oldPreferencesTypes = oldPreferencesTypes.concat(Shopping);
+        }
+        if (
+          oldDataPreference.name === 'Local Experience' &&
+          oldDataPreference.selected === true
+        ) {
+          oldPreferencesTypes = oldPreferencesTypes.concat(allCategories);
+        }
+        if (
+          oldDataPreference.name === 'Travel on a budget' &&
+          oldDataPreference.selected === true
+        ) {
+          oldPreferencesTypes = oldPreferencesTypes.concat(allCategories);
+        }
+        if (
+          oldDataPreference.name === 'Solo Traveler' &&
+          oldDataPreference.selected === true
+        ) {
+          oldPreferencesTypes = oldPreferencesTypes.concat(allCategories);
+        }
+        if (
+          oldDataPreference.name === 'Family-oriented trendy' &&
+          oldDataPreference.selected === true
+        ) {
+          oldPreferencesTypes = oldPreferencesTypes.concat(allCategories);
+        }
+      });
+    }
+
+    if (newSelectedData) {
+      newSelectedData.forEach((newDataPreference: any) => {
+        if (
+          newDataPreference.name === 'Business' &&
+          newDataPreference.selected === true
+        ) {
+          newPreferencesTypes = newPreferencesTypes.concat(Business);
+        }
+        if (
+          newDataPreference.name === 'Vegan' &&
+          newDataPreference.selected === true
+        ) {
+          newPreferencesTypes = newPreferencesTypes.concat(Vegan);
+        }
+        if (
+          newDataPreference.name === 'Shopping' &&
+          newDataPreference.selected === true
+        ) {
+          newPreferencesTypes = newPreferencesTypes.concat(Shopping);
+        }
+        if (
+          newDataPreference.name === 'Local Experience' &&
+          newDataPreference.selected === true
+        ) {
+          newPreferencesTypes = newPreferencesTypes.concat(allCategories);
+        }
+        if (
+          newDataPreference.name === 'Travel on a budget' &&
+          newDataPreference.selected === true
+        ) {
+          newPreferencesTypes = newPreferencesTypes.concat(allCategories);
+        }
+        if (
+          newDataPreference.name === 'Solo Traveler' &&
+          newDataPreference.selected === true
+        ) {
+          newPreferencesTypes = newPreferencesTypes.concat(allCategories);
+        }
+        if (
+          newDataPreference.name === 'Family-oriented trendy' &&
+          newDataPreference.selected === true
+        ) {
+          newPreferencesTypes = newPreferencesTypes.concat(allCategories);
+        }
+      });
+    }
+
+    console.log('New Data : ', newPreferencesTypes);
+    console.log('Old data : ', oldPreferencesTypes);
 
     // let tid = '';
     // tid = travelData.id;

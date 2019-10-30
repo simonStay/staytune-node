@@ -245,8 +245,23 @@ export class TravelPreferencesController {
     const travelData = await this.travelPreferencesRepository.findById(
       travelPreferences.id,
     );
-    console.log(travelData, 'data');
+    // console.log(travelData.selectedTravelPreferences, 'data');
 
+    // eslint-disable-next-line prefer-const
+
+    // console.log(travelData, 'data');
+    const test: any = await travelPreferences.selectedTravelPreferences;
+    console.log('test:', test);
+    const array: any = await travelData.selectedTravelPreferences;
+    // console.log(array, 'array');
+    let i: any;
+    if (array !== undefined) {
+      console.log('failed');
+    } else {
+      console.log('sucess');
+    }
+    // let i:any
+    // for(i=0;i<=array.length;i++)
     // let tid = '';
     // tid = travelData.id;
     // console.log('test1', travelData.id);

@@ -1,5 +1,12 @@
-import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {
+  Entity,
+  model,
+  property,
+  belongsTo,
+  hasMany,
+} from '@loopback/repository';
 import {User} from './user.model';
+import {BudgetInfo} from './budget-info.model';
 
 @model({settings: {strict: false}})
 export class TravelPreferences extends Entity {
@@ -52,10 +59,25 @@ export class TravelPreferences extends Entity {
   id: string;
 
   @property({
+    type: 'number',
+    default: 0,
+  })
+  expenditure?: number;
+
+  @property({
+    type: 'number',
+    default: 0,
+  })
+  daysLeft?: number;
+
+  @property({
     type: 'array',
     itemType: 'object',
   })
   selectedCategories: Array<object>;
+
+  @hasMany(() => BudgetInfo, {keyTo: 'travelId'})
+  budgetinfo: TravelPreferences[];
 
   // Define well-known properties here
 

@@ -1,5 +1,6 @@
 import {Entity, model, property, hasMany} from '@loopback/repository';
 import {TravelPreferences} from './travel-preferences.model';
+import {BudgetInfo} from './budget-info.model';
 
 @model({settings: {strict: false}})
 export class User extends Entity {
@@ -80,6 +81,10 @@ export class User extends Entity {
 
   @hasMany(() => TravelPreferences, {keyTo: 'userId'})
   travelpreferences: TravelPreferences[];
+
+  @hasMany(() => BudgetInfo, {keyTo: 'userId'})
+  budgetinfo: BudgetInfo[];
+
   @property({
     type: 'number',
   })

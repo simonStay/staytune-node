@@ -245,6 +245,10 @@ export class TravelPreferencesController {
     const travelData = await this.travelPreferencesRepository.findById(
       travelPreferences.id,
     );
+    let tid = '';
+    tid = travelData.id;
+    let oldSelectedCategories = {};
+    oldSelectedCategories = await travelData.selectedCategories;
     // console.log('New Data : ', travelPreferences.selectedTravelPreferences);
     // console.log('Old data : ', travelData.selectedTravelPreferences);
     const Business: Array<string> = ['Culinary'];
@@ -357,125 +361,65 @@ export class TravelPreferencesController {
 
     console.log('New Data : ', newPreferencesTypes);
     console.log('Old data : ', oldPreferencesTypes);
+    let finalList: Array<string> = [];
+    let oldList: Array<string> = [];
+    newPreferencesTypes.forEach((item: string) => {
+      if (oldPreferencesTypes.includes(item)) {
+        console.log('Old List : ', item);
+        oldList = oldList.concat(item);
+      } else {
+        console.log('New list : ', item);
+        finalList = finalList.concat(item);
+      }
+    });
 
-    // eslint-disable-next-line prefer-const
+    await this.travelPreferencesRepository.updateById(
+      travelPreferences.id,
+      travelPreferences,
+    );
 
-    // console.log(travelData, 'data');
-    const test: any = await travelPreferences.selectedTravelPreferences;
-    console.log('test:', test);
-    const array: any = await travelData.selectedTravelPreferences;
-    // console.log(array, 'array');
-    let i: any;
-    if (array !== undefined) {
-      console.log('failed');
-    } else {
-      console.log('sucess');
+    console.log(finalList);
+    console.log(oldList);
+    let categoriesList: Array<object> = [];
+    if (oldList) {
+      categoriesList = categoriesList.concat(oldSelectedCategories);
     }
-    // let i:any
-    // for(i=0;i<=array.length;i++)
-    // let tid = '';
-    // tid = travelData.id;
-    // console.log('test1', travelData.id);
-    // travelData.userCheck = '1' + travelData.userId;
-    // await this.travelPreferencesRepository.updateById(
-    //   travelData.id,
-    //   travelData,
-    // );
-    // let finalList: Array<string> = [];
-    // const Business: Array<string> = ['Culinary'];
-    // const Vegan: Array<string> = ['Culinary'];
-    // const Shopping: Array<string> = ['Shopping', 'Culinary'];
-    // const allCategories: Array<string> = [
-    //   'Shopping',
-    //   'Culinary',
-    //   'Adventure',
-    //   'Museums',
-    //   'Entertainment',
-    // ];
-    // const selectedData = travelPreferences.selectedTravelPreferences;
-    // // console.log(selectedData);
-    // selectedData.forEach((dataPreference: any) => {
-    //   console.log('selected categories by surya', dataPreference);
-    //   console.log('testdfdfd', dataPreference.name);
-    //   if (
-    //     dataPreference.name === 'Business' &&
-    //     dataPreference.selected === true
-    //   ) {
-    //     console.log(dataPreference.name);
-    //     finalList = finalList.concat(Business);
-    //   }
-    //   if (dataPreference.name === 'Vegan' && dataPreference.selected === true) {
-    //     console.log(dataPreference.name);
-    //     finalList = finalList.concat(Vegan);
-    //   }
-    //   if (
-    //     dataPreference.name === 'Shopping' &&
-    //     dataPreference.selected === true
-    //   ) {
-    //     console.log(dataPreference.name);
-    //     finalList = finalList.concat(Shopping);
-    //   }
-    //   if (
-    //     dataPreference.name === 'Local Experience' &&
-    //     dataPreference.selected === true
-    //   ) {
-    //     console.log(dataPreference.name);
-    //     finalList = finalList.concat(allCategories);
-    //   }
-    //   if (
-    //     dataPreference.name === 'Travel on a budget' &&
-    //     dataPreference.selected === true
-    //   ) {
-    //     console.log(dataPreference.name);
-    //     finalList = finalList.concat(allCategories);
-    //   }
-    //   if (
-    //     dataPreference.name === 'Solo Traveler' &&
-    //     dataPreference.selected === true
-    //   ) {
-    //     console.log(dataPreference.name);
-    //     finalList = finalList.concat(allCategories);
-    //   }
-    //   if (
-    //     dataPreference.name === 'Family-oriented trendy' &&
-    //     dataPreference.selected === true
-    //   ) {
-    //     console.log(dataPreference.name);
-    //     finalList = finalList.concat(allCategories);
-    //   }
-    // });
+    if (finalList) {
+      const mainCategories = await this.categoriesRepository.find({
+        where: {categoryname: {inq: finalList}},
+      });
 
-    // console.log(finalList);
+      let i: any;
+      for (i = 0; i < mainCategories.length; i++) {
+        const subCategories = await this.categoriesRepository.find({
+          where: {parentcategory: mainCategories[i].categoryname},
+        });
+        // console.log(subCategories, 'sub');
+        categoriesList.push({
+          id: mainCategories[i].id,
+          categoryname: mainCategories[i].categoryname,
+          subCategories: subCategories,
+        });
 
-    // const mainCategories = await this.categoriesRepository.find({
-    //   where: {categoryname: {inq: finalList}},
-    // });
-
-    // const categoriesList: Array<object> = [];
-    // let i: any;
-    // for (i = 0; i < mainCategories.length; i++) {
-    //   const subCategories = await this.categoriesRepository.find({
-    //     where: {parentcategory: mainCategories[i].categoryname},
-    //   });
-    //   // console.log(subCategories, 'sub');
-    //   categoriesList.push({
-    //     id: mainCategories[i].id,
-    //     categoryname: mainCategories[i].categoryname,
-    //     subCategories: subCategories,
-    //   });
-
-    //   if (i === mainCategories.length - 1) {
-    //     console.log('test2', tid);
-    //     return {
-    //       status: 'Success',
-    //       id: tid,
-    //       categoriesList,
-    //     };
-    //     // return {
-    //     //   status: 'Success',
-    //     // };
-    //   }
-    // }
+        if (i === mainCategories.length - 1) {
+          console.log('test2', tid);
+          return {
+            status: 'Success',
+            id: tid,
+            categoriesList,
+          };
+          // return {
+          //   status: 'Success',
+          // };
+        }
+      }
+    } else {
+      return {
+        status: 'Success',
+        id: tid,
+        categoriesList,
+      };
+    }
   }
 
   @patch('/travel-preferences', {

@@ -1,13 +1,13 @@
 import {Entity, model, property, belongsTo} from '@loopback/repository';
 import {User} from './user.model';
-import {TravelPreference} from './travel-preferences.model';
+import {TravelPreferences} from './travel-preferences.model';
 
 @model({settings: {}})
 export class BudgetInfo extends Entity {
   @property({
     type: 'string',
     id: true,
-    required: true,
+    // required: true,
     generated: true,
   })
   id: string;
@@ -31,7 +31,7 @@ export class BudgetInfo extends Entity {
   @belongsTo(() => User)
   userId: string;
 
-  @belongsTo(() => TravelPreference)
+  @belongsTo(() => TravelPreferences)
   travelId: string;
 
   constructor(data?: Partial<BudgetInfo>) {

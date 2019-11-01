@@ -18,12 +18,12 @@ import {
   del,
   requestBody,
 } from '@loopback/rest';
-import {TravelPreferences, Categories, User} from '../models';
+import {TravelPreferences, User} from '../models';
 import {
   TravelPreferencesRepository,
   CategoriesRepository,
+  BudgetInfoRepository,
 } from '../repositories';
-import {threadId} from 'worker_threads';
 
 export class TravelPreferencesController {
   constructor(
@@ -31,6 +31,8 @@ export class TravelPreferencesController {
     public travelPreferencesRepository: TravelPreferencesRepository,
     @repository(CategoriesRepository)
     public categoriesRepository: CategoriesRepository,
+    @repository(BudgetInfoRepository)
+    public budgetinfoRepository: BudgetInfoRepository,
   ) {}
 
   @post('/travel-preferences', {
@@ -532,22 +534,86 @@ export class TravelPreferencesController {
     const data = await this.travelPreferencesRepository.findById(body.id);
     // const budgetPerDay = data.totalBudget / data.daysCount;
 
+    const data1 = await this.budgetinfoRepository.find(
+      {
+        where: {travelId: body.id},
+      },
+      {
+        strictObjectIDCoercion: true,
+      },
+    );
+    // console.log(data1, 'data12');
+    // console.log(data1.length, 'length');
+
     let totalBudget: any;
     let daysCount: any;
     let totalExpen: any;
+    let i: any;
+    let response: Array<object> = [];
 
-    // eslint-disable-next-line prefer-const
-    if (data.expenditure === 0) {
+    if (data1.length === 0) {
+      // eslint-disable-next-line prefer-const
       totalBudget = data.totalBudget;
       // eslint-disable-next-line prefer-const
       totalExpen = data.expenditure;
       const remaingBudget = totalBudget - totalExpen;
+      console.log(remaingBudget, 'remaining');
       // eslint-disable-next-line prefer-const
       daysCount = data.daysCount;
+      console.log(daysCount, 'days');
       const budgetPerDay = remaingBudget / daysCount;
       console.log(budgetPerDay, 'budget');
       const budgetDivide = budgetPerDay / 2;
       console.log('budgetDivide', budgetDivide);
+      console.log('hello');
+      for (i = 1; i < daysCount; i++) {
+        await response.push({
+          id: i - 1,
+          day: 'Day' + i,
+          dayBudget: budgetPerDay,
+          meals: budgetDivide,
+          entertainment: budgetDivide,
+        });
+      }
+      return response;
+    } else {
+      let exp1: any;
+      let exp2: any;
+
+      let i: any;
+      totalBudget = data.totalBudget;
+      for (i = 0; i < data1.length; i++) {
+        exp1 = data1[i].mealsExpenditure;
+        exp2 = data1[i].entExpenditure;
+        daysCount = data.daysCount;
+        data.daysLeft = daysCount - (i + 1);
+        totalExpen = exp1 + exp2;
+
+        const remaingBudget = totalBudget - totalExpen;
+        totalBudget = remaingBudget;
+
+        if (data.daysLeft !== 0) {
+          const budgetPerDay = totalBudget / data.daysLeft;
+          console.log(data.daysLeft, 'daysleft');
+          console.log(budgetPerDay, 'budget');
+          const budgetDivide = budgetPerDay / 2;
+          console.log('budgetDivide', budgetDivide);
+          for (i = 1; i <= data.daysLeft; i++) {
+            await response.push({
+              id: i,
+              day: 'Day' + i,
+              dayBudget: budgetPerDay,
+              meals: budgetDivide,
+              entertainment: budgetDivide,
+            });
+          }
+        } else {
+          const budgetPerDay = totalBudget;
+          const budgetDivide = budgetPerDay / 2;
+          console.log('budgetDivide', budgetDivide);
+        }
+      }
+      return response;
     }
   }
 }

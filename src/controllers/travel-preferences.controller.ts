@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/await-thenable */
 import {
   Count,
@@ -405,6 +407,7 @@ export class TravelPreferencesController {
 
         if (i === mainCategories.length - 1) {
           console.log('test2', tid);
+          console.log(categoriesList, 'category');
           return {
             status: 'Success',
             id: tid,
@@ -549,13 +552,18 @@ export class TravelPreferencesController {
     let daysCount: any;
     let totalExpen: any;
     let i: any;
+    let j: any;
     let response: Array<object> = [];
+    let oldRecord: Array<object> = [];
+    let data2: any;
 
     if (data1.length === 0) {
       // eslint-disable-next-line prefer-const
       totalBudget = data.totalBudget;
+      console.log(totalBudget, 'budget12');
       // eslint-disable-next-line prefer-const
       totalExpen = data.expenditure;
+      console.log(totalExpen, 'expen');
       const remaingBudget = totalBudget - totalExpen;
       console.log(remaingBudget, 'remaining');
       // eslint-disable-next-line prefer-const
@@ -566,7 +574,7 @@ export class TravelPreferencesController {
       const budgetDivide = budgetPerDay / 2;
       console.log('budgetDivide', budgetDivide);
       console.log('hello');
-      for (i = 1; i < daysCount; i++) {
+      for (i = 1; i <= daysCount; i++) {
         await response.push({
           id: i - 1,
           day: 'Day' + i,
@@ -581,6 +589,7 @@ export class TravelPreferencesController {
       let exp2: any;
 
       let i: any;
+
       totalBudget = data.totalBudget;
       for (i = 0; i < data1.length; i++) {
         exp1 = data1[i].mealsExpenditure;
@@ -592,28 +601,34 @@ export class TravelPreferencesController {
         const remaingBudget = totalBudget - totalExpen;
         totalBudget = remaingBudget;
 
+        await oldRecord.push({
+          id: i + 1,
+          day: i + 1,
+          amountSpent: totalExpen,
+        });
+
         if (data.daysLeft !== 0) {
           const budgetPerDay = totalBudget / data.daysLeft;
-          console.log(data.daysLeft, 'daysleft');
-          console.log(budgetPerDay, 'budget');
+
           const budgetDivide = budgetPerDay / 2;
-          console.log('budgetDivide', budgetDivide);
-          for (i = 1; i <= data.daysLeft; i++) {
+
+          for (j = 1; j <= data.daysLeft; j++) {
             await response.push({
-              id: i,
-              day: 'Day' + i,
+              id: j + 1,
+              day: 'Day' + (j + 1),
               dayBudget: budgetPerDay,
               meals: budgetDivide,
               entertainment: budgetDivide,
             });
+            data2 = oldRecord.concat(response);
           }
         } else {
           const budgetPerDay = totalBudget;
           const budgetDivide = budgetPerDay / 2;
-          console.log('budgetDivide', budgetDivide);
+          console.log(budgetDivide, 'divide');
         }
       }
-      return response;
+      return data2;
     }
   }
 }

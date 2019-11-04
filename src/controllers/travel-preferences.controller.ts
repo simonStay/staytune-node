@@ -386,7 +386,14 @@ export class TravelPreferencesController {
     if (oldList) {
       categoriesList = categoriesList.concat(oldSelectedCategories);
     }
-    if (finalList) {
+    if (JSON.stringify(finalList) === JSON.stringify([])) {
+      console.log('Only old data : ', categoriesList);
+      return {
+        status: 'Success',
+        id: tid,
+        categoriesList,
+      };
+    } else if (finalList) {
       const mainCategories = await this.categoriesRepository.find({
         where: {categoryname: {inq: finalList}},
       });
@@ -415,12 +422,6 @@ export class TravelPreferencesController {
           // };
         }
       }
-    } else {
-      return {
-        status: 'Success',
-        id: tid,
-        categoriesList,
-      };
     }
   }
 
@@ -549,7 +550,7 @@ export class TravelPreferencesController {
     let daysCount: any;
     let totalExpen: any;
     let i: any;
-    let response: Array<object> = [];
+    const response: Array<object> = [];
 
     if (data1.length === 0) {
       // eslint-disable-next-line prefer-const

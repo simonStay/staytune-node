@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/await-thenable */
 import {
   Count,
@@ -24,6 +26,7 @@ import {
   CategoriesRepository,
   BudgetInfoRepository,
 } from '../repositories';
+const moment = require('moment');
 
 export class TravelPreferencesController {
   constructor(
@@ -412,6 +415,7 @@ export class TravelPreferencesController {
 
         if (i === mainCategories.length - 1) {
           console.log('test2', tid);
+          console.log(categoriesList, 'category');
           return {
             status: 'Success',
             id: tid,
@@ -531,11 +535,32 @@ export class TravelPreferencesController {
     },
   })
   async budgetInfo(@requestBody() body: any): Promise<any> {
-    // const value = data;
-    const data = await this.travelPreferencesRepository.findById(body.id);
+    const travelPreferenceData = await this.travelPreferencesRepository.findById(
+      body.id,
+    );
     // const budgetPerDay = data.totalBudget / data.daysCount;
+    if (travelPreferenceData.travelDate) {
+      console.log(travelPreferenceData.travelDate);
+      const startDate = moment().format(
+        travelPreferenceData.travelDate,
+        'DD-MM-YYYY',
+      );
+      const currentDate = moment().format('DD-MM-YYYY');
+      if (startDate) {
+        console.log('start date ', startDate);
+        console.log('current date ', currentDate);
+        const days = startDate.diff(currentDate, 'days');
+        console.log('Completed days', days);
+        // let differenceInTime = currentDate.getTime() - startDate.getTime();
+        // To calculate the no. of days between two dates
+        // let days = differenceInTime / (1000 * 3600 * 24);
+        // console.log('Completed days', days);
+      }
+    }
 
-    const data1 = await this.budgetinfoRepository.find(
+    let response: Array<object> = [];
+
+    const oldBudgetInfo = await this.budgetinfoRepository.find(
       {
         where: {travelId: body.id},
       },
@@ -543,78 +568,69 @@ export class TravelPreferencesController {
         strictObjectIDCoercion: true,
       },
     );
-    // console.log(data1, 'data12');
-    // console.log(data1.length, 'length');
+    console.log(oldBudgetInfo);
+    let expenditure = 0;
+    if (oldBudgetInfo) {
+      oldBudgetInfo.forEach(budget => {
+        if (budget.mealsExpenditure && budget.entExpenditure) {
+          let dayBudget = budget.mealsExpenditure + budget.entExpenditure;
+
+          response.push({
+            id: budget.day,
+            day: budget.day,
+            dayBudget: dayBudget,
+            meals: budget.mealsExpenditure,
+            entertainment: budget.entExpenditure,
+            date: '04-11-2019',
+          });
+          expenditure = expenditure + dayBudget;
+        }
+      });
+
+      // response = response.concat(oldBudgetInfo);
+    }
+    console.log(response);
 
     let totalBudget: any;
     let daysCount: any;
     let totalExpen: any;
     let i: any;
-    const response: Array<object> = [];
+    let daysLeft: any;
 
-    if (data1.length === 0) {
-      // eslint-disable-next-line prefer-const
-      totalBudget = data.totalBudget;
-      // eslint-disable-next-line prefer-const
-      totalExpen = data.expenditure;
-      const remaingBudget = totalBudget - totalExpen;
-      console.log(remaingBudget, 'remaining');
-      // eslint-disable-next-line prefer-const
-      daysCount = data.daysCount;
-      console.log(daysCount, 'days');
-      const budgetPerDay = remaingBudget / daysCount;
-      console.log(budgetPerDay, 'budget');
+    const completedDays = oldBudgetInfo.length;
+    totalBudget = travelPreferenceData.totalBudget;
+    totalExpen = expenditure;
+    const remaingBudget = totalBudget - totalExpen;
+    daysCount = travelPreferenceData.daysCount;
+    daysLeft = daysCount - completedDays;
+    console.log(daysLeft);
+    console.log(completedDays);
+    if (daysLeft !== 0) {
+      const budgetPerDay = remaingBudget / daysLeft;
       const budgetDivide = budgetPerDay / 2;
-      console.log('budgetDivide', budgetDivide);
-      console.log('hello');
-      for (i = 1; i < daysCount; i++) {
+      for (i = completedDays + 1; i <= daysCount; i++) {
         await response.push({
-          id: i - 1,
-          day: 'Day' + i,
+          id: i,
+          day: i,
           dayBudget: budgetPerDay,
           meals: budgetDivide,
           entertainment: budgetDivide,
+          date: '04-11-2019',
         });
       }
-      return response;
-    } else {
-      let exp1: any;
-      let exp2: any;
 
-      let i: any;
-      totalBudget = data.totalBudget;
-      for (i = 0; i < data1.length; i++) {
-        exp1 = data1[i].mealsExpenditure;
-        exp2 = data1[i].entExpenditure;
-        daysCount = data.daysCount;
-        data.daysLeft = daysCount - (i + 1);
-        totalExpen = exp1 + exp2;
-
-        const remaingBudget = totalBudget - totalExpen;
-        totalBudget = remaingBudget;
-
-        if (data.daysLeft !== 0) {
-          const budgetPerDay = totalBudget / data.daysLeft;
-          console.log(data.daysLeft, 'daysleft');
-          console.log(budgetPerDay, 'budget');
-          const budgetDivide = budgetPerDay / 2;
-          console.log('budgetDivide', budgetDivide);
-          for (i = 1; i <= data.daysLeft; i++) {
-            await response.push({
-              id: i,
-              day: 'Day' + i,
-              dayBudget: budgetPerDay,
-              meals: budgetDivide,
-              entertainment: budgetDivide,
-            });
-          }
-        } else {
-          const budgetPerDay = totalBudget;
-          const budgetDivide = budgetPerDay / 2;
-          console.log('budgetDivide', budgetDivide);
-        }
-      }
-      return response;
+      return {
+        budget: response,
+        totalBudget: travelPreferenceData.totalBudget,
+        expBudget: expenditure,
+        completedDays: completedDays,
+      };
     }
+    return {
+      budget: response,
+      totalBudget: travelPreferenceData.totalBudget,
+      expBudget: expenditure,
+      completedDays: completedDays,
+    };
   }
 }

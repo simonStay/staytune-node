@@ -17,13 +17,18 @@ import {
   del,
   requestBody,
 } from '@loopback/rest';
-import {BudgetInfo} from '../models';
-import {BudgetInfoRepository} from '../repositories';
+import {BudgetInfo, TravelPreferences} from '../models';
+import {
+  BudgetInfoRepository,
+  TravelPreferencesRepository,
+} from '../repositories';
 
 export class BudgetInfoController {
   constructor(
     @repository(BudgetInfoRepository)
-    public budgetInfoRepository : BudgetInfoRepository,
+    public budgetInfoRepository: BudgetInfoRepository,
+    @repository(TravelPreferencesRepository)
+    public travelPreferencesRepository: TravelPreferencesRepository,
   ) {}
 
   @post('/budget-infos', {
@@ -56,7 +61,8 @@ export class BudgetInfoController {
     },
   })
   async count(
-    @param.query.object('where', getWhereSchemaFor(BudgetInfo)) where?: Where<BudgetInfo>,
+    @param.query.object('where', getWhereSchemaFor(BudgetInfo))
+    where?: Where<BudgetInfo>,
   ): Promise<Count> {
     return this.budgetInfoRepository.count(where);
   }
@@ -74,7 +80,8 @@ export class BudgetInfoController {
     },
   })
   async find(
-    @param.query.object('filter', getFilterSchemaFor(BudgetInfo)) filter?: Filter<BudgetInfo>,
+    @param.query.object('filter', getFilterSchemaFor(BudgetInfo))
+    filter?: Filter<BudgetInfo>,
   ): Promise<BudgetInfo[]> {
     return this.budgetInfoRepository.find(filter);
   }
@@ -96,7 +103,8 @@ export class BudgetInfoController {
       },
     })
     budgetInfo: BudgetInfo,
-    @param.query.object('where', getWhereSchemaFor(BudgetInfo)) where?: Where<BudgetInfo>,
+    @param.query.object('where', getWhereSchemaFor(BudgetInfo))
+    where?: Where<BudgetInfo>,
   ): Promise<Count> {
     return this.budgetInfoRepository.updateAll(budgetInfo, where);
   }

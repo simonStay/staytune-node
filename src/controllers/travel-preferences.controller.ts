@@ -26,7 +26,7 @@ import {
   CategoriesRepository,
   BudgetInfoRepository,
 } from '../repositories';
-const moment = require('moment');
+let moment = require('moment');
 
 export class TravelPreferencesController {
   constructor(
@@ -218,6 +218,7 @@ export class TravelPreferencesController {
     const listPreferences = await this.travelPreferencesRepository.find(
       {
         where: {userId: userId},
+        order: ['id DESC'],
       },
       {
         strictObjectIDCoercion: true,
@@ -539,18 +540,24 @@ export class TravelPreferencesController {
       body.id,
     );
     // const budgetPerDay = data.totalBudget / data.daysCount;
+    let daysCompleted = 0;
     if (travelPreferenceData.travelDate) {
       console.log(travelPreferenceData.travelDate);
       const startDate = moment().format(
         travelPreferenceData.travelDate,
         'DD-MM-YYYY',
       );
+
       const currentDate = moment().format('DD-MM-YYYY');
+      let a = moment(startDate, 'DD-MM-YYYY');
+      let b = moment(currentDate, 'DD-MM-YYYY');
+
       if (startDate) {
         console.log('start date ', startDate);
         console.log('current date ', currentDate);
-        const days = startDate.diff(currentDate, 'days');
-        console.log('Completed days', days);
+
+        daysCompleted = b.diff(a, 'days');
+        console.log('Completed days', daysCompleted);
         // let differenceInTime = currentDate.getTime() - startDate.getTime();
         // To calculate the no. of days between two dates
         // let days = differenceInTime / (1000 * 3600 * 24);
@@ -583,6 +590,7 @@ export class TravelPreferencesController {
             entertainment: budget.entExpenditure,
             date: '04-11-2019',
           });
+
           expenditure = expenditure + dayBudget;
         }
       });
@@ -623,14 +631,14 @@ export class TravelPreferencesController {
         budget: response,
         totalBudget: travelPreferenceData.totalBudget,
         expBudget: expenditure,
-        completedDays: completedDays,
+        completedDays: daysCompleted,
       };
     }
     return {
       budget: response,
       totalBudget: travelPreferenceData.totalBudget,
       expBudget: expenditure,
-      completedDays: completedDays,
+      completedDays: daysCompleted,
     };
   }
 }

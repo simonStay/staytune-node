@@ -22,6 +22,7 @@ import {
   BudgetInfoRepository,
   TravelPreferencesRepository,
 } from '../repositories';
+import {response} from 'express';
 
 export class BudgetInfoController {
   constructor(
@@ -48,8 +49,25 @@ export class BudgetInfoController {
       },
     })
     budgetInfo: Omit<BudgetInfo, 'id'>,
-  ): Promise<BudgetInfo> {
-    return this.budgetInfoRepository.create(budgetInfo);
+  ): Promise<any> {
+    const data = await this.budgetInfoRepository.find(
+      {
+        where: {travelId: budgetInfo.travelId, day: budgetInfo.day},
+      },
+      {
+        strictObjectIDCoercion: true,
+      },
+    );
+    if (data.length !== 0) {
+      // eslint-disable-next-line prefer-const
+
+      await this.budgetInfoRepository.updateById(data[0].id, budgetInfo);
+      return {
+        status: 'sucess',
+        budget: 'updated',
+      };
+      // console.log(data, 'data');
+    } else return this.budgetInfoRepository.create(budgetInfo);
   }
 
   @get('/budget-infos/count', {

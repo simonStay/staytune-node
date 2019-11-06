@@ -581,16 +581,23 @@ export class TravelPreferencesController {
       oldBudgetInfo.forEach(budget => {
         if (budget.mealsExpenditure && budget.entExpenditure) {
           let dayBudget = budget.mealsExpenditure + budget.entExpenditure;
+          const startDate = moment().format(
+            travelPreferenceData.travelDate,
+            'DD-MM-YYYY',
+          );
+          let a = moment(startDate, 'DD-MM-YYYY');
+          if (budget.day) {
+            const nextDay = a.add(budget.day - 1, 'days');
 
-          response.push({
-            id: budget.day,
-            day: budget.day,
-            dayBudget: dayBudget,
-            meals: budget.mealsExpenditure,
-            entertainment: budget.entExpenditure,
-            date: '04-11-2019',
-          });
-
+            response.push({
+              id: budget.day,
+              day: budget.day,
+              dayBudget: dayBudget,
+              meals: budget.mealsExpenditure,
+              entertainment: budget.entExpenditure,
+              date: nextDay.format('DD-MM-YYYY'),
+            });
+          }
           expenditure = expenditure + dayBudget;
         }
       });
@@ -611,22 +618,27 @@ export class TravelPreferencesController {
     const remaingBudget = totalBudget - totalExpen;
     daysCount = travelPreferenceData.daysCount;
     daysLeft = daysCount - completedDays;
-    console.log(daysLeft);
-    console.log(completedDays);
+    console.log(daysLeft, 'daysleft');
+    console.log(completedDays, 'days');
     if (daysLeft !== 0) {
+      let startDate = moment(travelPreferenceData.travelDate, 'DD-MM-YYYY');
+      const nextDay = startDate.add(completedDays - 1, 'days');
+      console.log(nextDay, 'next');
+
       const budgetPerDay = remaingBudget / daysLeft;
       const budgetDivide = budgetPerDay / 2;
       for (i = completedDays + 1; i <= daysCount; i++) {
+        const dayNext = nextDay.add(1, 'days');
         await response.push({
           id: i,
           day: i,
           dayBudget: budgetPerDay,
           meals: budgetDivide,
           entertainment: budgetDivide,
-          date: '04-11-2019',
+          date: dayNext.format('DD-MM-YYYY'),
         });
       }
-
+      console.log(response, 'dta');
       return {
         budget: response,
         totalBudget: travelPreferenceData.totalBudget,

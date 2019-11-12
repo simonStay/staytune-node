@@ -184,13 +184,16 @@ export class AdminController {
     const value = await this.adminRepository.find({
       where: {name: user.name, password: user.password},
     });
+    console.log(value, 'value');
     if (Object.keys(value).length === 0) {
       return {
         response: 'Invalid credentials',
       };
     } else {
       return {
-      response:"Valid credentials"
+        response: 'Valid credentials',
+        id: value[0].id,
+        name: value[0].name,
       };
     }
   }

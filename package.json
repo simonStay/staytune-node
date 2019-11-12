@@ -71,6 +71,7 @@
     "multer": "^1.4.2",
     "nodemailer": "^6.3.0",
     "npm": "^6.11.3",
+    "npm-fetch": "0.0.9",
     "passport": "^0.4.0",
     "passport-http": "^0.3.0",
     "passport-jwt": "^4.0.0",

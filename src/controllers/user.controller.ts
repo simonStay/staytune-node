@@ -33,11 +33,11 @@ import {
 import {Credentials} from '../repositories/user.repository';
 import {TokenServiceBindings, UserServiceBindings} from '../keys';
 import * as nodemailer from 'nodemailer';
-import {userInfo} from 'os';
-import {getMaxListeners} from 'cluster';
-import {stat} from 'fs-extra';
+
+const CircularJSON = require('circular-json');
+
 import axios from 'axios';
-import {request} from 'express';
+
 // import JSON from 'circular-json';
 const transporter = nodemailer.createTransport({
   // host: 'mail.nuevesolutions.com',
@@ -376,6 +376,43 @@ export class UserController {
       location: body.location,
       details: details.data,
     };
+  }
+
+  @post('/users/notifications', {
+    responses: {
+      '200': {
+        description: 'Array of Admin model instances',
+        headers: {
+          'content-type': 'application/json',
+        },
+      },
+    },
+  })
+  async notifications(@requestBody() data: any): Promise<any> {
+    const information: any = {
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
+      data: {
+        data: 'hello this is one signal',
+      },
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      include_player_ids: [data.id],
+      contents: {en: 'welcome to one signal'},
+    };
+    const details: any = await axios.post(
+      'https://onesignal.com/api/v1/notifications',
+      information,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization:
+            'Basic NDA5YWNmM2UtODFhZi00MzMzLTg0OTItYTFiODg0OTA4Njlk',
+        },
+      },
+    );
+    // const str = CircularJSON.stringify(details);
+
+    // return JSON.parse(str);
   }
 
   @post('/users/login', {

@@ -7,6 +7,7 @@ import {repository} from '@loopback/repository';
 // import {PasswordHasher} from './hash.password.bcryptjs';
 // import {PasswordHasherBindings} from '../keys';
 import {inject} from '@loopback/context';
+const crypto = require('crypto');
 
 export class MyUserService implements UserService<User, Credentials> {
   constructor(

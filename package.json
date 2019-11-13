@@ -64,6 +64,7 @@
     "@types/passport-http": "^0.3.8",
     "@types/passport-jwt": "^3.0.2",
     "circular-json": "^0.5.9",
+    "crypto": "^1.0.1",
     "fetch": "^1.1.0",
     "fs": "0.0.1-security",
     "loopback-connector-mongodb": "^4.2.0",

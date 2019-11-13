@@ -34,19 +34,14 @@ import {Credentials} from '../repositories/user.repository';
 import {TokenServiceBindings, UserServiceBindings} from '../keys';
 import * as nodemailer from 'nodemailer';
 
-const CircularJSON = require('circular-json');
+//const CircularJSON = require('circular-json');
 
 import axios from 'axios';
 
+const crypto = require('crypto');
+
 // import JSON from 'circular-json';
 const transporter = nodemailer.createTransport({
-  // host: 'mail.nuevesolutions.com',
-  // port: 465,
-  // secure: true,
-  // auth: {
-  //   user: 'surya@nuevesolutions.com',
-  //   pass: 'Surya@3220',
-  // },
   host: 'smtp.gmail.com',
   port: 465,
   secure: true,
@@ -117,6 +112,14 @@ export class UserController {
         status: 'failed',
       };
     } else {
+      const mykey = crypto.createCipher('aes-128-cbc', 'mypassword');
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      let mystr = mykey.update(user.password, 'utf8', 'hex');
+      mystr = mystr + mykey.final('hex');
+
+      // eslint-disable-next-line require-atomic-updates
+      user.password = mystr;
+
       const newUser = await this.userRepository.create(user);
       return {
         id: newUser.id,
@@ -245,7 +248,7 @@ export class UserController {
     await this.userRepository.updateById(id, user);
     const updatedData = await this.userRepository.findById(id);
     // console.log(checkUser, '5d9ab8211113661189ffb735');
-    console.log(updatedData, 'updateddata');
+
     // console.log(updatedUser, 'userupdated');
 
     return {
@@ -438,8 +441,17 @@ export class UserController {
     @requestBody(CredentialsRequestBody) credentials: Credentials,
   ): Promise<any> {
     // ensure the user exists, and the password is correct
+
+    const mykey = await crypto.createCipher('aes-128-cbc', 'mypassword');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    let mystr = mykey.update(credentials.password, 'utf8', 'hex');
+    mystr = mystr + mykey.final('hex');
+
+    // eslint-disable-next-line require-atomic-updates
+    credentials.password = mystr;
+
     const extUser = await this.userRepository.findOne({
-      where: {email: credentials.email},
+      where: {email: credentials.email, password: credentials.password},
     });
     let otp = 0;
     if (extUser) {
@@ -473,7 +485,7 @@ export class UserController {
         };
       } else {
         const user = await this.userService.verifyCredentials(credentials);
-
+        console.log(user, 'user');
         // convert a User object into a UserProfile object (reduced set of properties)
         const userProfile = this.userService.convertToUserProfile(user);
 

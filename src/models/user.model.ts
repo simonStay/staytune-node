@@ -79,6 +79,18 @@ export class User extends Entity {
   })
   profilePic: string;
 
+  @property({
+    type: 'number',
+    default: 0,
+  })
+  lat: number;
+
+  @property({
+    type: 'number',
+    default: 0,
+  })
+  long: number;
+
   @hasMany(() => TravelPreferences, {keyTo: 'userId'})
   travelpreferences: TravelPreferences[];
 

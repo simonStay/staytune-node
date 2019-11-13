@@ -392,27 +392,42 @@ export class UserController {
     },
   })
   async notifications(@requestBody() data: any): Promise<any> {
-    const information: any = {
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
-      data: {
-        data: 'hello this is one signal',
-      },
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      include_player_ids: [data.id],
-      contents: {en: 'welcome to one signal'},
-    };
-    const details: any = await axios.post(
-      'https://onesignal.com/api/v1/notifications',
-      information,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization:
-            'Basic NDA5YWNmM2UtODFhZi00MzMzLTg0OTItYTFiODg0OTA4Njlk',
+    const id: any = data.userId;
+    const location = await this.userRepository.findById(id);
+
+    if (location.lat !== data.lat || location.long !== data.long) {
+      const lat = data.lat;
+      const long = data.long;
+
+      const update = {
+        lat: lat,
+        long: long,
+      };
+      const user = await this.userRepository.updateById(id, update);
+      console.log(data.lat, location.lat, 'user');
+      const information: any = {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
+        // data: {
+        //   data: 'hello this is one signal',
+        // },
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        include_player_ids: [data.id],
+        contents: {en: 'welcome to one signal'},
+      };
+      const details: any = await axios.post(
+        'https://onesignal.com/api/v1/notifications',
+        information,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization:
+              'Basic NDA5YWNmM2UtODFhZi00MzMzLTg0OTItYTFiODg0OTA4Njlk',
+          },
         },
-      },
-    );
+      );
+    }
+
     // const str = CircularJSON.stringify(details);
 
     // return JSON.parse(str);
@@ -449,6 +464,7 @@ export class UserController {
 
     // eslint-disable-next-line require-atomic-updates
     credentials.password = mystr;
+    console.log(credentials.password, 'pnascnnn');
 
     const extUser = await this.userRepository.findOne({
       where: {email: credentials.email, password: credentials.password},

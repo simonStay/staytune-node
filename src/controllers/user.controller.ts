@@ -347,7 +347,7 @@ export class UserController {
     }
   }
 
-  @post('/users/movies/', {
+  @post('/users/userDetails/', {
     responses: {
       '200': {
         description: 'Array of Admin model instances',
@@ -358,12 +358,16 @@ export class UserController {
     },
   })
   async movies(@requestBody() body: any): Promise<object> {
+    let data: any;
     // const value = data;
-    const {location} = body;
-    const details: any = await axios.get(
+
+    // eslint-disable-next-line prefer-const
+    data = await axios.get(
       'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' +
-        location +
-        '&radius=1500&type=university&key=AIzaSyBI_ae3Hvrib8Bao3_WrhXLEHKuGj1J8pQ',
+        body.lat +
+        ',' +
+        body.long +
+        '&radius=1500&type=restaurant&key=AIzaSyBI_ae3Hvrib8Bao3_WrhXLEHKuGj1J8pQ',
       {
         headers: {
           'content-type': 'application/json',
@@ -371,67 +375,91 @@ export class UserController {
       },
     );
 
+    const test = data.data.results.map((data1: any) => data1.name);
+    console.log(test, 'tset');
+
+    const information: any = {
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
+      // data: {
+      //   data: 'hello this is one signal',
+      // },
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      include_player_ids: [body.id],
+      data: {
+        data: test,
+      },
+      contents: {en: 'welcome to my world'},
+    };
+
+    const details = await axios.post(
+      'https://onesignal.com/api/v1/notifications',
+      information,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization:
+            'Basic NDA5YWNmM2UtODFhZi00MzMzLTg0OTItYTFiODg0OTA4Njlk',
+        },
+      },
+    );
+    console.log('details', details);
+
     // return {
     //   data: details.data,
     // };
-    console.log(location, 'location');
+    // console.log(location, 'location');
+    // return {
+    //   location: body.location,
+    //   details: test,
+    // };
     return {
-      location: body.location,
-      details: details.data,
+      details: test,
     };
   }
 
-  @post('/users/notifications', {
-    responses: {
-      '200': {
-        description: 'Array of Admin model instances',
-        headers: {
-          'content-type': 'application/json',
-        },
-      },
-    },
-  })
-  async notifications(@requestBody() data: any): Promise<any> {
-    const id: any = data.userId;
-    const location = await this.userRepository.findById(id);
+  // @post('/users/notifications', {
+  //   responses: {
+  //     '200': {
+  //       description: 'Array of Admin model instances',
+  //       headers: {
+  //         'content-type': 'application/json',
+  //       },
+  //     },
+  //   },
+  // })
+  // async notifications(@requestBody() data: any): Promise<any> {
+  //   const id: any = data.userId;
+  //   const content = {
+  //     data: 'hjsdhhj',
+  //   };
 
-    if (location.lat !== data.lat || location.long !== data.long) {
-      const lat = data.lat;
-      const long = data.long;
+  //   const information: any = {
+  //     // eslint-disable-next-line @typescript-eslint/camelcase
+  //     app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
+  //     // data: {
+  //     //   data: 'hello this is one signal',
+  //     // },
+  //     // eslint-disable-next-line @typescript-eslint/camelcase
+  //     include_player_ids: [data.id],
+  //     contents: {en: 'hello one signal '},
+  //   };
+  //   const details: any = await axios.post(
+  //     'https://onesignal.com/api/v1/notifications',
+  //     information,
+  //     {
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         Authorization:
+  //           'Basic NDA5YWNmM2UtODFhZi00MzMzLTg0OTItYTFiODg0OTA4Njlk',
+  //       },
+  //     },
+  //   );
 
-      const update = {
-        lat: lat,
-        long: long,
-      };
-      const user = await this.userRepository.updateById(id, update);
-      console.log(data.lat, location.lat, 'user');
-      const information: any = {
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
-        // data: {
-        //   data: 'hello this is one signal',
-        // },
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        include_player_ids: [data.id],
-        contents: {en: 'welcome to one signal'},
-      };
-      const details: any = await axios.post(
-        'https://onesignal.com/api/v1/notifications',
-        information,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization:
-              'Basic NDA5YWNmM2UtODFhZi00MzMzLTg0OTItYTFiODg0OTA4Njlk',
-          },
-        },
-      );
-    }
+  //   console.log(details, 'details');
 
-    // const str = CircularJSON.stringify(details);
-
-    // return JSON.parse(str);
-  }
+  //   // const str = CircularJSON.stringify(details);
+  // }
 
   @post('/users/login', {
     responses: {

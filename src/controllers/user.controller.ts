@@ -526,6 +526,54 @@ export class UserController {
           result = await result.slice(0, 3);
           const userInterest: any = result.map((type1: any) => type1.name);
           await this.notifications(body, userInterest, 'Museums');
+        } else if (type === 'park') {
+          const placeType = 'park';
+          result = await this.getTypes(placeType, body);
+          result = await result.slice(0, 3);
+          const userInterest: any = result.map((type1: any) => type1.name);
+          await this.notifications(body, userInterest, 'Parks');
+        } else if (type === 'shopping mall') {
+          const placeType = 'shopping_mall';
+          result = await this.getTypes(placeType, body);
+          result = await result.slice(0, 3);
+          const userInterest: any = result.map((type1: any) => type1.name);
+          await this.notifications(body, userInterest, 'Shopping Malls');
+        } else if (type === 'super market / groceries') {
+          const placeType = 'grocery_or_supermarket';
+          result = await this.getTypes(placeType, body);
+          result = await result.slice(0, 3);
+          const userInterest: any = result.map((type1: any) => type1.name);
+          await this.notifications(body, userInterest, 'Super Markets');
+        } else if (type === 'gym') {
+          const placeType = 'gym';
+          result = await this.getTypes(placeType, body);
+          result = await result.slice(0, 3);
+          const userInterest: any = result.map((type1: any) => type1.name);
+          await this.notifications(body, userInterest, ' Gyms');
+        } else if (type === 'campground') {
+          const placeType = 'campground';
+          result = await this.getTypes(placeType, body);
+          result = await result.slice(0, 3);
+          const userInterest: any = result.map((type1: any) => type1.name);
+          await this.notifications(body, userInterest, 'Camp Grounds');
+        } else if (type === 'department store') {
+          const placeType = 'department_store';
+          result = await this.getTypes(placeType, body);
+          result = await result.slice(0, 3);
+          const userInterest: any = result.map((type1: any) => type1.name);
+          await this.notifications(body, userInterest, 'Departmental Stores');
+        } else if (type === 'electronics store') {
+          const placeType = 'electronics_store';
+          result = await this.getTypes(placeType, body);
+          result = await result.slice(0, 3);
+          const userInterest: any = result.map((type1: any) => type1.name);
+          await this.notifications(body, userInterest, 'Electronic Stores');
+        } else if (type === 'convenience store') {
+          const placeType = 'convenience_store';
+          result = await this.getTypes(placeType, body);
+          result = await result.slice(0, 3);
+          const userInterest: any = result.map((type1: any) => type1.name);
+          await this.notifications(body, userInterest, 'Convenience Stores');
         } else {
           return {
             response: 'does not exist',

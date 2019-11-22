@@ -4,6 +4,7 @@ import {
   Filter,
   repository,
   Where,
+  constrainDataObjects,
 } from '@loopback/repository';
 import {
   post,
@@ -38,6 +39,8 @@ import * as nodemailer from 'nodemailer';
 //const CircularJSON = require('circular-json');
 
 import axios from 'axios';
+import {CategoriesController} from './categories.controller';
+import {json} from 'express';
 
 const crypto = require('crypto');
 
@@ -351,6 +354,68 @@ export class UserController {
     }
   }
 
+  public async getTypes(type: any, body: any) {
+    let data: any = {};
+
+    data = await axios(
+      'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' +
+        body.lat +
+        ',' +
+        body.long +
+        '&radius=1500&type=' +
+        type +
+        '&key=AIzaSyBI_ae3Hvrib8Bao3_WrhXLEHKuGj1J8pQ',
+      {
+        headers: {
+          'content-type': 'application/json',
+        },
+        method: 'POST',
+      },
+    );
+    let finalResponse: any = [];
+    //let result: any = [];
+    //let response1 = await data.data.results.map((result: any) => result.name);
+    // response1 = await response1.concat(data.data.results);
+    finalResponse = await data.data.results.concat(data.data.results);
+
+    return finalResponse;
+  }
+
+  public async notifications(data: any, text: any, parentCategory: any) {
+    const information: any = {
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
+
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      include_player_ids: [data.id],
+
+      contents: {
+        en:
+          'These are the famous' +
+          ' ' +
+          parentCategory +
+          ' ' +
+          'near you' +
+          ' ' +
+          text,
+      },
+    };
+    const details = axios.post(
+      'https://onesignal.com/api/v1/notifications',
+      information,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization:
+            'Basic NDA5YWNmM2UtODFhZi00MzMzLTg0OTItYTFiODg0OTA4Njlk',
+        },
+      },
+    );
+    // console.log('details', details);
+
+    // console.log(data, text, 'any');
+  }
+
   @post('/users/userDetails/', {
     responses: {
       '200': {
@@ -362,7 +427,8 @@ export class UserController {
     },
   })
   async movies(@requestBody() body: any): Promise<any> {
-    let data: any;
+    let value: Array<object> = [];
+    let result: any = [];
 
     const location = await this.userRepository.findById(body.userId);
     if (location.lat === body.lat && location.long === body.lang) {
@@ -384,144 +450,93 @@ export class UserController {
 
       await this.userRepository.updateById(id, data1);
 
-      // console.log(
-      //   preference,
-      //   'prefere',
-      // );
-
-      // eslint-disable-next-line no-unused-expressions
-      // eslint-disable-next-line prefer-const
       preference.map(data2 => {
         if (data2.selectedCategories !== null) {
-          data2.selectedCategories.map(text => {
-            console.log(text, 'text');
+          data2.selectedCategories.map((text: any) => {
+            text.subCategories.map((test1: any) => {
+              if (test1.selected === true) {
+                if (!value.includes(test1.categoryname.toLowerCase())) {
+                  value = value.concat(test1.categoryname.toLowerCase());
+                }
+              }
+            });
           });
         }
       });
 
-      // const value1 = value.map(app => app)
+      value.map(async (type: any) => {
+        if (type === 'food') {
+          const placeType = 'restaurant';
+          result = await this.getTypes(placeType, body);
+          result = await result.slice(0, 3);
 
-      // if (data2.selectedTravelPreferences.selected === true) {
-      //   console.log('hello');}
-      //   data = await axios(
-      //     'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' +
-      //       body.lat +
-      //       ',' +
-      //       body.long +
-      //       '&radius=1500&type=restaurant&key=AIzaSyBI_ae3Hvrib8Bao3_WrhXLEHKuGj1J8pQ',
-      //     {
-      //       headers: {
-      //         'content-type': 'application/json',
-      //       },
-      //       method: 'POST',
-      //     },
-      //   );
-      //   // console.log(data, 'datadfdfd');
-      // }
-
-      // eslint-disable-next-line prefer-const
-
-      // type.forEach((notify: any) => console.log(notify.selected));
-
-      // eslint-disable-next-line prefer-const
-      // data = await axios(
-      //   'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' +
-      //     body.lat +
-      //     ',' +
-      //     body.long +
-      //     '&radius=1500&type=restaurant&key=AIzaSyBI_ae3Hvrib8Bao3_WrhXLEHKuGj1J8pQ',
-      //   {
-      //     headers: {
-      //       'content-type': 'application/json',
-      //     },
-      //     method: 'POST',
-      //   },
-      // );
-
-      // const test = data.data.results.map((data1: any) => data1.name);
-      // // console.log(test, 'tset');
-      // const hotels = test.slice(0, 3);
-
-      const information: any = {
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
-        // data: {
-        //   data: test,
-        // },
-
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        include_player_ids: [body.id],
-        // data: {
-        //   response: '200',
-        // },
-        contents: {en: 'these are the famous restaurants near u'},
+          const userInterest: any = result.map((type1: any) => type1.name);
+          await this.notifications(body, userInterest, 'Restaurants');
+        } else if (type === 'boutique') {
+          const placeType = 'clothing_store';
+          result = await this.getTypes(placeType, body);
+          result = await result.slice(0, 3);
+          const userInterest: any = result.map((type1: any) => type1.name);
+          await this.notifications(body, userInterest, 'Boutiques');
+        } else if (type === 'bar') {
+          const placeType = 'bar';
+          result = await this.getTypes(placeType, body);
+          result = await result.slice(0, 3);
+          const userInterest: any = result.map((type1: any) => type1.name);
+          await this.notifications(body, userInterest, 'Bars');
+        } else if (type === 'cafe') {
+          const placeType = 'cafe';
+          result = await this.getTypes(placeType, body);
+          result = await result.slice(0, 3);
+          const userInterest: any = result.map((type1: any) => type1.name);
+          await this.notifications(body, userInterest, 'Cafes');
+        } else if (type === 'bakery') {
+          const placeType = 'bakery';
+          result = await this.getTypes(placeType, body);
+          result = await result.slice(0, 3);
+          const userInterest: any = result.map((type1: any) => type1.name);
+          await this.notifications(body, userInterest, 'Bakeries');
+        } else if (type === 'amusement parks') {
+          const placeType = 'amusement_park';
+          result = await this.getTypes(placeType, body);
+          result = await result.slice(0, 3);
+          const userInterest: any = result.map((type1: any) => type1.name);
+          await this.notifications(body, userInterest, 'Amusement_Paeks');
+        } else if (type === 'night clubs') {
+          const placeType = 'night_club';
+          result = await this.getTypes(placeType, body);
+          result = await result.slice(0, 3);
+          const userInterest: any = result.map((type1: any) => type1.name);
+          await this.notifications(body, userInterest, 'Night_Clubs');
+        } else if (type === 'book stores') {
+          const placeType = 'book_store';
+          result = await this.getTypes(placeType, body);
+          result = await result.slice(0, 3);
+          const userInterest: any = result.map((type1: any) => type1.name);
+          await this.notifications(body, userInterest, 'Book_Stores');
+        } else if (type === 'art') {
+          const placeType = 'art_gallery';
+          result = await this.getTypes(placeType, body);
+          result = await result.slice(0, 3);
+          const userInterest: any = result.map((type1: any) => type1.name);
+          await this.notifications(body, userInterest, 'Art Gallery');
+        } else if (type === 'history') {
+          const placeType = 'museum';
+          result = await this.getTypes(placeType, body);
+          result = await result.slice(0, 3);
+          const userInterest: any = result.map((type1: any) => type1.name);
+          await this.notifications(body, userInterest, 'Museums');
+        } else {
+          return {
+            response: 'does not exist',
+          };
+        }
+      });
+      return {
+        status: 'Success',
+        statuscode: 200,
       };
-
-      // console.log(information.data.data, 'datahbhhh');
-
-      // const details = await axios.post(
-      //   'https://onesignal.com/api/v1/notifications',
-      //   information,
-      //   {
-      //     headers: {
-      //       'Content-Type': 'application/json',
-      //       Authorization:
-      //         'Basic NDA5YWNmM2UtODFhZi00MzMzLTg0OTItYTFiODg0OTA4Njlk',
-      //     },
-      //   },
-      // );
-      // console.log('details', details);
-
-      // return {
-      //   data: details.data,
-      // };
-      // console.log(location, 'location');
-      // return {
-      //   location: body.location,
-      //   details: test,
-      // };
-      // return {
-      //   details: test.slice(0, 3),
-      // };
     }
-  }
-
-  @post('/users/notifications', {
-    responses: {
-      '200': {
-        description: 'Array of Admin model instances',
-        headers: {
-          'content-type': 'application/json',
-        },
-      },
-    },
-  })
-  async notifications(@requestBody() data: any): Promise<any> {
-    const information: any = {
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
-      // data: {
-      //   data: 'hello this is one signal',
-      // },
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      include_player_ids: [data.id],
-      contents: {en: 'hello one signal '},
-    };
-    const details: any = await axios.post(
-      'https://onesignal.com/api/v1/notifications',
-      information,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization:
-            'Basic NDA5YWNmM2UtODFhZi00MzMzLTg0OTItYTFiODg0OTA4Njlk',
-        },
-      },
-    );
-
-    console.log(details, 'details');
-
-    // const str = CircularJSON.stringify(details);
   }
 
   @post('/users/login', {

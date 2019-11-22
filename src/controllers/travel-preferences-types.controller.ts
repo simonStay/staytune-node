@@ -16,21 +16,28 @@ import {
   put,
   del,
   requestBody,
+  RestBindings,
 } from '@loopback/rest';
 import {TravelPreferenceTypes} from '../models';
 import {TravelPreferenceTypesRepository} from '../repositories';
+import {inject} from '@loopback/context';
+const multer = require('multer');
 
 export class TravelPreferencesTypesController {
   constructor(
     @repository(TravelPreferenceTypesRepository)
-    public travelPreferenceTypesRepository : TravelPreferenceTypesRepository,
+    public travelPreferenceTypesRepository: TravelPreferenceTypesRepository,
   ) {}
 
   @post('/travel-preference-types', {
     responses: {
       '200': {
         description: 'TravelPreferenceTypes model instance',
-        content: {'application/json': {schema: getModelSchemaRef(TravelPreferenceTypes)}},
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(TravelPreferenceTypes),
+          },
+        },
       },
     },
   })
@@ -56,7 +63,8 @@ export class TravelPreferencesTypesController {
     },
   })
   async count(
-    @param.query.object('where', getWhereSchemaFor(TravelPreferenceTypes)) where?: Where<TravelPreferenceTypes>,
+    @param.query.object('where', getWhereSchemaFor(TravelPreferenceTypes))
+    where?: Where<TravelPreferenceTypes>,
   ): Promise<Count> {
     return this.travelPreferenceTypesRepository.count(where);
   }
@@ -67,16 +75,78 @@ export class TravelPreferencesTypesController {
         description: 'Array of TravelPreferenceTypes model instances',
         content: {
           'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(TravelPreferenceTypes)},
+            schema: {
+              type: 'array',
+              items: getModelSchemaRef(TravelPreferenceTypes),
+            },
           },
         },
       },
     },
   })
   async find(
-    @param.query.object('filter', getFilterSchemaFor(TravelPreferenceTypes)) filter?: Filter<TravelPreferenceTypes>,
+    @param.query.object('filter', getFilterSchemaFor(TravelPreferenceTypes))
+    filter?: Filter<TravelPreferenceTypes>,
   ): Promise<TravelPreferenceTypes[]> {
     return this.travelPreferenceTypesRepository.find(filter);
+  }
+
+  @post('/preferences-types/upload', {
+    responses: {
+      200: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+        description: '',
+      },
+    },
+  })
+  async uploadFile(
+    @requestBody({
+      description: 'multipart/form-data value.',
+      required: true,
+      content: {
+        'multipart/form-data': {
+          // Skip body parsing
+          'x-parser': 'stream',
+          schema: {type: 'object'},
+        },
+      },
+    })
+    request: any,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+  ): Promise<Object> {
+    const storage = multer.diskStorage({
+      destination: function(
+        req: any,
+        file: any,
+        cb: (arg0: null, arg1: string) => void,
+      ) {
+        cb(null, 'images/travel-preferences');
+      },
+      filename: function(
+        req: any,
+        file: {fieldname: string},
+        cb: (arg0: null, arg1: string) => void,
+      ) {
+        cb(null, file.fieldname + '-' + Date.now());
+      },
+    });
+
+    const upload = multer({storage: storage});
+    return new Promise<object>((resolve, reject) => {
+      upload.any()(request, response, (err: string) => {
+        if (err) return err;
+        resolve({
+          files: request.files,
+          fields: (request as any).fields,
+        });
+      });
+    });
   }
 
   @patch('/travel-preference-types', {
@@ -96,20 +166,30 @@ export class TravelPreferencesTypesController {
       },
     })
     travelPreferenceTypes: TravelPreferenceTypes,
-    @param.query.object('where', getWhereSchemaFor(TravelPreferenceTypes)) where?: Where<TravelPreferenceTypes>,
+    @param.query.object('where', getWhereSchemaFor(TravelPreferenceTypes))
+    where?: Where<TravelPreferenceTypes>,
   ): Promise<Count> {
-    return this.travelPreferenceTypesRepository.updateAll(travelPreferenceTypes, where);
+    return this.travelPreferenceTypesRepository.updateAll(
+      travelPreferenceTypes,
+      where,
+    );
   }
 
   @get('/travel-preference-types/{id}', {
     responses: {
       '200': {
         description: 'TravelPreferenceTypes model instance',
-        content: {'application/json': {schema: getModelSchemaRef(TravelPreferenceTypes)}},
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(TravelPreferenceTypes),
+          },
+        },
       },
     },
   })
-  async findById(@param.path.string('id') id: string): Promise<TravelPreferenceTypes> {
+  async findById(
+    @param.path.string('id') id: string,
+  ): Promise<TravelPreferenceTypes> {
     return this.travelPreferenceTypesRepository.findById(id);
   }
 
@@ -131,7 +211,10 @@ export class TravelPreferencesTypesController {
     })
     travelPreferenceTypes: TravelPreferenceTypes,
   ): Promise<void> {
-    await this.travelPreferenceTypesRepository.updateById(id, travelPreferenceTypes);
+    await this.travelPreferenceTypesRepository.updateById(
+      id,
+      travelPreferenceTypes,
+    );
   }
 
   @put('/travel-preference-types/{id}', {
@@ -145,7 +228,10 @@ export class TravelPreferencesTypesController {
     @param.path.string('id') id: string,
     @requestBody() travelPreferenceTypes: TravelPreferenceTypes,
   ): Promise<void> {
-    await this.travelPreferenceTypesRepository.replaceById(id, travelPreferenceTypes);
+    await this.travelPreferenceTypesRepository.replaceById(
+      id,
+      travelPreferenceTypes,
+    );
   }
 
   @del('/travel-preference-types/{id}', {

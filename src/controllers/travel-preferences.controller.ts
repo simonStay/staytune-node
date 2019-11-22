@@ -83,8 +83,8 @@ export class TravelPreferencesController {
     const selectedData = travelPreferences.selectedTravelPreferences;
     // console.log(selectedData);
     selectedData.forEach((dataPreference: any) => {
-      console.log('selected categories by surya', dataPreference);
-      console.log('testdfdfd', dataPreference.name);
+      // console.log('selected categories by surya', dataPreference);
+      // console.log('testdfdfd', dataPreference.name);
       if (
         dataPreference.name === 'Business' &&
         dataPreference.selected === true

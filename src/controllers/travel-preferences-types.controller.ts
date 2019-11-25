@@ -17,6 +17,7 @@ import {
   del,
   requestBody,
   RestBindings,
+  Response,
 } from '@loopback/rest';
 import {TravelPreferenceTypes} from '../models';
 import {TravelPreferenceTypesRepository} from '../repositories';

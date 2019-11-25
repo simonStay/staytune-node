@@ -429,6 +429,7 @@ export class UserController {
   async movies(@requestBody() body: any): Promise<any> {
     let value: Array<object> = [];
     let result: any = [];
+    let response: any = [];
 
     const location = await this.userRepository.findById(body.userId);
     if (location.lat === body.lat && location.long === body.lang) {
@@ -579,7 +580,13 @@ export class UserController {
             response: 'does not exist',
           };
         }
+
+        // eslint-disable-next-line require-atomic-updates
+        response = response.concat(result);
       });
+
+      console.log(response, 'response');
+
       return {
         status: 'Success',
         statuscode: 200,

@@ -5,3 +5,4 @@ export * from './avathars.repository';
 export * from './travel-preferences.repository';
 export * from './travel-preference-types.repository';
 export * from './budget-info.repository';
+export * from './notifications.repository';

@@ -6,3 +6,4 @@ export * from './avathars.controller';
 export * from './travel-preferences.controller';
 export * from './travel-preferences-types.controller';
 export * from './budget-info.controller';
+export * from './notifications.controller';

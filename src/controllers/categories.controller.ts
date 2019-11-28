@@ -18,12 +18,14 @@ import {
   requestBody,
   RestBindings,
   Response,
+  Request,
 } from '@loopback/rest';
 import {Categories} from '../models';
 import {CategoriesRepository} from '../repositories';
 import {inject} from '@loopback/context';
+import {siteUrl} from '../keys/config';
 const multer = require('multer');
-// const upload = multer({dest: 'uploads/'});
+const url = require('url');
 
 export class CategoriesController {
   constructor(
@@ -114,6 +116,7 @@ export class CategoriesController {
     })
     request: any,
     @inject(RestBindings.Http.RESPONSE) response: Response,
+    @inject(RestBindings.Http.REQUEST) req: Request,
   ): Promise<Object> {
     const storage = multer.diskStorage({
       destination: function(
@@ -121,19 +124,24 @@ export class CategoriesController {
         file: any,
         cb: (arg0: null, arg1: string) => void,
       ) {
+        // eslint-disable-next-line no-undef
         cb(null, 'images/categories');
       },
+
       filename: function(
         req: any,
-        file: {fieldname: string},
+        file: {fieldname: string; originalname: string},
         cb: (arg0: null, arg1: string) => void,
       ) {
-        cb(null, file.fieldname + '-' + Date.now());
+        cb(null, file.originalname);
       },
     });
+    // console.log(req, 'req');
+    console.log(siteUrl + 'images', 'hjbchjjdc');
 
     const upload = multer({storage: storage});
     return new Promise<object>((resolve, reject) => {
+      console.log(request.files, 'files');
       upload.any()(request, response, (err: string) => {
         if (err) return err;
         resolve({

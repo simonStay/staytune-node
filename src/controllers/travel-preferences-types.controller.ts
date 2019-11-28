@@ -131,10 +131,10 @@ export class TravelPreferencesTypesController {
       },
       filename: function(
         req: any,
-        file: {fieldname: string},
+        file: {fieldname: string; originalname: string},
         cb: (arg0: null, arg1: string) => void,
       ) {
-        cb(null, file.fieldname + '-' + Date.now());
+        cb(null, file.originalname);
       },
     });
 

@@ -13,6 +13,12 @@ export class TravelPreferenceTypes extends Entity {
   image?: string;
 
   @property({
+    type: 'array',
+    itemType:'string'
+  })
+  categories?: Array<string>;
+
+  @property({
     type: 'boolean',
     default: false,
   })

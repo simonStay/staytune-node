@@ -64,7 +64,7 @@ export class NotificationsController {
     return this.notificationsRepository.count(where);
   }
 
-  @get('/notifications', {
+  @post('/notificationslist', {
     responses: {
       '200': {
         description: 'Array of Notifications model instances',
@@ -76,11 +76,17 @@ export class NotificationsController {
       },
     },
   })
-  async find(
-    @param.query.object('filter', getFilterSchemaFor(Notifications))
-    filter?: Filter<Notifications>,
-  ): Promise<Notifications[]> {
-    return this.notificationsRepository.find(filter);
+  async findByUserId(@requestBody() body: any): Promise<Notifications[]> {
+    return this.notificationsRepository.find(
+      {
+        where: {
+          userId: body.id,
+        },
+      },
+      {
+        strictObjectIDCoercion: true,
+      },
+    );
   }
 
   @patch('/notifications', {

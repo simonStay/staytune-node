@@ -13,12 +13,17 @@ export class Notifications extends Entity {
   @property({
     type: 'date',
   })
-  date?: string;
+  date?: Date;
 
   @property({
     type: 'string',
   })
   notification?: string;
+
+  @property({
+    type: 'string',
+  })
+  placeId?: string;
 
   @belongsTo(() => User)
   userId: string;

@@ -20,7 +20,7 @@ import {
 } from '@loopback/rest';
 import {inject} from '@loopback/core';
 import {User} from '../models';
-import {UserRepository} from '../repositories';
+import {UserRepository, NotificationsRepository} from '../repositories';
 import {TravelPreferencesRepository} from '../repositories';
 import {
   authenticate,
@@ -39,8 +39,8 @@ import * as nodemailer from 'nodemailer';
 //const CircularJSON = require('circular-json');
 
 import axios from 'axios';
-import {CategoriesController} from './categories.controller';
-import {json} from 'express';
+// import {CategoriesController} from './categories.controller';
+// import {json} from 'express';
 
 const crypto = require('crypto');
 
@@ -61,6 +61,8 @@ export class UserController {
     public userRepository: UserRepository,
     @repository(TravelPreferencesRepository)
     public travelPreferenceRepository: TravelPreferencesRepository,
+    @repository(NotificationsRepository)
+    public notificationsRepository: NotificationsRepository,
 
     @inject(TokenServiceBindings.TOKEN_SERVICE)
     public jwtService: TokenService,
@@ -362,7 +364,7 @@ export class UserController {
         body.lat +
         ',' +
         body.long +
-        '&radius=1500&type=' +
+        '&radius=500&type=' +
         type +
         '&key=AIzaSyBI_ae3Hvrib8Bao3_WrhXLEHKuGj1J8pQ',
       {
@@ -430,6 +432,7 @@ export class UserController {
     let value: Array<object> = [];
     let result: any = [];
     let response: any = [];
+    const notify: any = [];
 
     const location = await this.userRepository.findById(body.userId);
     if (location.lat === body.lat && location.long === body.lang) {
@@ -582,10 +585,35 @@ export class UserController {
         }
 
         // eslint-disable-next-line require-atomic-updates
-        response = response.concat(result);
+        // eslint-disable-next-line @typescript-eslint/await-thenable
+        response = await response.concat(result);
       });
 
-      console.log(response, 'response');
+      setTimeout(() => {
+        response.map((value2: any) => {
+          // notify.push({
+          //   date: Date,
+          //   notification: value2.name,
+          //   userId: body.userId,
+          // });
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          this.notificationsRepository.create({
+            date: Date.now(),
+            notification:
+              'hello' +
+              ' ' +
+              body.userName +
+              ' ' +
+              'these are some of the famous places near you' +
+              ' ' +
+              ' ' +
+              value2.name,
+            placeId: value2.place_id,
+            userId: body.userId,
+          });
+        });
+        // console.log(notify.notification, 'notifysss');
+      }, 3000);
 
       return {
         status: 'Success',

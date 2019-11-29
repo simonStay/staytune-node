@@ -66,96 +66,77 @@ export class TravelPreferencesController {
     );
     let tid = '';
     tid = travelData.id;
-    // console.log('test1', travelData.id);
+    console.log('test1', travelData.id);
     travelData.userCheck = '1' + travelData.userId;
     await this.travelPreferencesRepository.updateById(
       travelData.id,
       travelData,
     );
     let finalList: Array<string> = [];
-
-    // const Business: Array<string> = ['Culinary'];
-    // const Vegan: Array<string> = ['Culinary'];
-    // const Shopping: Array<string> = ['Shopping', 'Culinary'];
-    // const allCategories: Array<string> = [
-    //   'Shopping',
-    //   'Culinary',
-    //   'Adventure',
-    //   'Museums',
-    //   'Entertainment',
-    // ];
-    // const data: any = await this.travelPreferenceTypesRepository.find();
-
-    // data.map((details: any) => {
-
-    // });
-
+    const Business: Array<string> = ['Culinary'];
+    const Vegan: Array<string> = ['Culinary'];
+    const Shopping: Array<string> = ['Shopping', 'Culinary'];
+    const allCategories: Array<string> = [
+      'Shopping',
+      'Culinary',
+      'Adventure',
+      'Museums',
+      'Entertainment',
+    ];
     const selectedData = travelPreferences.selectedTravelPreferences;
-
-    selectedData.forEach(async (dataPreference: any) => {
-      if (dataPreference.selected === true) {
-        const list: any = await this.travelPreferenceTypesRepository.find({
-          where: {
-            name: dataPreference.name,
-          },
-        });
-        console.log(list, 'list');
-
-        const categories = list.categories;
-        finalList = await finalList.concat(categories);
-        console.log(finalList, 'ksacscs');
-      }
+    // console.log(selectedData);
+    selectedData.forEach((dataPreference: any) => {
       // console.log('selected categories by surya', dataPreference);
       // console.log('testdfdfd', dataPreference.name);
-      // if (
-      //   dataPreference.name === 'Business' &&
-      //   dataPreference.selected === true
-      // ) {
-      //   console.log(dataPreference.name);
-      //   finalList = finalList.concat(Business);
-      // }
-      // if (dataPreference.name === 'Vegan' && dataPreference.selected === true) {
-      //   console.log(dataPreference.name);
-      //   finalList = finalList.concat(Vegan);
-      // }
-      // if (
-      //   dataPreference.name === 'Shopping' &&
-      //   dataPreference.selected === true
-      // ) {
-      //   console.log(dataPreference.name);
-      //   finalList = finalList.concat(Shopping);
-      // }
-      // if (
-      //   dataPreference.name === 'Local Experience' &&
-      //   dataPreference.selected === true
-      // ) {
-      //   console.log(dataPreference.name);
-      //   finalList = finalList.concat(allCategories);
-      // }
-      // if (
-      //   dataPreference.name === 'Travel on a budget' &&
-      //   dataPreference.selected === true
-      // ) {
-      //   console.log(dataPreference.name);
-      //   finalList = finalList.concat(allCategories);
-      // }
-      // if (
-      //   dataPreference.name === 'Solo Traveler' &&
-      //   dataPreference.selected === true
-      // ) {
-      //   console.log(dataPreference.name);
-      //   finalList = finalList.concat(allCategories);
-      // }
-      // if (
-      //   dataPreference.name === 'Family-oriented trendy' &&
-      //   dataPreference.selected === true
-      // ) {
-      //   console.log(dataPreference.name);
-      //   finalList = finalList.concat(allCategories);
-      // }
+      if (
+        dataPreference.name === 'Business' &&
+        dataPreference.selected === true
+      ) {
+        console.log(dataPreference.name);
+        finalList = finalList.concat(Business);
+      }
+      if (dataPreference.name === 'Vegan' && dataPreference.selected === true) {
+        console.log(dataPreference.name);
+        finalList = finalList.concat(Vegan);
+      }
+      if (
+        dataPreference.name === 'Shopping' &&
+        dataPreference.selected === true
+      ) {
+        console.log(dataPreference.name);
+        finalList = finalList.concat(Shopping);
+      }
+      if (
+        dataPreference.name === 'Local Experience' &&
+        dataPreference.selected === true
+      ) {
+        console.log(dataPreference.name);
+        finalList = finalList.concat(allCategories);
+      }
+      if (
+        dataPreference.name === 'Travel on a budget' &&
+        dataPreference.selected === true
+      ) {
+        console.log(dataPreference.name);
+        finalList = finalList.concat(allCategories);
+      }
+      if (
+        dataPreference.name === 'Solo Traveler' &&
+        dataPreference.selected === true
+      ) {
+        console.log(dataPreference.name);
+        finalList = finalList.concat(allCategories);
+      }
+      if (
+        dataPreference.name === 'Family-oriented trendy' &&
+        dataPreference.selected === true
+      ) {
+        console.log(dataPreference.name);
+        finalList = finalList.concat(allCategories);
+      }
     });
 
-    // console.log(finalList, 'finallist');
+    console.log(finalList);
 
     const mainCategories = await this.categoriesRepository.find({
       where: {categoryname: {inq: finalList}},

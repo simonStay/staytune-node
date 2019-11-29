@@ -123,7 +123,7 @@ export class NotificationsController {
     },
   })
   async findById(@param.path.string('id') id: string): Promise<Notifications> {
-    return this.notificationsRepository.findById(id);
+    return this.notificationsRepository.findById(id, {order: ['id DESC']});
   }
 
   @patch('/notifications/{id}', {
@@ -171,4 +171,36 @@ export class NotificationsController {
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.notificationsRepository.deleteById(id);
   }
+
+  // @del('/notifications/{userid}', {
+  //   responses: {
+  //     '204': {
+  //       description: 'Notifications DELETE success',
+  //     },
+  //   },
+  // })
+  // async delete(@param.path.string('id') userid: string): Promise<void> {
+  //   await this.notificationsRepository.delete({
+  //     userId: userid,
+  //   });
+
+  // @post('/delete', {
+  //   responses: {
+  //     '200': {
+  //       description: 'Array of Notifications model instances',
+  //       content: {
+  //         'application/json': {
+  //           schema: {type: 'array', items: getModelSchemaRef(Notifications)},
+  //         },
+  //       },
+  //     },
+  //   },
+  // })
+  // async delete(@requestBody() body: any): Promise<Notifications[]> {
+  //   return this.notificationsRepository.delete({
+  //     where: {
+  //       userId: body.userid,
+  //     },
+  //   });
+  // }
 }

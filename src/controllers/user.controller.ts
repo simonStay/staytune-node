@@ -35,6 +35,7 @@ import {
 import {Credentials} from '../repositories/user.repository';
 import {TokenServiceBindings, UserServiceBindings} from '../keys';
 import * as nodemailer from 'nodemailer';
+const moment = require('moment');
 
 //const CircularJSON = require('circular-json');
 
@@ -433,6 +434,7 @@ export class UserController {
     let result: any = [];
     let response: any = [];
     const notify: any = [];
+    let endDate: any = [];
 
     const location = await this.userRepository.findById(body.userId);
     if (location.lat === body.lat && location.long === body.lang) {
@@ -440,7 +442,7 @@ export class UserController {
         status: '400',
       };
     } else {
-      const preference = await this.travelPreferenceRepository.find(
+      const preference: any = await this.travelPreferenceRepository.find(
         {
           where: {userId: body.userId},
         },
@@ -451,20 +453,56 @@ export class UserController {
         lat: body.lat,
         long: body.long,
       };
+      // console.log(preference, 'prefererencedeec');
 
       await this.userRepository.updateById(id, data1);
 
-      preference.map(data2 => {
-        if (data2.selectedCategories !== null) {
-          data2.selectedCategories.map((text: any) => {
-            text.subCategories.map((test1: any) => {
-              if (test1.selected === true) {
-                if (!value.includes(test1.categoryname.toLowerCase())) {
-                  value = value.concat(test1.categoryname.toLowerCase());
-                }
-              }
-            });
-          });
+      // const startDate = moment().format(preference.travelDate, 'DD-MM-YYYY');
+
+      // const a = moment(startDate, 'DD-MM-YYYY');
+
+      // console.log(a, 'jjjd');
+      // console.log(b, 'hjbdvdvsd');
+      // if (preference.travelDate) {
+      //   // console.log(preference.travelDate, 'traveldate');
+      // }
+
+      // console.log(currentDate, 'xkvksdvksd');
+
+      preference.map((data2: any) => {
+        // console.log(data2.travelDate, 'traveldate');
+        if (data2.travelDate) {
+          // const startDate = data2.travelDate
+          //   .split('-')
+          //   .reverse()
+          //   .join('-');
+          // console.log(startDate, 'start');
+          const currentDate: any = moment().format('YYYY-MM-DD');
+
+          const a: any = moment(data2.travelDate, 'DD-MM-YYYY');
+          const b: any = moment(data2.travelDate, 'DD-MM-YYYY');
+          const startDate = b.format('YYYY-MM-DD');
+
+          endDate = a.add(data2.daysCount, 'days');
+          const dates: any = endDate.format('YYYY-MM-DD');
+
+          // console.log(dates, 'dates');
+          if (
+            moment(currentDate).isBetween(startDate, dates) &&
+            moment(currentDate).isSameOrAfter(startDate)
+          ) {
+            if (data2.selectedCategories !== null) {
+              data2.selectedCategories.map((text: any) => {
+                text.subCategories.map((test1: any) => {
+                  if (test1.selected === true) {
+                    if (!value.includes(test1.categoryname.toLowerCase())) {
+                      value = value.concat(test1.categoryname.toLowerCase());
+                    }
+                  }
+                });
+              });
+            }
+          }
         }
       });
 
@@ -473,6 +511,7 @@ export class UserController {
           const placeType = 'restaurant';
           result = await this.getTypes(placeType, body);
           result = await result.slice(0, 3);
+          console.log(result, 'resultrrr');
 
           const userInterest: any = result.map((type1: any) => type1.name);
           await this.notifications(body, userInterest, 'Restaurants');
@@ -600,9 +639,10 @@ export class UserController {
           this.notificationsRepository.create({
             date: Date.now(),
             notification:
-              'hello' +
+              'Hello' +
               ' ' +
               body.userName +
+              ' ,' +
               ' ' +
               'these are some of the famous places near you' +
               ' ' +

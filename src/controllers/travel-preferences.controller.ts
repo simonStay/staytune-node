@@ -74,7 +74,7 @@ export class TravelPreferencesController {
     );
     let finalList: Array<string> = [];
     const Business: Array<string> = ['Culinary'];
-    const Vegan: Array<string> = ['Culinary'];
+    const Foodie: Array<string> = ['Culinary'];
     const Shopping: Array<string> = ['Shopping', 'Culinary'];
     const allCategories: Array<string> = [
       'Shopping',
@@ -95,9 +95,12 @@ export class TravelPreferencesController {
         console.log(dataPreference.name);
         finalList = finalList.concat(Business);
       }
-      if (dataPreference.name === 'Vegan' && dataPreference.selected === true) {
+      if (
+        dataPreference.name === 'Foodie' &&
+        dataPreference.selected === true
+      ) {
         console.log(dataPreference.name);
-        finalList = finalList.concat(Vegan);
+        finalList = finalList.concat(Foodie);
       }
       if (
         dataPreference.name === 'Shopping' &&
@@ -261,7 +264,7 @@ export class TravelPreferencesController {
     // console.log('New Data : ', travelPreferences.selectedTravelPreferences);
     // console.log('Old data : ', travelData.selectedTravelPreferences);
     const Business: Array<string> = ['Culinary'];
-    const Vegan: Array<string> = ['Culinary'];
+    const Foodie: Array<string> = ['Culinary'];
     const Shopping: Array<string> = ['Shopping', 'Culinary'];
     const allCategories: Array<string> = [
       'Shopping',
@@ -283,10 +286,10 @@ export class TravelPreferencesController {
           oldPreferencesTypes = oldPreferencesTypes.concat(Business);
         }
         if (
-          oldDataPreference.name === 'Vegan' &&
+          oldDataPreference.name === 'Foodie' &&
           oldDataPreference.selected === true
         ) {
-          oldPreferencesTypes = oldPreferencesTypes.concat(Vegan);
+          oldPreferencesTypes = oldPreferencesTypes.concat(Foodie);
         }
         if (
           oldDataPreference.name === 'Shopping' &&
@@ -330,10 +333,10 @@ export class TravelPreferencesController {
           newPreferencesTypes = newPreferencesTypes.concat(Business);
         }
         if (
-          newDataPreference.name === 'Vegan' &&
+          newDataPreference.name === 'Foodie' &&
           newDataPreference.selected === true
         ) {
-          newPreferencesTypes = newPreferencesTypes.concat(Vegan);
+          newPreferencesTypes = newPreferencesTypes.concat(Foodie);
         }
         if (
           newDataPreference.name === 'Shopping' &&

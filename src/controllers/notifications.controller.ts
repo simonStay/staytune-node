@@ -80,8 +80,9 @@ export class NotificationsController {
     return this.notificationsRepository.find(
       {
         where: {
-          userId: body.id,
+          userId: body.userId,
         },
+        order: ['date DESC'],
       },
       {
         strictObjectIDCoercion: true,
@@ -123,7 +124,7 @@ export class NotificationsController {
     },
   })
   async findById(@param.path.string('id') id: string): Promise<Notifications> {
-    return this.notificationsRepository.findById(id, {order: ['id DESC']});
+    return this.notificationsRepository.findById(id);
   }
 
   @patch('/notifications/{id}', {
@@ -179,28 +180,25 @@ export class NotificationsController {
   //     },
   //   },
   // })
-  // async delete(@param.path.string('id') userid: string): Promise<void> {
-  //   await this.notificationsRepository.delete({
-  //     userId: userid,
-  //   });
-
-  // @post('/delete', {
-  //   responses: {
-  //     '200': {
-  //       description: 'Array of Notifications model instances',
-  //       content: {
-  //         'application/json': {
-  //           schema: {type: 'array', items: getModelSchemaRef(Notifications)},
-  //         },
-  //       },
-  //     },
-  //   },
-  // })
-  // async delete(@requestBody() body: any): Promise<Notifications[]> {
-  //   return this.notificationsRepository.delete({
-  //     where: {
-  //       userId: body.userid,
-  //     },
-  //   });
+  // async delete(@param.path.string('userId') userid: string): Promise<void> {
+  //   await this.notificationsRepository.deleteAll({userId: userid});
   // }
+
+  @del('/delete', {
+    responses: {
+      '200': {
+        description: 'Array of Notifications model instances',
+        content: {
+          'application/json': {
+            schema: {type: 'array', items: getModelSchemaRef(Notifications)},
+          },
+        },
+      },
+    },
+  })
+  async delete(@requestBody() body: any): Promise<any> {
+    return this.notificationsRepository.deleteAll({
+      userId: body.userid,
+    });
+  }
 }

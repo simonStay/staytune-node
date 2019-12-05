@@ -242,7 +242,11 @@ export class TravelPreferencesTypesController {
       },
     },
   })
-  async deleteById(@param.path.string('id') id: string): Promise<void> {
+  async deleteById(@param.path.string('id') id: string): Promise<any> {
     await this.travelPreferenceTypesRepository.deleteById(id);
+    return {
+      status: 'success',
+      message: 'Preference type has been deleted successfully',
+    };
   }
 }

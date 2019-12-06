@@ -380,8 +380,8 @@ export class UserController {
     //let response1 = await data.data.results.map((result: any) => result.name);
     // response1 = await response1.concat(data.data.results);
     finalResponse = await data.data.results.concat(data.data.results);
-    // console.log(finalResponse, 'final');
-    // console.log(data, 'datadad');
+    console.log(finalResponse, 'final');
+    console.log(data, 'datadad');
 
     return finalResponse;
   }
@@ -437,7 +437,6 @@ export class UserController {
     let response: any = [];
     const notify: any = [];
     let endDate: any = [];
-    const name: any = [];
 
     const location = await this.userRepository.findById(body.userId);
 
@@ -483,7 +482,7 @@ export class UserController {
           //   .join('-');
 
           const currentDate: any = moment().format('YYYY-MM-DD');
-          // console.log(currentDate, 'if current date is not between ');
+          console.log(currentDate, 'if current date is not between ');
 
           const a: any = moment(data2.travelDate, 'DD-MM-YYYY');
           const b: any = moment(data2.travelDate, 'DD-MM-YYYY');
@@ -492,7 +491,7 @@ export class UserController {
           endDate = a.add(data2.daysCount, 'days');
           const dates: any = endDate.format('YYYY-MM-DD');
 
-          // console.log(dates, 'dates');
+          console.log(dates, 'dates');
 
           if (
             moment(currentDate).isBetween(startDate, dates) &&
@@ -512,24 +511,15 @@ export class UserController {
           }
         }
       });
-      // console.log(value, 'valuees');
+      console.log(value, 'valuees');
 
       value.map(async (type: any) => {
-        console.log(type, 'type123');
+        console.log(type, 'type');
         if (type === 'food') {
           const placeType = 'restaurant';
           result = await this.getTypes(placeType, body);
-
-          // result.map((review: any) => {
-          //   console.log('review', review.rating);
-          //   if (review.rating > 4) {
-          //     name.push(review.name);
-          //   }
-          // });
-          // console.log('name', name);
-
           result = await result.slice(0, 3);
-          console.log(result, 'response');
+          console.log(result, 'resultrrr');
 
           const userInterest: any = result.map((type1: any) => type1.name);
           await this.notifications(body, userInterest, 'Restaurants');
@@ -555,7 +545,6 @@ export class UserController {
           const placeType = 'bakery';
           result = await this.getTypes(placeType, body);
           result = await result.slice(0, 3);
-          console.log('bakerytest123', result);
           const userInterest: any = result.map((type1: any) => type1.name);
           await this.notifications(body, userInterest, 'Bakeries');
         } else if (type === 'amusement parks') {
@@ -646,7 +635,7 @@ export class UserController {
         // eslint-disable-next-line @typescript-eslint/await-thenable
         response = await response.concat(result);
       });
-      // console.log(response, 'respnse');
+      console.log(response, 'respnse');
 
       setTimeout(() => {
         response.map((value2: any) => {

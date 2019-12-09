@@ -387,38 +387,41 @@ export class UserController {
   }
 
   public async notifications(data: any, text: any, parentCategory: any) {
-    const information: any = {
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
+    console.log(text, 'text');
+    if (text.length !== 0) {
+      const information: any = {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
 
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      include_player_ids: [data.id],
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        include_player_ids: [data.id],
 
-      contents: {
-        en:
-          'These are the famous' +
-          ' ' +
-          parentCategory +
-          ' ' +
-          'near you' +
-          ' ' +
-          text,
-      },
-    };
-    const details = axios.post(
-      'https://onesignal.com/api/v1/notifications',
-      information,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization:
-            'Basic NDA5YWNmM2UtODFhZi00MzMzLTg0OTItYTFiODg0OTA4Njlk',
+        contents: {
+          en:
+            'These are the famous' +
+            ' ' +
+            parentCategory +
+            ' ' +
+            'near you' +
+            ' ' +
+            text,
         },
-      },
-    );
-    // console.log('details', details);
+      };
+      const details = axios.post(
+        'https://onesignal.com/api/v1/notifications',
+        information,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization:
+              'Basic NDA5YWNmM2UtODFhZi00MzMzLTg0OTItYTFiODg0OTA4Njlk',
+          },
+        },
+      );
+      // console.log('details', details);
 
-    // console.log(data, text, 'any');
+      // console.log(data, text, 'any');
+    }
   }
 
   @post('/users/userDetails/', {
@@ -494,8 +497,8 @@ export class UserController {
           console.log(dates, 'dates');
 
           if (
-            moment(currentDate).isBetween(startDate, dates) &&
-            moment(currentDate).isSameOrAfter(startDate)
+            moment(currentDate).isBetween(startDate, dates) ||
+            moment(currentDate).isSame(startDate)
           ) {
             if (data2.selectedCategories !== null) {
               data2.selectedCategories.map((text: any) => {
@@ -625,6 +628,7 @@ export class UserController {
           result = await result.slice(0, 3);
           const userInterest: any = result.map((type1: any) => type1.name);
           await this.notifications(body, userInterest, 'Convenience Stores');
+          console.log(userInterest, 'uuuuuu');
         } else {
           return {
             response: 'does not exist',

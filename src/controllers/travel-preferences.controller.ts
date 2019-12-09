@@ -616,7 +616,10 @@ export class TravelPreferencesController {
     let expenditure = 0;
     if (oldBudgetInfo) {
       oldBudgetInfo.forEach(budget => {
-        if (budget.mealsExpenditure && budget.entExpenditure) {
+        if (
+          budget.mealsExpenditure !== undefined &&
+          budget.entExpenditure !== undefined
+        ) {
           let dayBudget = budget.mealsExpenditure + budget.entExpenditure;
           const startDate = moment().format(
             travelPreferenceData.travelDate,
@@ -666,7 +669,8 @@ export class TravelPreferencesController {
       const budgetDivide = budgetPerDay / 2;
       for (i = completedDays + 1; i <= daysCount; i++) {
         const dayNext = nextDay.add(1, 'days');
-        await response.push({
+        // eslint-disable-next-line require-atomic-updates
+        response = await response.concat({
           id: i,
           day: i,
           dayBudget: budgetPerDay,
@@ -674,8 +678,16 @@ export class TravelPreferencesController {
           entertainment: budgetDivide,
           date: dayNext.format('DD-MM-YYYY'),
         });
+        // await response.push({
+        //   id: i,
+        //   day: i,
+        //   dayBudget: budgetPerDay,
+        //   meals: budgetDivide,
+        //   entertainment: budgetDivide,
+        //   date: dayNext.format('DD-MM-YYYY'),
+        // });
       }
-      console.log(response, 'dta');
+      console.log(response, 'dta123');
       return {
         budget: response,
         totalBudget: travelPreferenceData.totalBudget,

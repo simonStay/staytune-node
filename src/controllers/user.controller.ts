@@ -20,8 +20,13 @@ import {
 } from '@loopback/rest';
 import {inject} from '@loopback/core';
 import {User} from '../models';
-import {UserRepository, NotificationsRepository} from '../repositories';
-import {TravelPreferencesRepository} from '../repositories';
+import {
+  UserRepository,
+  NotificationsRepository,
+  CategoriesRepository,
+  TravelPreferencesRepository,
+} from '../repositories';
+
 import {
   authenticate,
   TokenService,
@@ -64,6 +69,8 @@ export class UserController {
     public travelPreferenceRepository: TravelPreferencesRepository,
     @repository(NotificationsRepository)
     public notificationsRepository: NotificationsRepository,
+    @repository(CategoriesRepository)
+    public categoriesRepository: CategoriesRepository,
 
     @inject(TokenServiceBindings.TOKEN_SERVICE)
     public jwtService: TokenService,
@@ -504,8 +511,8 @@ export class UserController {
               data2.selectedCategories.map((text: any) => {
                 text.subCategories.map((test1: any) => {
                   if (test1.selected === true) {
-                    if (!value.includes(test1.categoryname.toLowerCase())) {
-                      value = value.concat(test1.categoryname.toLowerCase());
+                    if (!value.includes(test1.categoryname)) {
+                      value = value.concat(test1.categoryname);
                     }
                   }
                 });
@@ -518,148 +525,141 @@ export class UserController {
 
       value.map(async (type: any) => {
         console.log(type, 'type');
-        if (type === 'food') {
-          //   const placeType = 'restaurant';
-          // } else if (type === 'botique') {
-          //   const placeType = 'cloting_store';
-          // } else if (type === 'bar') {
-          //   const placeType = type;
-          // } else if (type === 'cafe') {
-          //   const placeType = type;
-          // } else if (type === 'bakery') {
-          //   const placeType = type;
-          // } else if (type === 'amusement parks') {
-          //   const placeType = 'amusement_park';
-          // }else if(type==='night clubs'){
-          //   const placeType='night_club'
-          // }else if(type==='book stores'){
-          //   const placeType='book_store'
-          // }else if(type==='art'){
-          //   const placeType='art_gallery'
-          // }else if(type==='history'){
-          //   const placeType='museum'
-          // }else if(type==='park'){
-          //   const placeType=type
-          // }else if()
-          result = await this.getTypes(placeType, body);
-          result = await result.slice(0, 3);
-          console.log(result, 'resultrrr');
-
-          const userInterest: any = result.map((type1: any) => type1.name);
-          await this.notifications(body, userInterest, 'Restaurants');
-        } else if (type === 'boutique') {
-          const placeType = 'clothing_store';
-          result = await this.getTypes(placeType, body);
+        const placeType: any = await this.categoriesRepository.find({
+          where: {categoryname: type},
+        });
+        console.log('place type : ', placeType[0].googleCategory);
+        console.log(placeType[0].googleCategory, 'Googlecategory name');
+        result = await this.getTypes(placeType[0].googleCategory, body);
+        if (result) {
           result = await result.slice(0, 3);
           const userInterest: any = result.map((type1: any) => type1.name);
-          await this.notifications(body, userInterest, 'Boutiques');
-        } else if (type === 'bar') {
-          const placeType = 'bar';
-          result = await this.getTypes(placeType, body);
-          result = await result.slice(0, 3);
-          const userInterest: any = result.map((type1: any) => type1.name);
-          await this.notifications(body, userInterest, 'Bars');
-        } else if (type === 'cafe') {
-          const placeType = 'cafe';
-          result = await this.getTypes(placeType, body);
-          result = await result.slice(0, 3);
-          const userInterest: any = result.map((type1: any) => type1.name);
-          await this.notifications(body, userInterest, 'Cafes');
-        } else if (type === 'bakery') {
-          const placeType = 'bakery';
-          result = await this.getTypes(placeType, body);
-          result = await result.slice(0, 3);
-          const userInterest: any = result.map((type1: any) => type1.name);
-          await this.notifications(body, userInterest, 'Bakeries');
-        } else if (type === 'amusement parks') {
-          const placeType = 'amusement_park';
-          result = await this.getTypes(placeType, body);
-          result = await result.slice(0, 3);
-          const userInterest: any = result.map((type1: any) => type1.name);
-          await this.notifications(body, userInterest, 'Amusement_Paeks');
-        } else if (type === 'night clubs') {
-          const placeType = 'night_club';
-          result = await this.getTypes(placeType, body);
-          result = await result.slice(0, 3);
-          const userInterest: any = result.map((type1: any) => type1.name);
-          await this.notifications(body, userInterest, 'Night_Clubs');
-        } else if (type === 'book stores') {
-          const placeType = 'book_store';
-          result = await this.getTypes(placeType, body);
-          result = await result.slice(0, 3);
-          const userInterest: any = result.map((type1: any) => type1.name);
-          await this.notifications(body, userInterest, 'Book_Stores');
-        } else if (type === 'art') {
-          const placeType = 'art_gallery';
-          result = await this.getTypes(placeType, body);
-          result = await result.slice(0, 3);
-          const userInterest: any = result.map((type1: any) => type1.name);
-          await this.notifications(body, userInterest, 'Art Gallery');
-        } else if (type === 'history') {
-          const placeType = 'museum';
-          result = await this.getTypes(placeType, body);
-          result = await result.slice(0, 3);
-          const userInterest: any = result.map((type1: any) => type1.name);
-          await this.notifications(body, userInterest, 'Museums');
-        } else if (type === 'park') {
-          const placeType = 'park';
-          result = await this.getTypes(placeType, body);
-          result = await result.slice(0, 3);
-          const userInterest: any = result.map((type1: any) => type1.name);
-          await this.notifications(body, userInterest, 'Parks');
-        } else if (type === 'shopping mall') {
-          const placeType = 'shopping_mall';
-          result = await this.getTypes(placeType, body);
-          result = await result.slice(0, 3);
-          const userInterest: any = result.map((type1: any) => type1.name);
-          await this.notifications(body, userInterest, 'Shopping Malls');
-        } else if (type === 'super market / groceries') {
-          const placeType = 'grocery_or_supermarket';
-          result = await this.getTypes(placeType, body);
-          result = await result.slice(0, 3);
-          const userInterest: any = result.map((type1: any) => type1.name);
-          await this.notifications(body, userInterest, 'Super Markets');
-        } else if (type === 'gym') {
-          const placeType = 'gym';
-          result = await this.getTypes(placeType, body);
-          result = await result.slice(0, 3);
-          const userInterest: any = result.map((type1: any) => type1.name);
-          await this.notifications(body, userInterest, ' Gyms');
-        } else if (type === 'campground') {
-          const placeType = 'campground';
-          result = await this.getTypes(placeType, body);
-          result = await result.slice(0, 3);
-          const userInterest: any = result.map((type1: any) => type1.name);
-          await this.notifications(body, userInterest, 'Camp Grounds');
-        } else if (type === 'department store') {
-          const placeType = 'department_store';
-          result = await this.getTypes(placeType, body);
-          result = await result.slice(0, 3);
-          const userInterest: any = result.map((type1: any) => type1.name);
-          await this.notifications(body, userInterest, 'Departmental Stores');
-        } else if (type === 'electronics store') {
-          const placeType = 'electronics_store';
-          result = await this.getTypes(placeType, body);
-          result = await result.slice(0, 3);
-          const userInterest: any = result.map((type1: any) => type1.name);
-          await this.notifications(body, userInterest, 'Electronic Stores');
-        } else if (type === 'convenience store') {
-          const placeType = 'convenience_store';
-          result = await this.getTypes(placeType, body);
-          result = await result.slice(0, 3);
-          const userInterest: any = result.map((type1: any) => type1.name);
-          await this.notifications(body, userInterest, 'Convenience Stores');
-          console.log(userInterest, 'uuuuuu');
-        } else {
-          return {
-            response: 'does not exist',
-          };
+          await this.notifications(body, userInterest, type);
         }
+
+        // if (type === 'food') {
+        //   const placeType = 'restaurant';
+
+        //   result = await this.getTypes(placeType, body);
+        //   result = await result.slice(0, 3);
+        //   console.log(result, 'resultrrr');
+
+        //   const userInterest: any = result.map((type1: any) => type1.name);
+        //   await this.notifications(body, userInterest, 'Restaurants');
+        // } else if (type === 'boutique') {
+        //   const placeType = 'clothing_store';
+        //   result = await this.getTypes(placeType, body);
+        //   result = await result.slice(0, 3);
+        //   const userInterest: any = result.map((type1: any) => type1.name);
+        //   await this.notifications(body, userInterest, 'Boutiques');
+        // } else if (type === 'bar') {
+        //   const placeType = 'bar';
+        //   result = await this.getTypes(placeType, body);
+        //   result = await result.slice(0, 3);
+        //   const userInterest: any = result.map((type1: any) => type1.name);
+        //   await this.notifications(body, userInterest, 'Bars');
+        // } else if (type === 'cafe') {
+        //   const placeType = 'cafe';
+        //   result = await this.getTypes(placeType, body);
+        //   result = await result.slice(0, 3);
+        //   const userInterest: any = result.map((type1: any) => type1.name);
+        //   await this.notifications(body, userInterest, 'Cafes');
+        // } else if (type === 'bakery') {
+        //   const placeType = 'bakery';
+        //   result = await this.getTypes(placeType, body);
+        //   result = await result.slice(0, 3);
+        //   const userInterest: any = result.map((type1: any) => type1.name);
+        //   await this.notifications(body, userInterest, 'Bakeries');
+        // } else if (type === 'amusement parks') {
+        //   const placeType = 'amusement_park';
+        //   result = await this.getTypes(placeType, body);
+        //   result = await result.slice(0, 3);
+        //   const userInterest: any = result.map((type1: any) => type1.name);
+        //   await this.notifications(body, userInterest, 'Amusement_Paeks');
+        // } else if (type === 'night clubs') {
+        //   const placeType = 'night_club';
+        //   result = await this.getTypes(placeType, body);
+        //   result = await result.slice(0, 3);
+        //   const userInterest: any = result.map((type1: any) => type1.name);
+        //   await this.notifications(body, userInterest, 'Night_Clubs');
+        // } else if (type === 'book stores') {
+        //   const placeType = 'book_store';
+        //   result = await this.getTypes(placeType, body);
+        //   result = await result.slice(0, 3);
+        //   const userInterest: any = result.map((type1: any) => type1.name);
+        //   await this.notifications(body, userInterest, 'Book_Stores');
+        // } else if (type === 'art') {
+        //   const placeType = 'art_gallery';
+        //   result = await this.getTypes(placeType, body);
+        //   result = await result.slice(0, 3);
+        //   const userInterest: any = result.map((type1: any) => type1.name);
+        //   await this.notifications(body, userInterest, 'Art Gallery');
+        // } else if (type === 'history') {
+        //   const placeType = 'museum';
+        //   result = await this.getTypes(placeType, body);
+        //   result = await result.slice(0, 3);
+        //   const userInterest: any = result.map((type1: any) => type1.name);
+        //   await this.notifications(body, userInterest, 'Museums');
+        // } else if (type === 'park') {
+        //   const placeType = 'park';
+        //   result = await this.getTypes(placeType, body);
+        //   result = await result.slice(0, 3);
+        //   const userInterest: any = result.map((type1: any) => type1.name);
+        //   await this.notifications(body, userInterest, 'Parks');
+        // } else if (type === 'shopping mall') {
+        //   const placeType = 'shopping_mall';
+        //   result = await this.getTypes(placeType, body);
+        //   result = await result.slice(0, 3);
+        //   const userInterest: any = result.map((type1: any) => type1.name);
+        //   await this.notifications(body, userInterest, 'Shopping Malls');
+        // } else if (type === 'super market / groceries') {
+        //   const placeType = 'grocery_or_supermarket';
+        //   result = await this.getTypes(placeType, body);
+        //   result = await result.slice(0, 3);
+        //   const userInterest: any = result.map((type1: any) => type1.name);
+        //   await this.notifications(body, userInterest, 'Super Markets');
+        // } else if (type === 'gym') {
+        //   const placeType = 'gym';
+        //   result = await this.getTypes(placeType, body);
+        //   result = await result.slice(0, 3);
+        //   const userInterest: any = result.map((type1: any) => type1.name);
+        //   await this.notifications(body, userInterest, ' Gyms');
+        // } else if (type === 'campground') {
+        //   const placeType = 'campground';
+        //   result = await this.getTypes(placeType, body);
+        //   result = await result.slice(0, 3);
+        //   const userInterest: any = result.map((type1: any) => type1.name);
+        //   await this.notifications(body, userInterest, 'Camp Grounds');
+        // } else if (type === 'department store') {
+        //   const placeType = 'department_store';
+        //   result = await this.getTypes(placeType, body);
+        //   result = await result.slice(0, 3);
+        //   const userInterest: any = result.map((type1: any) => type1.name);
+        //   await this.notifications(body, userInterest, 'Departmental Stores');
+        // } else if (type === 'electronics store') {
+        //   const placeType = 'electronics_store';
+        //   result = await this.getTypes(placeType, body);
+        //   result = await result.slice(0, 3);
+        //   const userInterest: any = result.map((type1: any) => type1.name);
+        //   await this.notifications(body, userInterest, 'Electronic Stores');
+        // } else if (type === 'convenience store') {
+        //   const placeType = 'convenience_store';
+        //   result = await this.getTypes(placeType, body);
+        //   result = await result.slice(0, 3);
+        //   const userInterest: any = result.map((type1: any) => type1.name);
+        //   await this.notifications(body, userInterest, 'Convenience Stores');
+        //   console.log(userInterest, 'uuuuuu');
+        // } else {
+        //   return {
+        //     response: 'does not exist',
+        //   };
+        // }
 
         // eslint-disable-next-line require-atomic-updates
         // eslint-disable-next-line @typescript-eslint/await-thenable
         response = await response.concat(result);
       });
+
       console.log(response, 'respnse');
 
       setTimeout(() => {

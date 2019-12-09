@@ -519,7 +519,28 @@ export class UserController {
       value.map(async (type: any) => {
         console.log(type, 'type');
         if (type === 'food') {
-          const placeType = 'restaurant';
+          //   const placeType = 'restaurant';
+          // } else if (type === 'botique') {
+          //   const placeType = 'cloting_store';
+          // } else if (type === 'bar') {
+          //   const placeType = type;
+          // } else if (type === 'cafe') {
+          //   const placeType = type;
+          // } else if (type === 'bakery') {
+          //   const placeType = type;
+          // } else if (type === 'amusement parks') {
+          //   const placeType = 'amusement_park';
+          // }else if(type==='night clubs'){
+          //   const placeType='night_club'
+          // }else if(type==='book stores'){
+          //   const placeType='book_store'
+          // }else if(type==='art'){
+          //   const placeType='art_gallery'
+          // }else if(type==='history'){
+          //   const placeType='museum'
+          // }else if(type==='park'){
+          //   const placeType=type
+          // }else if()
           result = await this.getTypes(placeType, body);
           result = await result.slice(0, 3);
           console.log(result, 'resultrrr');

@@ -21,6 +21,11 @@ export class Categories extends Entity {
   @property({
     type: 'string',
   })
+  googleCategory?: string;
+
+  @property({
+    type: 'string',
+  })
   categoryPic: string;
 
   @property({

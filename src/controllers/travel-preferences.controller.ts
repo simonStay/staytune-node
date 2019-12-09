@@ -73,73 +73,89 @@ export class TravelPreferencesController {
       travelData,
     );
     let finalList: Array<string> = [];
-    const Business: Array<string> = ['Culinary'];
-    const Foodie: Array<string> = ['Culinary'];
-    const Shopping: Array<string> = ['Shopping', 'Culinary'];
-    const allCategories: Array<string> = [
-      'Shopping',
-      'Culinary',
-      'Adventure',
-      'Museums',
-      'Entertainment',
-    ];
+    // const Business: Array<string> = ['Culinary'];
+    // const Foodie: Array<string> = ['Culinary'];
+    // const Shopping: Array<string> = ['Shopping', 'Culinary'];
+    // const allCategories: Array<string> = [
+    //   'Shopping',
+    //   'Culinary',
+    //   'Adventure',
+    //   'Museums',
+    //   'Entertainment',
+    // ];
     const selectedData = travelPreferences.selectedTravelPreferences;
     // console.log(selectedData);
-    selectedData.forEach((dataPreference: any) => {
+    let j: any;
+    // selectedData.map(async (dataPreference: any) => {
+    for (j = 0; j < selectedData.length; j++) {
       // console.log('selected categories by surya', dataPreference);
       // console.log('testdfdfd', dataPreference.name);
-      if (
-        dataPreference.name === 'Business' &&
-        dataPreference.selected === true
-      ) {
-        console.log(dataPreference.name);
-        finalList = finalList.concat(Business);
+      if (selectedData[j].selected === true) {
+        const preferenceCategoriesData = await this.travelPreferenceTypesRepository.find(
+          {
+            where: {name: selectedData[j].name},
+          },
+        );
+        let categories = preferenceCategoriesData[0].categories;
+        console.log('surya categories : ', categories);
+        if (categories) {
+          finalList = finalList.concat(categories);
+        }
       }
-      if (
-        dataPreference.name === 'Foodie' &&
-        dataPreference.selected === true
-      ) {
-        console.log(dataPreference.name);
-        finalList = finalList.concat(Foodie);
-      }
-      if (
-        dataPreference.name === 'Shopping' &&
-        dataPreference.selected === true
-      ) {
-        console.log(dataPreference.name);
-        finalList = finalList.concat(Shopping);
-      }
-      if (
-        dataPreference.name === 'Local Experience' &&
-        dataPreference.selected === true
-      ) {
-        console.log(dataPreference.name);
-        finalList = finalList.concat(allCategories);
-      }
-      if (
-        dataPreference.name === 'Travel on a budget' &&
-        dataPreference.selected === true
-      ) {
-        console.log(dataPreference.name);
-        finalList = finalList.concat(allCategories);
-      }
-      if (
-        dataPreference.name === 'Solo Traveler' &&
-        dataPreference.selected === true
-      ) {
-        console.log(dataPreference.name);
-        finalList = finalList.concat(allCategories);
-      }
-      if (
-        dataPreference.name === 'Family-oriented trendy' &&
-        dataPreference.selected === true
-      ) {
-        console.log(dataPreference.name);
-        finalList = finalList.concat(allCategories);
-      }
-    });
 
-    console.log(finalList);
+      // if (
+      //   dataPreference.name === 'Business' &&
+      //   dataPreference.selected === true
+      // ) {
+      //   console.log(dataPreference.name);
+      //   finalList = finalList.concat(Business);
+      // }
+      // if (
+      //   dataPreference.name === 'Foodie' &&
+      //   dataPreference.selected === true
+      // ) {
+      //   console.log(dataPreference.name);
+      //   finalList = finalList.concat(Foodie);
+      // }
+      // if (
+      //   dataPreference.name === 'Shopping' &&
+      //   dataPreference.selected === true
+      // ) {
+      //   console.log(dataPreference.name);
+      //   finalList = finalList.concat(Shopping);
+      // }
+      // if (
+      //   dataPreference.name === 'Local Experience' &&
+      //   dataPreference.selected === true
+      // ) {
+      //   console.log(dataPreference.name);
+      //   finalList = finalList.concat(allCategories);
+      // }
+      // if (
+      //   dataPreference.name === 'Travel on a budget' &&
+      //   dataPreference.selected === true
+      // ) {
+      //   console.log(dataPreference.name);
+      //   finalList = finalList.concat(allCategories);
+      // }
+      // if (
+      //   dataPreference.name === 'Solo Traveler' &&
+      //   dataPreference.selected === true
+      // ) {
+      //   console.log(dataPreference.name);
+      //   finalList = finalList.concat(allCategories);
+      // }
+      // if (
+      //   dataPreference.name === 'Family-oriented trendy' &&
+      //   dataPreference.selected === true
+      // ) {
+      //   console.log(dataPreference.name);
+      //   finalList = finalList.concat(allCategories);
+      // }
+    }
+    // });
+
+    console.log('final list by surya today : ', finalList);
 
     const mainCategories = await this.categoriesRepository.find({
       where: {categoryname: {inq: finalList}},
@@ -278,6 +294,21 @@ export class TravelPreferencesController {
     const oldSelectedData = await travelData.selectedTravelPreferences;
     const newSelectedData = travelPreferences.selectedTravelPreferences;
     if (oldSelectedData) {
+      let j: any;
+      for (j = 0; j < oldSelectedData.length; j++) {
+        if (oldSelectedData[j].selected === true) {
+          const preferenceCategoriesData = await this.travelPreferenceTypesRepository.find(
+            {
+              where: {name: oldSelectedData[j].name},
+            },
+          );
+          let categories = preferenceCategoriesData[0].categories;
+          console.log('surya categories : ', categories);
+          if (categories) {
+            oldPreferencesTypes = oldPreferencesTypes.concat(categories);
+          }
+        }
+      }
       oldSelectedData.forEach((oldDataPreference: any) => {
         if (
           oldDataPreference.name === 'Business' &&

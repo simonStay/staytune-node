@@ -386,7 +386,7 @@ export class UserController {
     //let result: any = [];
     //let response1 = await data.data.results.map((result: any) => result.name);
     // response1 = await response1.concat(data.data.results);
-    finalResponse = await data.data.results.concat(data.data.results);
+    finalResponse = await finalResponse.concat(data.data.results);
     console.log(finalResponse, 'final');
     console.log(data, 'datadad');
 
@@ -395,40 +395,39 @@ export class UserController {
 
   public async notifications(data: any, text: any, parentCategory: any) {
     console.log(text, 'text');
-    if (text.length !== 0) {
-      const information: any = {
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
 
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        include_player_ids: [data.id],
+    const information: any = {
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
 
-        contents: {
-          en:
-            'These are the famous' +
-            ' ' +
-            parentCategory +
-            ' ' +
-            'near you' +
-            ' ' +
-            text,
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      include_player_ids: [data.id],
+
+      contents: {
+        en:
+          'These are the famous' +
+          ' ' +
+          parentCategory +
+          ' ' +
+          'near you' +
+          ' ' +
+          text,
+      },
+    };
+    const details = axios.post(
+      'https://onesignal.com/api/v1/notifications',
+      information,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization:
+            'Basic NDA5YWNmM2UtODFhZi00MzMzLTg0OTItYTFiODg0OTA4Njlk',
         },
-      };
-      const details = axios.post(
-        'https://onesignal.com/api/v1/notifications',
-        information,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization:
-              'Basic NDA5YWNmM2UtODFhZi00MzMzLTg0OTItYTFiODg0OTA4Njlk',
-          },
-        },
-      );
-      // console.log('details', details);
+      },
+    );
+    // console.log('details', details);
 
-      // console.log(data, text, 'any');
-    }
+    // console.log(data, text, 'any');
   }
 
   @post('/users/userDetails/', {
@@ -445,8 +444,11 @@ export class UserController {
     let value: Array<object> = [];
     let result: any = [];
     let response: any = [];
-    const notify: any = [];
+
     let endDate: any = [];
+    let budgetPerDay: any;
+
+    let finalResult: Array<object> = [];
 
     const location = await this.userRepository.findById(body.userId);
 
@@ -483,7 +485,11 @@ export class UserController {
 
       // console.log(currentDate, 'xkvksdvksd');
 
-      preference.map((data2: any) => {
+      // const budgetPerDay: any =
+      //   preference[0].totalBudget / preference[0].daysCount;
+      // console.log(budgetPerDay, 'budgetperday');
+
+      preference.map(async (data2: any) => {
         // console.log(data2.travelDate, 'traveldate');
         if (data2.travelDate) {
           // const startDate = data2.travelDate
@@ -497,7 +503,7 @@ export class UserController {
           const a: any = moment(data2.travelDate, 'DD-MM-YYYY');
           const b: any = moment(data2.travelDate, 'DD-MM-YYYY');
           const startDate = b.format('YYYY-MM-DD');
-
+          console.log(startDate, 'startdate');
           endDate = a.add(data2.daysCount, 'days');
           const dates: any = endDate.format('YYYY-MM-DD');
 
@@ -517,158 +523,79 @@ export class UserController {
                   }
                 });
               });
+              console.log(data2.totalBudget, 'total123');
+              console.log(data2.daysCount, 'count123');
+              budgetPerDay = data2.totalBudget / data2.daysCount;
             }
           }
         }
       });
       console.log(value, 'valuees');
+      console.log(budgetPerDay, 'budget');
 
       value.map(async (type: any) => {
         console.log(type, 'type');
         const placeType: any = await this.categoriesRepository.find({
           where: {categoryname: type},
         });
-        console.log('place type : ', placeType[0].googleCategory);
-        console.log(placeType[0].googleCategory, 'Googlecategory name');
         result = await this.getTypes(placeType[0].googleCategory, body);
-        if (result) {
-          result = await result.slice(0, 3);
-          const userInterest: any = result.map((type1: any) => type1.name);
+        // if (budgetPerDay > 50) {
+        //   console.log('hello');
+        // }
+        console.log('Api result : ', result);
+        if (result.length !== 0) {
+          console.log('case 1 : ');
+          if (budgetPerDay >= 100) {
+            finalResult = [];
+            result.map((rating: any) => {
+              if (rating.rating >= 4) {
+                console.log('shop name : ', rating.name);
+
+                finalResult = finalResult.concat(rating);
+              }
+            });
+          } else if (budgetPerDay < 100 && budgetPerDay >= 50) {
+            finalResult = [];
+            result.map((rating: any) => {
+              if (rating.rating >= 3 && rating.rating < 4) {
+                console.log('shop name123 : ', rating.name);
+
+                finalResult = finalResult.concat(rating);
+              }
+            });
+          } else if (budgetPerDay < 50) {
+            finalResult = [];
+            result.map((rating: any) => {
+              if (rating.rating < 3) {
+                console.log('shop name1234 : ', rating.name);
+
+                finalResult = finalResult.concat(rating);
+              }
+            });
+          } else {
+            console.log('error');
+          }
+
+          finalResult = await finalResult.slice(0, 3);
+          // finalResult = await finalResult.slice(
+          //   finalResult.length,
+          //   finalResult.length + 3,
+          // );
+          console.log('final result : ', finalResult);
+          const userInterest: any = finalResult.map((type1: any) => type1.name);
+          console.log('userInterest : ', userInterest);
           await this.notifications(body, userInterest, type);
         }
 
-        // if (type === 'food') {
-        //   const placeType = 'restaurant';
-
-        //   result = await this.getTypes(placeType, body);
-        //   result = await result.slice(0, 3);
-        //   console.log(result, 'resultrrr');
-
-        //   const userInterest: any = result.map((type1: any) => type1.name);
-        //   await this.notifications(body, userInterest, 'Restaurants');
-        // } else if (type === 'boutique') {
-        //   const placeType = 'clothing_store';
-        //   result = await this.getTypes(placeType, body);
-        //   result = await result.slice(0, 3);
-        //   const userInterest: any = result.map((type1: any) => type1.name);
-        //   await this.notifications(body, userInterest, 'Boutiques');
-        // } else if (type === 'bar') {
-        //   const placeType = 'bar';
-        //   result = await this.getTypes(placeType, body);
-        //   result = await result.slice(0, 3);
-        //   const userInterest: any = result.map((type1: any) => type1.name);
-        //   await this.notifications(body, userInterest, 'Bars');
-        // } else if (type === 'cafe') {
-        //   const placeType = 'cafe';
-        //   result = await this.getTypes(placeType, body);
-        //   result = await result.slice(0, 3);
-        //   const userInterest: any = result.map((type1: any) => type1.name);
-        //   await this.notifications(body, userInterest, 'Cafes');
-        // } else if (type === 'bakery') {
-        //   const placeType = 'bakery';
-        //   result = await this.getTypes(placeType, body);
-        //   result = await result.slice(0, 3);
-        //   const userInterest: any = result.map((type1: any) => type1.name);
-        //   await this.notifications(body, userInterest, 'Bakeries');
-        // } else if (type === 'amusement parks') {
-        //   const placeType = 'amusement_park';
-        //   result = await this.getTypes(placeType, body);
-        //   result = await result.slice(0, 3);
-        //   const userInterest: any = result.map((type1: any) => type1.name);
-        //   await this.notifications(body, userInterest, 'Amusement_Paeks');
-        // } else if (type === 'night clubs') {
-        //   const placeType = 'night_club';
-        //   result = await this.getTypes(placeType, body);
-        //   result = await result.slice(0, 3);
-        //   const userInterest: any = result.map((type1: any) => type1.name);
-        //   await this.notifications(body, userInterest, 'Night_Clubs');
-        // } else if (type === 'book stores') {
-        //   const placeType = 'book_store';
-        //   result = await this.getTypes(placeType, body);
-        //   result = await result.slice(0, 3);
-        //   const userInterest: any = result.map((type1: any) => type1.name);
-        //   await this.notifications(body, userInterest, 'Book_Stores');
-        // } else if (type === 'art') {
-        //   const placeType = 'art_gallery';
-        //   result = await this.getTypes(placeType, body);
-        //   result = await result.slice(0, 3);
-        //   const userInterest: any = result.map((type1: any) => type1.name);
-        //   await this.notifications(body, userInterest, 'Art Gallery');
-        // } else if (type === 'history') {
-        //   const placeType = 'museum';
-        //   result = await this.getTypes(placeType, body);
-        //   result = await result.slice(0, 3);
-        //   const userInterest: any = result.map((type1: any) => type1.name);
-        //   await this.notifications(body, userInterest, 'Museums');
-        // } else if (type === 'park') {
-        //   const placeType = 'park';
-        //   result = await this.getTypes(placeType, body);
-        //   result = await result.slice(0, 3);
-        //   const userInterest: any = result.map((type1: any) => type1.name);
-        //   await this.notifications(body, userInterest, 'Parks');
-        // } else if (type === 'shopping mall') {
-        //   const placeType = 'shopping_mall';
-        //   result = await this.getTypes(placeType, body);
-        //   result = await result.slice(0, 3);
-        //   const userInterest: any = result.map((type1: any) => type1.name);
-        //   await this.notifications(body, userInterest, 'Shopping Malls');
-        // } else if (type === 'super market / groceries') {
-        //   const placeType = 'grocery_or_supermarket';
-        //   result = await this.getTypes(placeType, body);
-        //   result = await result.slice(0, 3);
-        //   const userInterest: any = result.map((type1: any) => type1.name);
-        //   await this.notifications(body, userInterest, 'Super Markets');
-        // } else if (type === 'gym') {
-        //   const placeType = 'gym';
-        //   result = await this.getTypes(placeType, body);
-        //   result = await result.slice(0, 3);
-        //   const userInterest: any = result.map((type1: any) => type1.name);
-        //   await this.notifications(body, userInterest, ' Gyms');
-        // } else if (type === 'campground') {
-        //   const placeType = 'campground';
-        //   result = await this.getTypes(placeType, body);
-        //   result = await result.slice(0, 3);
-        //   const userInterest: any = result.map((type1: any) => type1.name);
-        //   await this.notifications(body, userInterest, 'Camp Grounds');
-        // } else if (type === 'department store') {
-        //   const placeType = 'department_store';
-        //   result = await this.getTypes(placeType, body);
-        //   result = await result.slice(0, 3);
-        //   const userInterest: any = result.map((type1: any) => type1.name);
-        //   await this.notifications(body, userInterest, 'Departmental Stores');
-        // } else if (type === 'electronics store') {
-        //   const placeType = 'electronics_store';
-        //   result = await this.getTypes(placeType, body);
-        //   result = await result.slice(0, 3);
-        //   const userInterest: any = result.map((type1: any) => type1.name);
-        //   await this.notifications(body, userInterest, 'Electronic Stores');
-        // } else if (type === 'convenience store') {
-        //   const placeType = 'convenience_store';
-        //   result = await this.getTypes(placeType, body);
-        //   result = await result.slice(0, 3);
-        //   const userInterest: any = result.map((type1: any) => type1.name);
-        //   await this.notifications(body, userInterest, 'Convenience Stores');
-        //   console.log(userInterest, 'uuuuuu');
-        // } else {
-        //   return {
-        //     response: 'does not exist',
-        //   };
-        // }
-
         // eslint-disable-next-line require-atomic-updates
         // eslint-disable-next-line @typescript-eslint/await-thenable
-        response = await response.concat(result);
+        response = response.concat(result);
       });
 
-      console.log(response, 'respnse');
+      // console.log(response, 'respnse');
 
       setTimeout(() => {
         response.map((value2: any) => {
-          // notify.push({
-          //   date: Date,
-          //   notification: value2.name,
-          //   userId: body.userId,
-          // });
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           this.notificationsRepository.create({
             date: Date.now(),

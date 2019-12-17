@@ -31,6 +31,14 @@ export class TravelGuide extends Entity {
     itemType: 'string',
   })
   places: Array<string>;
+  @property({
+    type: 'string',
+  })
+  email: string;
+  @property({
+    type: 'number',
+  })
+  phoneNumber: number;
 
   // Define well-known properties here
 

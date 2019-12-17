@@ -20,24 +20,22 @@ import {
   Response,
   Request,
 } from '@loopback/rest';
-import {Categories} from '../models';
-import {CategoriesRepository} from '../repositories';
+import {TravelGuide} from '../models';
+import {TravelGuideRepository} from '../repositories';
 import {inject} from '@loopback/context';
-import {siteUrl} from '../keys/config';
 const multer = require('multer');
-// const url = require('url');
 
-export class CategoriesController {
+export class TravelGuideController {
   constructor(
-    @repository(CategoriesRepository)
-    public categoriesRepository: CategoriesRepository,
+    @repository(TravelGuideRepository)
+    public travelGuideRepository: TravelGuideRepository,
   ) {}
 
-  @post('/categories', {
+  @post('/travel-guides', {
     responses: {
       '200': {
-        description: 'Categories model instance',
-        content: {'application/json': {schema: getModelSchemaRef(Categories)}},
+        description: 'TravelGuide model instance',
+        content: {'application/json': {schema: getModelSchemaRef(TravelGuide)}},
       },
     },
   })
@@ -45,50 +43,31 @@ export class CategoriesController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Categories, {exclude: ['id']}),
+          schema: getModelSchemaRef(TravelGuide, {exclude: ['id']}),
         },
       },
     })
-    categories: Omit<Categories, 'id'>,
-  ): Promise<Categories> {
-    return this.categoriesRepository.create(categories);
+    travelGuide: Omit<TravelGuide, 'id'>,
+  ): Promise<TravelGuide> {
+    return this.travelGuideRepository.create(travelGuide);
   }
 
-  @get('/categories/count', {
+  @get('/travel-guides/count', {
     responses: {
       '200': {
-        description: 'Categories model count',
+        description: 'TravelGuide model count',
         content: {'application/json': {schema: CountSchema}},
       },
     },
   })
   async count(
-    @param.query.object('where', getWhereSchemaFor(Categories))
-    where?: Where<Categories>,
+    @param.query.object('where', getWhereSchemaFor(TravelGuide))
+    where?: Where<TravelGuide>,
   ): Promise<Count> {
-    return this.categoriesRepository.count(where);
+    return this.travelGuideRepository.count(where);
   }
 
-  @get('/categories', {
-    responses: {
-      '200': {
-        description: 'Array of Categories model instances',
-        content: {
-          'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(Categories)},
-          },
-        },
-      },
-    },
-  })
-  async find(
-    @param.query.object('filter', getFilterSchemaFor(Categories))
-    filter?: Filter<Categories>,
-  ): Promise<Categories[]> {
-    return this.categoriesRepository.find(filter);
-  }
-
-  @post('/posts/upload', {
+  @post('/upload', {
     responses: {
       200: {
         content: {
@@ -116,7 +95,6 @@ export class CategoriesController {
     })
     request: any,
     @inject(RestBindings.Http.RESPONSE) response: Response,
-    @inject(RestBindings.Http.REQUEST) req: Request,
   ): Promise<Object> {
     const storage = multer.diskStorage({
       destination: function(
@@ -124,10 +102,8 @@ export class CategoriesController {
         file: any,
         cb: (arg0: null, arg1: string) => void,
       ) {
-        // eslint-disable-next-line no-undef
-        cb(null, 'images/categories');
+        cb(null, 'images/tour-guides');
       },
-
       filename: function(
         req: any,
         file: {fieldname: string; originalname: string},
@@ -136,12 +112,9 @@ export class CategoriesController {
         cb(null, file.originalname);
       },
     });
-    // console.log(req, 'req');
-    console.log(siteUrl + 'images', 'hjbchjjdc');
 
     const upload = multer({storage: storage});
     return new Promise<object>((resolve, reject) => {
-      console.log(request.files, 'files');
       upload.any()(request, response, (err: string) => {
         if (err) return err;
         resolve({
@@ -152,10 +125,29 @@ export class CategoriesController {
     });
   }
 
-  @patch('/categories', {
+  @get('/travel-guides', {
     responses: {
       '200': {
-        description: 'Categories PATCH success count',
+        description: 'Array of TravelGuide model instances',
+        content: {
+          'application/json': {
+            schema: {type: 'array', items: getModelSchemaRef(TravelGuide)},
+          },
+        },
+      },
+    },
+  })
+  async find(
+    @param.query.object('filter', getFilterSchemaFor(TravelGuide))
+    filter?: Filter<TravelGuide>,
+  ): Promise<TravelGuide[]> {
+    return this.travelGuideRepository.find(filter);
+  }
+
+  @patch('/travel-guides', {
+    responses: {
+      '200': {
+        description: 'TravelGuide PATCH success count',
         content: {'application/json': {schema: CountSchema}},
       },
     },
@@ -164,33 +156,33 @@ export class CategoriesController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Categories, {partial: true}),
+          schema: getModelSchemaRef(TravelGuide, {partial: true}),
         },
       },
     })
-    categories: Categories,
-    @param.query.object('where', getWhereSchemaFor(Categories))
-    where?: Where<Categories>,
+    travelGuide: TravelGuide,
+    @param.query.object('where', getWhereSchemaFor(TravelGuide))
+    where?: Where<TravelGuide>,
   ): Promise<Count> {
-    return this.categoriesRepository.updateAll(categories, where);
+    return this.travelGuideRepository.updateAll(travelGuide, where);
   }
 
-  @get('/categories/{id}', {
+  @get('/travel-guides/{id}', {
     responses: {
       '200': {
-        description: 'Categories model instance',
-        content: {'application/json': {schema: getModelSchemaRef(Categories)}},
+        description: 'TravelGuide model instance',
+        content: {'application/json': {schema: getModelSchemaRef(TravelGuide)}},
       },
     },
   })
-  async findById(@param.path.string('id') id: string): Promise<Categories> {
-    return this.categoriesRepository.findById(id);
+  async findById(@param.path.string('id') id: string): Promise<TravelGuide> {
+    return this.travelGuideRepository.findById(id);
   }
 
-  @patch('/categories/{id}', {
+  @patch('/travel-guides/{id}', {
     responses: {
       '204': {
-        description: 'Categories PATCH success',
+        description: 'TravelGuide PATCH success',
       },
     },
   })
@@ -199,37 +191,37 @@ export class CategoriesController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Categories, {partial: true}),
+          schema: getModelSchemaRef(TravelGuide, {partial: true}),
         },
       },
     })
-    categories: Categories,
+    travelGuide: TravelGuide,
   ): Promise<void> {
-    await this.categoriesRepository.updateById(id, categories);
+    await this.travelGuideRepository.updateById(id, travelGuide);
   }
 
-  @put('/categories/{id}', {
+  @put('/travel-guides/{id}', {
     responses: {
       '204': {
-        description: 'Categories PUT success',
+        description: 'TravelGuide PUT success',
       },
     },
   })
   async replaceById(
     @param.path.string('id') id: string,
-    @requestBody() categories: Categories,
+    @requestBody() travelGuide: TravelGuide,
   ): Promise<void> {
-    await this.categoriesRepository.replaceById(id, categories);
+    await this.travelGuideRepository.replaceById(id, travelGuide);
   }
 
-  @del('/categories/{id}', {
+  @del('/travel-guides/{id}', {
     responses: {
       '204': {
-        description: 'Categories DELETE success',
+        description: 'TravelGuide DELETE success',
       },
     },
   })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
-    await this.categoriesRepository.deleteById(id);
+    await this.travelGuideRepository.deleteById(id);
   }
 }

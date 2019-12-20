@@ -112,6 +112,11 @@ export class User extends Entity {
   })
   maritalStatus: string;
 
+  @property({
+    type: 'string',
+  })
+  deviceId: string;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

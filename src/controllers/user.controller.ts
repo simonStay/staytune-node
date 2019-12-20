@@ -4,7 +4,6 @@ import {
   Filter,
   repository,
   Where,
-  constrainDataObjects,
 } from '@loopback/repository';
 import {
   post,
@@ -40,6 +39,7 @@ import {
 import {Credentials} from '../repositories/user.repository';
 import {TokenServiceBindings, UserServiceBindings} from '../keys';
 import * as nodemailer from 'nodemailer';
+const cron = require('node-cron');
 const moment = require('moment');
 
 //const CircularJSON = require('circular-json');
@@ -472,23 +472,6 @@ export class UserController {
       // console.log(preference, 'prefererencedeec');
 
       await this.userRepository.updateById(id, data1);
-
-      // const startDate = moment().format(preference.travelDate, 'DD-MM-YYYY');
-
-      // const a = moment(startDate, 'DD-MM-YYYY');
-
-      // console.log(a, 'jjjd');
-      // console.log(b, 'hjbdvdvsd');
-      // if (preference.travelDate) {
-      //   // console.log(preference.travelDate, 'traveldate');
-      // }
-
-      // console.log(currentDate, 'xkvksdvksd');
-
-      // const budgetPerDay: any =
-      //   preference[0].totalBudget / preference[0].daysCount;
-      // console.log(budgetPerDay, 'budgetperday');
-
       preference.map(async (data2: any) => {
         // console.log(data2.travelDate, 'traveldate');
         if (data2.travelDate) {
@@ -584,7 +567,11 @@ export class UserController {
           console.log('final result : ', finalResult);
           const userInterest: any = finalResult.map((type1: any) => type1.name);
           console.log('userInterest : ', userInterest);
-          await this.notifications(body, userInterest, type);
+          await this.notifications(
+            body,
+            userInterest,
+            placeType[0].googleCategory,
+          );
         }
 
         // eslint-disable-next-line require-atomic-updates
@@ -632,6 +619,41 @@ export class UserController {
         };
       }
     }
+  }
+
+  @get('/users/push-notifications', {
+    responses: {
+      '200': {
+        description: 'Array of Admin model instances',
+        headers: {
+          'content-type': 'application/json',
+        },
+      },
+    },
+  })
+  async notify(): Promise<any> {
+    const currentDate: string = moment().format('DD-MM-YYYY');
+    console.log('current day :', currentDate);
+
+    const notifications = await this.travelPreferenceRepository.find(
+      {
+        where: {
+          and: [
+            {travelDate: {lte: currentDate}},
+            {endDate: {gte: currentDate}},
+          ],
+          // endDate: {gte: currentDate},
+        },
+      },
+      {
+        strictObjectIDCoercion: true,
+      },
+    );
+    console.log(notifications);
+
+    // cron.schedule('* 5 * * *', () => {
+    //   console.log('logs every minute');
+    // });
   }
 
   @post('/users/login', {

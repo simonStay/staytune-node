@@ -53,6 +53,11 @@ export class TravelPreferences extends Entity {
 
   @property({
     type: 'string',
+  })
+  endDate?: string;
+
+  @property({
+    type: 'string',
     id: true,
     generated: true,
   })

@@ -68,21 +68,19 @@ export class TravelPreferencesController {
     tid = travelData.id;
     console.log('test1', travelData.id);
     travelData.userCheck = '1' + travelData.userId;
+    const a: any = moment(travelData.travelDate, 'DD-MM-YYYY');
+
+    const endDate = a.add(travelData.daysCount, 'days');
+    const dates: any = endDate.format('DD-MM-YYYY');
+    console.log('end date : ', endDate);
+    travelData.endDate = dates;
+    console.log('travel end date : ', travelData.endDate);
     await this.travelPreferencesRepository.updateById(
       travelData.id,
       travelData,
     );
     let finalList: Array<string> = [];
-    // const Business: Array<string> = ['Culinary'];
-    // const Foodie: Array<string> = ['Culinary'];
-    // const Shopping: Array<string> = ['Shopping', 'Culinary'];
-    // const allCategories: Array<string> = [
-    //   'Shopping',
-    //   'Culinary',
-    //   'Adventure',
-    //   'Museums',
-    //   'Entertainment',
-    // ];
+
     const selectedData = travelPreferences.selectedTravelPreferences;
     // console.log(selectedData);
     let j: any;
@@ -102,58 +100,7 @@ export class TravelPreferencesController {
           finalList = finalList.concat(categories);
         }
       }
-
-      // if (
-      //   dataPreference.name === 'Business' &&
-      //   dataPreference.selected === true
-      // ) {
-      //   console.log(dataPreference.name);
-      //   finalList = finalList.concat(Business);
-      // }
-      // if (
-      //   dataPreference.name === 'Foodie' &&
-      //   dataPreference.selected === true
-      // ) {
-      //   console.log(dataPreference.name);
-      //   finalList = finalList.concat(Foodie);
-      // }
-      // if (
-      //   dataPreference.name === 'Shopping' &&
-      //   dataPreference.selected === true
-      // ) {
-      //   console.log(dataPreference.name);
-      //   finalList = finalList.concat(Shopping);
-      // }
-      // if (
-      //   dataPreference.name === 'Local Experience' &&
-      //   dataPreference.selected === true
-      // ) {
-      //   console.log(dataPreference.name);
-      //   finalList = finalList.concat(allCategories);
-      // }
-      // if (
-      //   dataPreference.name === 'Travel on a budget' &&
-      //   dataPreference.selected === true
-      // ) {
-      //   console.log(dataPreference.name);
-      //   finalList = finalList.concat(allCategories);
-      // }
-      // if (
-      //   dataPreference.name === 'Solo Traveler' &&
-      //   dataPreference.selected === true
-      // ) {
-      //   console.log(dataPreference.name);
-      //   finalList = finalList.concat(allCategories);
-      // }
-      // if (
-      //   dataPreference.name === 'Family-oriented trendy' &&
-      //   dataPreference.selected === true
-      // ) {
-      //   console.log(dataPreference.name);
-      //   finalList = finalList.concat(allCategories);
-      // }
     }
-    // });
 
     console.log('final list by surya today : ', finalList);
 
@@ -181,9 +128,6 @@ export class TravelPreferencesController {
           id: tid,
           categoriesList,
         };
-        // return {
-        //   status: 'Success',
-        // };
       }
     }
   }
@@ -277,8 +221,7 @@ export class TravelPreferencesController {
     tid = travelData.id;
     let oldSelectedCategories = {};
     oldSelectedCategories = await travelData.selectedCategories;
-    // console.log('New Data : ', travelPreferences.selectedTravelPreferences);
-    // console.log('Old data : ', travelData.selectedTravelPreferences);
+
     const Business: Array<string> = ['Culinary'];
     const Foodie: Array<string> = ['Culinary'];
     const Shopping: Array<string> = ['Shopping', 'Culinary'];
@@ -312,57 +255,11 @@ export class TravelPreferencesController {
           }
         }
       }
-      // oldSelectedData.forEach((oldDataPreference: any) => {
-      //   if (
-      //     oldDataPreference.name === 'Business' &&
-      //     oldDataPreference.selected === true
-      //   ) {
-      //     oldPreferencesTypes = oldPreferencesTypes.concat(Business);
-      //   }
-      //   if (
-      //     oldDataPreference.name === 'Foodie' &&
-      //     oldDataPreference.selected === true
-      //   ) {
-      //     oldPreferencesTypes = oldPreferencesTypes.concat(Foodie);
-      //   }
-      //   if (
-      //     oldDataPreference.name === 'Shopping' &&
-      //     oldDataPreference.selected === true
-      //   ) {
-      //     oldPreferencesTypes = oldPreferencesTypes.concat(Shopping);
-      //   }
-      //   if (
-      //     oldDataPreference.name === 'Local Experience' &&
-      //     oldDataPreference.selected === true
-      //   ) {
-      //     oldPreferencesTypes = oldPreferencesTypes.concat(allCategories);
-      //   }
-      //   if (
-      //     oldDataPreference.name === 'Travel on a budget' &&
-      //     oldDataPreference.selected === true
-      //   ) {
-      //     oldPreferencesTypes = oldPreferencesTypes.concat(allCategories);
-      //   }
-      //   if (
-      //     oldDataPreference.name === 'Solo Traveler' &&
-      //     oldDataPreference.selected === true
-      //   ) {
-      //     oldPreferencesTypes = oldPreferencesTypes.concat(allCategories);
-      //   }
-      //   if (
-      //     oldDataPreference.name === 'Family-oriented trendy' &&
-      //     oldDataPreference.selected === true
-      //   ) {
-      //     oldPreferencesTypes = oldPreferencesTypes.concat(allCategories);
-      //   }
-      // });
     }
 
     if (newSelectedData) {
       let k: any;
       for (k = 0; k < newSelectedData.length; k++) {
-        // console.log('selected pt : ', oldSelectedData[j].name);
-
         if (newSelectedData[k].selected === true) {
           const preferenceCategoriesData = await this.travelPreferenceTypesRepository.find(
             {
@@ -376,51 +273,6 @@ export class TravelPreferencesController {
           }
         }
       }
-
-      // newSelectedData.forEach((newDataPreference: any) => {
-      //   if (
-      //     newDataPreference.name === 'Business' &&
-      //     newDataPreference.selected === true
-      //   ) {
-      //     newPreferencesTypes = newPreferencesTypes.concat(Business);
-      //   }
-      //   if (
-      //     newDataPreference.name === 'Foodie' &&
-      //     newDataPreference.selected === true
-      //   ) {
-      //     newPreferencesTypes = newPreferencesTypes.concat(Foodie);
-      //   }
-      //   if (
-      //     newDataPreference.name === 'Shopping' &&
-      //     newDataPreference.selected === true
-      //   ) {
-      //     newPreferencesTypes = newPreferencesTypes.concat(Shopping);
-      //   }
-      //   if (
-      //     newDataPreference.name === 'Local Experience' &&
-      //     newDataPreference.selected === true
-      //   ) {
-      //     newPreferencesTypes = newPreferencesTypes.concat(allCategories);
-      //   }
-      //   if (
-      //     newDataPreference.name === 'Travel on a budget' &&
-      //     newDataPreference.selected === true
-      //   ) {
-      //     newPreferencesTypes = newPreferencesTypes.concat(allCategories);
-      //   }
-      //   if (
-      //     newDataPreference.name === 'Solo Traveler' &&
-      //     newDataPreference.selected === true
-      //   ) {
-      //     newPreferencesTypes = newPreferencesTypes.concat(allCategories);
-      //   }
-      //   if (
-      //     newDataPreference.name === 'Family-oriented trendy' &&
-      //     newDataPreference.selected === true
-      //   ) {
-      //     newPreferencesTypes = newPreferencesTypes.concat(allCategories);
-      //   }
-      // });
     }
 
     console.log('New Data : ', newPreferencesTypes);
@@ -436,6 +288,14 @@ export class TravelPreferencesController {
         finalList = finalList.concat(item);
       }
     });
+    const a: any = moment(travelPreferences.travelDate, 'DD-MM-YYYY');
+
+    const endDate = a.add(travelPreferences.daysCount, 'days');
+    const dates: any = endDate.format('DD-MM-YYYY');
+    // console.log('end date : ', endDate);
+    // travelData.endDate = dates;
+
+    travelPreferences.endDate = dates;
 
     await this.travelPreferencesRepository.updateById(
       travelPreferences.id,

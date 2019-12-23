@@ -41,7 +41,9 @@ import {TokenServiceBindings, UserServiceBindings} from '../keys';
 import * as nodemailer from 'nodemailer';
 const cron = require('node-cron');
 const moment = require('moment');
-
+const fs = require('fs');
+const express = require('express');
+const app = express();
 //const CircularJSON = require('circular-json');
 
 import axios from 'axios';
@@ -621,40 +623,65 @@ export class UserController {
     }
   }
 
-  @get('/users/push-notifications', {
-    responses: {
-      '200': {
-        description: 'Array of Admin model instances',
-        headers: {
-          'content-type': 'application/json',
-        },
-      },
-    },
-  })
-  async notify(): Promise<any> {
-    const currentDate: string = moment().format('DD-MM-YYYY');
-    console.log('current day :', currentDate);
+  // @get('/', {
+  //   responses: {
+  //     '200': {
+  //       description: 'Array of Admin model instances',
+  //       headers: {
+  //         'content-type': 'application/json',
+  //       },
+  //     },
+  //   },
+  // })
+  // async notify(): Promise<any> {
+  //   // const currentDate: string = moment().format('DD-MM-YYYY');
+  //   // console.log('current day :', currentDate);
 
-    const notifications = await this.travelPreferenceRepository.find(
-      {
-        where: {
-          and: [
-            {travelDate: {lte: currentDate}},
-            {endDate: {gte: currentDate}},
-          ],
-          // endDate: {gte: currentDate},
-        },
-      },
-      {
-        strictObjectIDCoercion: true,
-      },
-    );
-    console.log(notifications);
+  //   // const notifications = await this.travelPreferenceRepository.find(
+  //   //   {
+  //   //     where: {
+  //   //       and: [
+  //   //         {travelDate: {lte: currentDate}},
+  //   //         {endDate: {gte: currentDate}},
+  //   //       ],
+  //   //       // endDate: {gte: currentDate},
+  //   //     },
+  //   //   },
+  //   //   {
+  //   //     strictObjectIDCoercion: true,
+  //   //   },
+  //   // );
+  //   // console.log(notifications);
+  //   cron.schedule('* 1 * * *', () => {
+  //     console.log('hello');
+  //   });
+  // }
 
-    // cron.schedule('* 5 * * *', () => {
-    //   console.log('logs every minute');
-    // });
-  }
+  // text = () => {
+  //   cron.schedule('*  * * *', () => {
+  //     fs.readFile(
+  //       '/home/sathibbau/Documents/stay-tune-node/src/routes/cron.ts',
+  //     );
+  //   });
+  // };
+
+  // public async text() {
+  //   cron.schedule('*  * * *', () => {
+  //     fs.readFile(
+  //       '/home/sathibbau/Documents/stay-tune-node/src/routes/cron.ts',
+  //     );
+  //   });
+  // }
+  // eslint-disable-next-line no-invalid-this
+  // data = this.text();
+  // data = () => {
+  //   cron.schedule('* 1 * * *', function() {
+  //     app.get('/notifications-list', () => {
+  //       console.log('hello world');
+  //     });
+  //     return console.log('hello');
+  //   });
+  // };
 
   @post('/users/login', {
     responses: {
@@ -689,7 +716,7 @@ export class UserController {
     credentials.password = mystr;
     console.log(credentials.password, 'pnascnnn');
 
-    const extUser = await this.userRepository.findOne({
+    const extUser: any = await this.userRepository.findOne({
       where: {email: credentials.email, password: credentials.password},
     });
     let otp = 0;
@@ -725,6 +752,9 @@ export class UserController {
       } else {
         const user = await this.userService.verifyCredentials(credentials);
         console.log(user, 'user');
+        user.deviceId = credentials.deviceId;
+        const userData = await this.userRepository.updateById(user.id, user);
+        console.log('userData', userData);
         // convert a User object into a UserProfile object (reduced set of properties)
         const userProfile = this.userService.convertToUserProfile(user);
 

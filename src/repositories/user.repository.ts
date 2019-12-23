@@ -6,6 +6,7 @@ import {inject} from '@loopback/core';
 export type Credentials = {
   email: string;
   password: string;
+  deviceId: string;
 };
 
 export class UserRepository extends DefaultCrudRepository<

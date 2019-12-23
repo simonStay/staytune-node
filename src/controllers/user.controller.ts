@@ -41,7 +41,9 @@ import {TokenServiceBindings, UserServiceBindings} from '../keys';
 import * as nodemailer from 'nodemailer';
 const cron = require('node-cron');
 const moment = require('moment');
-
+const fs = require('fs');
+const express = require('express');
+const app = express();
 //const CircularJSON = require('circular-json');
 
 import axios from 'axios';
@@ -776,7 +778,7 @@ export class UserController {
     credentials.password = mystr;
     console.log(credentials.password, 'pnascnnn');
 
-    const extUser = await this.userRepository.findOne({
+    const extUser: any = await this.userRepository.findOne({
       where: {email: credentials.email, password: credentials.password},
     });
     let otp = 0;
@@ -812,6 +814,9 @@ export class UserController {
       } else {
         const user = await this.userService.verifyCredentials(credentials);
         console.log(user, 'user');
+        user.deviceId = credentials.deviceId;
+        const userData = await this.userRepository.updateById(user.id, user);
+        console.log('userData', userData);
         // convert a User object into a UserProfile object (reduced set of properties)
         const userProfile = this.userService.convertToUserProfile(user);
 

@@ -47,6 +47,7 @@ const app = express();
 //const CircularJSON = require('circular-json');
 
 import axios from 'axios';
+import {type} from 'os';
 // import {CategoriesController} from './categories.controller';
 // import {json} from 'express';
 
@@ -184,6 +185,21 @@ export class UserController {
   ): Promise<User[]> {
     currentUserProfile.id = currentUserProfile[securityId];
     return this.userRepository.find(filter);
+  }
+
+  @get('/surya', {
+    responses: {
+      '200': {
+        description: 'Array of User model instances',
+        headers: {
+          'content-type': 'application/json',
+        },
+      },
+    },
+  })
+  async test() {
+    console.log('hello surya by cron');
+    return 'hai';
   }
 
   @get('/users/me', {
@@ -389,8 +405,8 @@ export class UserController {
     //let response1 = await data.data.results.map((result: any) => result.name);
     // response1 = await response1.concat(data.data.results);
     finalResponse = await finalResponse.concat(data.data.results);
-    console.log(finalResponse, 'final');
-    console.log(data, 'datadad');
+    // console.log(finalResponse, 'final');
+    // console.log(data, 'datadad');
 
     return finalResponse;
   }
@@ -623,65 +639,111 @@ export class UserController {
     }
   }
 
-  // @get('/', {
-  //   responses: {
-  //     '200': {
-  //       description: 'Array of Admin model instances',
-  //       headers: {
-  //         'content-type': 'application/json',
-  //       },
-  //     },
-  //   },
-  // })
-  // async notify(): Promise<any> {
-  //   // const currentDate: string = moment().format('DD-MM-YYYY');
-  //   // console.log('current day :', currentDate);
+  @get('/users/push-notifications', {
+    responses: {
+      '200': {
+        description: 'Array of Admin model instances',
+        headers: {
+          'content-type': 'application/json',
+        },
+      },
+    },
+  })
+  async notify(): Promise<any> {
+    const currentDate: string = moment().format('DD-MM-YYYY');
+    console.log('current day :', currentDate);
+    let budgetPerDay = 0;
 
-  //   // const notifications = await this.travelPreferenceRepository.find(
-  //   //   {
-  //   //     where: {
-  //   //       and: [
-  //   //         {travelDate: {lte: currentDate}},
-  //   //         {endDate: {gte: currentDate}},
-  //   //       ],
-  //   //       // endDate: {gte: currentDate},
-  //   //     },
-  //   //   },
-  //   //   {
-  //   //     strictObjectIDCoercion: true,
-  //   //   },
-  //   // );
-  //   // console.log(notifications);
-  //   cron.schedule('* 1 * * *', () => {
-  //     console.log('hello');
-  //   });
-  // }
+    const activePreferences = await this.travelPreferenceRepository.find(
+      {
+        where: {
+          and: [
+            {travelDate: {lte: currentDate}},
+            {endDate: {gte: currentDate}},
+          ],
+          // endDate: {gte: currentDate},
+        },
+      },
+      {
+        strictObjectIDCoercion: true,
+      },
+    );
+    //console.log('current preferences : ', activePreferences);
+    activePreferences.map(async (preference: any) => {
+      // console.log('active preference : ', preference);
 
-  // text = () => {
-  //   cron.schedule('*  * * *', () => {
-  //     fs.readFile(
-  //       '/home/sathibbau/Documents/stay-tune-node/src/routes/cron.ts',
-  //     );
-  //   });
-  // };
+      if (preference.selectedCategories !== null) {
+        const userData = await this.userRepository.findById(preference.userId);
+        // console.log('user data : ', userData);
+        let selectedSubCategory = '';
+        preference.selectedCategories.map((categores: any) => {
+          categores.subCategories.map((subCategory: any) => {
+            if (subCategory.selected === true) {
+              console.log('selected Categories : ', subCategory.categoryname);
+              selectedSubCategory = subCategory.categoryname;
+            }
+          });
+        });
+        console.log('selected sub category : ', selectedSubCategory);
+        budgetPerDay = preference.totalBudget / preference.daysCount;
+        console.log('Budget per day : ', budgetPerDay);
+        const placeType: any = await this.categoriesRepository.find({
+          where: {categoryname: selectedSubCategory},
+        });
+        const locationData = {
+          lat: '30.2672',
+          long: '-97.7431',
+        };
+        const result = await this.getTypes(
+          placeType[0].googleCategory,
+          locationData,
+        );
+        // console.log('Near preferences types : ', result);
+        let finalResult: Array<object> = [];
+        if (result.length !== 0) {
+          if (budgetPerDay >= 100) {
+            result.map((rating: any) => {
+              if (rating.rating >= 4) {
+                finalResult = finalResult.concat(rating);
+              }
+            });
+          } else if (budgetPerDay < 100 && budgetPerDay >= 50) {
+            result.map((rating: any) => {
+              if (rating.rating >= 3 && rating.rating < 4) {
+                finalResult = finalResult.concat(rating);
+              }
+            });
+          } else if (budgetPerDay < 50) {
+            result.map((rating: any) => {
+              if (rating.rating < 3) {
+                finalResult = finalResult.concat(rating);
+              }
+            });
+          } else {
+            console.log('error');
+          }
+        }
+        console.log(' /********************* / ');
+        finalResult = await finalResult.slice(0, 1);
+        console.log('final result : ', finalResult);
+        const userInterest: any = finalResult.map((type1: any) => type1.name);
+        console.log('userInterest : ', userInterest);
+        const data = {
+          id: userData.deviceId,
+        };
+        await this.notifications(
+          data,
+          userInterest,
+          placeType[0].googleCategory,
+        );
+        console.log(' /********************* / ');
+      }
+    });
 
-  // public async text() {
-  //   cron.schedule('*  * * *', () => {
-  //     fs.readFile(
-  //       '/home/sathibbau/Documents/stay-tune-node/src/routes/cron.ts',
-  //     );
-  //   });
-  // }
-  // eslint-disable-next-line no-invalid-this
-  // data = this.text();
-  // data = () => {
-  //   cron.schedule('* 1 * * *', function() {
-  //     app.get('/notifications-list', () => {
-  //       console.log('hello world');
-  //     });
-  //     return console.log('hello');
-  //   });
-  // };
+    // cron.schedule('* 5 * * *', () => {
+    //   console.log('logs every minute');
+    // });
+  }
 
   @post('/users/login', {
     responses: {

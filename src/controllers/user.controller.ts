@@ -578,10 +578,10 @@ export class UserController {
 
         // eslint-disable-next-line require-atomic-updates
         // eslint-disable-next-line @typescript-eslint/await-thenable
-        response = response.concat(result);
+        response = response.concat(finalResult);
       });
 
-      // console.log(response, 'respnse');
+      console.log(response, 'respnse');
 
       setTimeout(() => {
         response.map((value2: any) => {

@@ -32,6 +32,7 @@ export class MyUserService implements UserService<User, Credentials> {
     // if (!passwordMatched) {
     //   throw new HttpErrors.Unauthorized(invalidCredentialsError);
     // }
+    // console.log(foundUser);
 
     return foundUser;
   }

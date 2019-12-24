@@ -385,7 +385,7 @@ export class UserController {
   public async getTypes(type: any, body: any) {
     let data: any = {};
 
-    data = await axios(
+    data = await axios.post(
       'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' +
         body.lat +
         ',' +
@@ -397,9 +397,9 @@ export class UserController {
         headers: {
           'content-type': 'application/json',
         },
-        method: 'POST',
       },
     );
+
     let finalResponse: any = [];
     //let result: any = [];
     //let response1 = await data.data.results.map((result: any) => result.name);
@@ -653,6 +653,8 @@ export class UserController {
     const currentDate: string = moment().format('DD-MM-YYYY');
     console.log('current day :', currentDate);
     let budgetPerDay = 0;
+    let response: any = [];
+    let body: any = {};
 
     const activePreferences = await this.travelPreferenceRepository.find(
       {
@@ -668,13 +670,11 @@ export class UserController {
         strictObjectIDCoercion: true,
       },
     );
-    //console.log('current preferences : ', activePreferences);
+    let finalResult: Array<object> = [];
     activePreferences.map(async (preference: any) => {
-      // console.log('active preference : ', preference);
-
       if (preference.selectedCategories !== null) {
         const userData = await this.userRepository.findById(preference.userId);
-        // console.log('user data : ', userData);
+
         let selectedSubCategory = '';
         preference.selectedCategories.map((categores: any) => {
           categores.subCategories.map((subCategory: any) => {
@@ -699,7 +699,7 @@ export class UserController {
           locationData,
         );
         // console.log('Near preferences types : ', result);
-        let finalResult: Array<object> = [];
+
         if (result.length !== 0) {
           if (budgetPerDay >= 100) {
             result.map((rating: any) => {
@@ -737,13 +737,77 @@ export class UserController {
           placeType[0].googleCategory,
         );
         console.log(' /********************* / ');
+        body = userData;
       }
+      response = await response.concat(finalResult);
+      console.log(body.id, 'body');
     });
 
-    // cron.schedule('* 5 * * *', () => {
-    //   console.log('logs every minute');
-    // });
+    console.log(response, 'respnse');
+
+    setTimeout(() => {
+      response.map(async (value2: any) => {
+        const notification =
+          'Hello' +
+          ' ' +
+          body.firstname +
+          ',' +
+          'These are some of the famous places near you' +
+          ' ' +
+          ' ' +
+          value2.name;
+        const data = {
+          date: Date.now(),
+          notification: notification,
+
+          placeId: value2.place_id,
+          userId: body.id,
+        };
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        const test = await this.notificationsRepository.create(data);
+        return test;
+      });
+      // console.log(notify.notification, 'notifysss');
+    }, 3000);
+
+    response.map(async (value2: any) => {
+      const notification =
+        'Hello' +
+        ' ' +
+        body.firstname +
+        ',' +
+        'These are some of the famous places near you' +
+        ' ' +
+        ' ' +
+        value2.name;
+      const data = {
+        date: Date.now(),
+        notification: notification,
+
+        placeId: value2.place_id,
+        userId: body.id,
+      };
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      const test = await this.notificationsRepository.create(data);
+      console.log('test : ', test);
+    });
+
+    if (response.length !== 0) {
+      return {
+        status: 'Success',
+        statuscode: 200,
+      };
+    } else {
+      return {
+        status: 'failure',
+        statuscode: '400',
+      };
+    }
   }
+
+  // cron.schedule('* 5 * * *', () => {
+  //   console.log('logs every minute');
+  // });
 
   @post('/users/login', {
     responses: {
@@ -813,17 +877,20 @@ export class UserController {
         };
       } else {
         const user = await this.userService.verifyCredentials(credentials);
-        console.log(user, 'user');
+        // console.log(user, 'user');
         user.deviceId = credentials.deviceId;
-        const userData = await this.userRepository.updateById(user.id, user);
-        console.log('userData', userData);
+        let id = '';
+        id = user.id;
+        await this.userRepository.updateById(id, user);
+        const userData = await this.userRepository.findById(id);
+
         // convert a User object into a UserProfile object (reduced set of properties)
         const userProfile = this.userService.convertToUserProfile(user);
 
         // create a JSON Web Token based on the user profile
         const token = await this.jwtService.generateToken(userProfile);
         user.token = token;
-        return user;
+        return userData;
       }
     } else {
       return {

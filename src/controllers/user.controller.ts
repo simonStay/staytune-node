@@ -110,7 +110,9 @@ export class UserController {
       subject: 'Email Verification from Staytune',
       html:
         'Hello ' +
-        user.fullname +
+        user.firstname +
+        ' ' +
+        user.lastname +
         ', The otp to verify your email address is ' +
         otp +
         '<br>',
@@ -187,20 +189,20 @@ export class UserController {
     return this.userRepository.find(filter);
   }
 
-  @get('/surya', {
-    responses: {
-      '200': {
-        description: 'Array of User model instances',
-        headers: {
-          'content-type': 'application/json',
-        },
-      },
-    },
-  })
-  async test() {
-    console.log('hello surya by cron');
-    return 'hai';
-  }
+  // @get('/surya', {
+  //   responses: {
+  //     '200': {
+  //       description: 'Array of User model instances',
+  //       headers: {
+  //         'content-type': 'application/json',
+  //       },
+  //     },
+  //   },
+  // })
+  // async test() {
+  //   console.log('hello surya by cron');
+  //   return 'hai';
+  // }
 
   @get('/users/me', {
     responses: {
@@ -870,7 +872,7 @@ export class UserController {
           html:
             'Hello ' +
             extUser.firstname +
-            '&nbsp;' +
+            '&nbsp' +
             extUser.lastname +
             ', The otp to verify your email address is ' +
             otp +

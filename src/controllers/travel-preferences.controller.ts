@@ -26,7 +26,10 @@ import {
   CategoriesRepository,
   BudgetInfoRepository,
   TravelPreferenceTypesRepository,
+  NotificationsRepository,
+  UserRepository,
 } from '../repositories';
+import axios from 'axios';
 let moment = require('moment');
 
 export class TravelPreferencesController {
@@ -39,6 +42,10 @@ export class TravelPreferencesController {
     public travelPreferenceTypesRepository: TravelPreferenceTypesRepository,
     @repository(BudgetInfoRepository)
     public budgetinfoRepository: BudgetInfoRepository,
+    @repository(NotificationsRepository)
+    public notificationsRepository: NotificationsRepository,
+    @repository(UserRepository)
+    public userRepository: UserRepository,
   ) {}
 
   @post('/travel-preferences', {
@@ -405,11 +412,120 @@ export class TravelPreferencesController {
     })
     travelPreferences: TravelPreferences,
   ): Promise<object> {
+    let listCategories: Array<object> = [];
+    let budgetPerDay: any;
+    let result: any = [];
+    let finalResult: Array<object> = [];
+    let response: any = [];
     await this.travelPreferencesRepository.updateById(id, travelPreferences);
     const updatedData = await this.travelPreferencesRepository.findById(id);
-    // console.log(checkUser, '5d9ab8211113661189ffb735');
-    console.log(updatedData, 'updateddata');
+    //console.log(updatedData, 'updateddata');
     // console.log(updatedUser, 'userupdated');
+    //console.log('Travel Preference Data : ', updatedData);
+    const userData = await this.userRepository.findById(updatedData.userId);
+    console.log('User Data : ', userData);
+    console.log('device id : ', userData.deviceId);
+    console.log('Selected Categories : ', updatedData.selectedCategories);
+    if (updatedData.selectedCategories !== null) {
+      updatedData.selectedCategories.map((categories: any) => {
+        categories.subCategories.map((subCategory: any) => {
+          if (subCategory.selected === true) {
+            if (!listCategories.includes(subCategory.categoryname)) {
+              listCategories = listCategories.concat(subCategory.categoryname);
+            }
+          }
+        });
+      });
+    }
+    console.log(updatedData.totalBudget, 'total123');
+    console.log(updatedData.daysCount, 'count123');
+    if (updatedData.totalBudget && updatedData.daysCount) {
+      budgetPerDay = updatedData.totalBudget / updatedData.daysCount;
+    }
+    const locationData = {
+      lat: userData.lat,
+      long: userData.long,
+    };
+
+    listCategories.map(async (type: any) => {
+      const placeType: any = await this.categoriesRepository.find({
+        where: {categoryname: type},
+      });
+
+      result = await this.getTypes(placeType[0].googleCategory, locationData);
+
+      if (result.length !== 0) {
+        console.log('case 1 : ');
+        if (budgetPerDay >= 100) {
+          finalResult = [];
+          result.map((rating: any) => {
+            if (rating.rating >= 4) {
+              console.log('shop name : ', rating.name);
+
+              finalResult = finalResult.concat(rating);
+            }
+          });
+        } else if (budgetPerDay < 100 && budgetPerDay >= 50) {
+          finalResult = [];
+          result.map((rating: any) => {
+            if (rating.rating >= 3 && rating.rating < 4) {
+              console.log('shop name123 : ', rating.name);
+
+              finalResult = finalResult.concat(rating);
+            }
+          });
+        } else if (budgetPerDay < 50) {
+          finalResult = [];
+          result.map((rating: any) => {
+            if (rating.rating < 3) {
+              console.log('shop name1234 : ', rating.name);
+
+              finalResult = finalResult.concat(rating);
+            }
+          });
+        } else {
+          console.log('error');
+        }
+
+        finalResult = await finalResult.slice(0, 1);
+
+        const userInterest: any = finalResult.map((type1: any) => type1.name);
+
+        // await this.notifications(
+        //   body,
+        //   userInterest,
+        //   placeType[0].googleCategory,
+        // );
+      }
+
+      // eslint-disable-next-line require-atomic-updates
+      // eslint-disable-next-line @typescript-eslint/await-thenable
+      response = response.concat(finalResult);
+    });
+    await this.notifications(userData.deviceId);
+
+    setTimeout(() => {
+      response.map((res: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.notificationsRepository.create({
+          date: Date.now(),
+          notification:
+            'Hello' +
+            ' ' +
+            userData.firstname +
+            ' ' +
+            userData.lastname +
+            ',' +
+            'These are some of the famous places near you' +
+            ' ' +
+            ' ' +
+            res.name,
+          placeId: res.place_id,
+          userId: userData.id,
+        });
+      });
+      // console.log(notify.notification, 'notifysss');
+    }, 3000);
 
     return {
       status: 'success',
@@ -582,5 +698,63 @@ export class TravelPreferencesController {
       expBudget: expenditure,
       completedDays: daysCompleted,
     };
+  }
+
+  public async notifications(data: any) {
+    const information: any = {
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
+
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      include_player_ids: [data],
+
+      contents: {
+        en:
+          'Here are some suggestions based on your interest. Please check in  notifications',
+      },
+    };
+    const details = await axios.post(
+      'https://onesignal.com/api/v1/notifications',
+      information,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization:
+            'Basic NDA5YWNmM2UtODFhZi00MzMzLTg0OTItYTFiODg0OTA4Njlk',
+        },
+      },
+    );
+    console.log('details', details);
+
+    // console.log(data, text, 'any');
+  }
+
+  public async getTypes(type: any, body: any) {
+    let data: any = {};
+
+    data = await axios.post(
+      'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' +
+        body.lat +
+        ',' +
+        body.long +
+        '&radius=1500&type=' +
+        type +
+        '&key=AIzaSyBI_ae3Hvrib8Bao3_WrhXLEHKuGj1J8pQ',
+      {
+        headers: {
+          'content-type': 'application/json',
+        },
+      },
+    );
+
+    let finalResponse: any = [];
+    //let result: any = [];
+    //let response1 = await data.data.results.map((result: any) => result.name);
+    // response1 = await response1.concat(data.data.results);
+    finalResponse = await finalResponse.concat(data.data.results);
+    // console.log(finalResponse, 'final');
+    // console.log(data, 'datadad');
+
+    return finalResponse;
   }
 }

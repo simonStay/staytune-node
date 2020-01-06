@@ -416,7 +416,7 @@ export class TravelPreferencesController {
     let budgetPerDay: any;
     let result: any = [];
     let finalResult: Array<object> = [];
-    let response: any = [];
+    let response: Array<object> = [];
     await this.travelPreferencesRepository.updateById(id, travelPreferences);
     const updatedData = await this.travelPreferencesRepository.findById(id);
     //console.log(updatedData, 'updateddata');
@@ -437,17 +437,19 @@ export class TravelPreferencesController {
         });
       });
     }
-    console.log(updatedData.totalBudget, 'total123');
-    console.log(updatedData.daysCount, 'count123');
+    console.log('Total Budget : ', updatedData.totalBudget);
+    console.log('Days Count : ', updatedData.daysCount);
     if (updatedData.totalBudget && updatedData.daysCount) {
       budgetPerDay = updatedData.totalBudget / updatedData.daysCount;
     }
+    console.log('Budget per Day : ', budgetPerDay);
     const locationData = {
       lat: userData.lat,
       long: userData.long,
     };
 
     listCategories.map(async (type: any) => {
+      console.log('Category Name : ', type);
       const placeType: any = await this.categoriesRepository.find({
         where: {categoryname: type},
       });
@@ -500,11 +502,21 @@ export class TravelPreferencesController {
 
       // eslint-disable-next-line require-atomic-updates
       // eslint-disable-next-line @typescript-eslint/await-thenable
-      response = response.concat(finalResult);
+      console.log('Final Result : ', finalResult);
+      response = await response.concat(finalResult);
     });
-    await this.notifications(userData.deviceId);
 
     setTimeout(() => {
+      console.log('Notifications Response : ', response);
+      let message = '';
+      if (Object.keys(response).length !== 0) {
+        message =
+          'Here are some suggestions based on your interests. Please check in  notifications';
+      } else {
+        message = 'Sorry, There are no suggestions based on your interets';
+      }
+      const data = this.notifications(userData.deviceId, message);
+
       response.map((res: any) => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.notificationsRepository.create({
@@ -700,7 +712,7 @@ export class TravelPreferencesController {
     };
   }
 
-  public async notifications(data: any) {
+  public async notifications(data: any, message: any) {
     const information: any = {
       // eslint-disable-next-line @typescript-eslint/camelcase
       app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
@@ -709,8 +721,7 @@ export class TravelPreferencesController {
       include_player_ids: [data],
 
       contents: {
-        en:
-          'Here are some suggestions based on your interest. Please check in  notifications',
+        en: message,
       },
     };
     const details = await axios.post(
@@ -724,7 +735,7 @@ export class TravelPreferencesController {
         },
       },
     );
-    console.log('details', details);
+    // console.log('details', details);
 
     // console.log(data, text, 'any');
   }

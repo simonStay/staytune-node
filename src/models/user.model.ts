@@ -96,7 +96,7 @@ export class User extends Entity {
     type: 'string',
     default: '',
   })
-  travelGuideId: number;
+  travelGuideId: string;
 
   @hasMany(() => TravelPreferences, {keyTo: 'userId'})
   travelpreferences: TravelPreferences[];

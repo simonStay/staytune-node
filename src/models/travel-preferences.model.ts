@@ -76,6 +76,12 @@ export class TravelPreferences extends Entity {
   daysLeft?: number;
 
   @property({
+    type: 'string',
+    default: 'disable',
+  })
+  status?: string;
+
+  @property({
     type: 'array',
     itemType: 'object',
   })

@@ -600,32 +600,56 @@ export class UserController {
 
       console.log(response, 'respnse');
 
-      setTimeout(() => {
-        response.map((value2: any) => {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          this.notificationsRepository.create({
-            date: Date.now(),
-            notification:
-              'Hello' +
-              ' ' +
-              body.userName +
-              ',' +
-              'These are some of the famous places near you' +
-              ' ' +
-              ' ' +
-              value2.name,
-            placeId: value2.place_id,
-            userId: body.userId,
-          });
-        });
-        // console.log(notify.notification, 'notifysss');
-      }, 3000);
+      // setTimeout(() => {
+      //   response.map((value2: any) => {
+      //     // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      //     this.notificationsRepository.create({
+      //       date: Date.now(),
+      //       notification:
+      //         'Hello' +
+      //         ' ' +
+      //         body.userName +
+      //         ',' +
+      //         'These are some of the famous places near you' +
+      //         ' ' +
+      //         ' ' +
+      //         value2.name,
+      //       placeId: value2.place_id,
+      //       userId: body.userId,
+      //     });
+      //   });
+      //   // console.log(notify.notification, 'notifysss');
+      // }, 3000);
       // const notifylist = await this.notificationsRepository.find({
       //   where: {
       //     userId: body.userId,
       //   },
       // });
       // console.log(notifylist, 'suryaaa');
+      response.map(async (value2: any) => {
+        const notification =
+          'Hello' +
+          ' ' +
+          body.firstname +
+          ',' +
+          'These are some of the famous places near you' +
+          ' ' +
+          ' ' +
+          value2.name;
+        const data = {
+          date: Date.now(),
+          notification: notification,
+
+          placeId: value2.place_id,
+          userId: body.id,
+          lat: value2.geometry.location.lat,
+          lng: value2.geometry.location.lng,
+        };
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        const test = await this.notificationsRepository.create(data);
+        console.log('test : ', test);
+      });
+
       if (value) {
         return {
           status: 'Success',
@@ -682,7 +706,6 @@ export class UserController {
             if (subCategory.selected === true) {
               console.log('selected Categories : ', subCategory.categoryname);
               selectedSubCategory = subCategory.categoryname;
-              console.log(selectedSubCategory, 'subCategory');
             }
           });
         });
@@ -692,7 +715,6 @@ export class UserController {
         const placeType: any = await this.categoriesRepository.find({
           where: {categoryname: selectedSubCategory},
         });
-        console.log(placeType, 'placeType');
         const locationData = {
           lat: '30.2672',
           long: '-97.7431',
@@ -748,32 +770,54 @@ export class UserController {
 
     console.log(response, 'respnse');
 
-    setTimeout(() => {
-      console.log('helloWorld');
-      response.map(async (value2: any) => {
-        console.log(value2.name, 'name');
-        const notification =
-          'Hello' +
-          ' ' +
-          body.firstname +
-          ',' +
-          'These are some of the famous places near you' +
-          ' ' +
-          ' ' +
-          value2.name;
-        const data = {
-          date: Date.now(),
-          notification: notification,
+    // setTimeout(() => {
+    //   response.map(async (value2: any) => {
+    //     const notification =
+    //       'Hello' +
+    //       ' ' +
+    //       body.firstname +
+    //       ',' +
+    //       'These are some of the famous places near you' +
+    //       ' ' +
+    //       ' ' +
+    //       value2.name;
+    //     const data = {
+    //       date: Date.now(),
+    //       notification: notification,
 
-          placeId: value2.place_id,
-          userId: body.id,
-        };
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        const test = await this.notificationsRepository.create(data);
-        return test;
-      });
-      // console.log(notify.notification, 'notifysss');
-    }, 3000);
+    //       placeId: value2.place_id,
+    //       userId: body.id,
+    //     };
+    //     // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    //     const test = await this.notificationsRepository.create(data);
+    //     return test;
+    //   });
+    //   // console.log(notify.notification, 'notifysss');
+    // }, 3000);
+
+    response.map(async (value2: any) => {
+      const notification =
+        'Hello' +
+        ' ' +
+        body.firstname +
+        ',' +
+        'These are some of the famous places near you' +
+        ' ' +
+        ' ' +
+        value2.name;
+      const data = {
+        date: Date.now(),
+        notification: notification,
+
+        placeId: value2.place_id,
+        userId: body.id,
+        lat: value2.geometry.location.lat,
+        lng: value2.geometry.location.lng,
+      };
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      const test = await this.notificationsRepository.create(data);
+      console.log('test : ', test);
+    });
 
     if (response.length !== 0) {
       return {

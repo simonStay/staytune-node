@@ -462,7 +462,7 @@ export class TravelPreferencesController {
         if (budgetPerDay >= 100) {
           finalResult = [];
           result.map((rating: any) => {
-            if (rating.rating >= 4) {
+            if (rating.rating >= 3) {
               console.log('shop name : ', rating.name);
 
               finalResult = finalResult.concat(rating);
@@ -471,7 +471,7 @@ export class TravelPreferencesController {
         } else if (budgetPerDay < 100 && budgetPerDay >= 50) {
           finalResult = [];
           result.map((rating: any) => {
-            if (rating.rating >= 3 && rating.rating < 4) {
+            if (rating.rating >= 2 && rating.rating < 3) {
               console.log('shop name123 : ', rating.name);
 
               finalResult = finalResult.concat(rating);
@@ -480,7 +480,7 @@ export class TravelPreferencesController {
         } else if (budgetPerDay < 50) {
           finalResult = [];
           result.map((rating: any) => {
-            if (rating.rating < 3) {
+            if (rating.rating < 2) {
               console.log('shop name1234 : ', rating.name);
 
               finalResult = finalResult.concat(rating);
@@ -492,11 +492,14 @@ export class TravelPreferencesController {
 
         finalResult = await finalResult.slice(0, 4);
 
-        const userInterest: any = finalResult.map((type1: any) => type1.name);
+        // const userInterest: any = finalResult.map((type1: any) => type1.name);
         finalResult.map(async (type1: any) => {
+          const data = {
+            id: userData.deviceId,
+          };
           await this.notifications(
-            userData.deviceId,
-            userInterest,
+            data,
+            type1.name,
             placeType[0].googleCategory,
           );
         });
@@ -536,7 +539,10 @@ export class TravelPreferencesController {
             res.name,
           placeId: res.place_id,
           userId: userData.id,
+          lat: res.geometry.location.lat,
+          long: res.geometry.location.lng,
         });
+        console.log('lat : ', res.geometry.location.lat);
       });
       // console.log(notify.notification, 'notifysss');
     }, 3000);
@@ -763,7 +769,7 @@ export class TravelPreferencesController {
           text,
       },
     };
-    const details = axios.post(
+    const details = await axios.post(
       'https://onesignal.com/api/v1/notifications',
       information,
       {

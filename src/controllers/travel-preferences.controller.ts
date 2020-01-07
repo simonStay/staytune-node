@@ -75,6 +75,7 @@ export class TravelPreferencesController {
     tid = travelData.id;
     console.log('test1', travelData.id);
     travelData.userCheck = '1' + travelData.userId;
+    console.log('travelDate:', travelData.travelDate);
     const a: any = moment(travelData.travelDate, 'DD-MM-YYYY');
     console.log(a, 'a');
     const endDate = a.add(travelData.daysCount, 'days');

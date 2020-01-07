@@ -413,6 +413,7 @@ export class UserController {
 
   public async notifications(data: any, text: any, parentCategory: any) {
     console.log(text, 'text');
+    console.log('hello');
 
     const information: any = {
       // eslint-disable-next-line @typescript-eslint/camelcase
@@ -650,7 +651,7 @@ export class UserController {
     },
   })
   async notify(): Promise<any> {
-    const currentDate: string = moment().format('DD-MM-YYYY');
+    const currentDate: any = moment().format();
     console.log('current day :', currentDate);
     let budgetPerDay = 0;
     let response: any = [];
@@ -669,6 +670,7 @@ export class UserController {
         strictObjectIDCoercion: true,
       },
     );
+    console.log('active preferences', activePreferences);
     let finalResult: Array<object> = [];
     activePreferences.map(async (preference: any) => {
       if (preference.selectedCategories !== null) {
@@ -680,6 +682,7 @@ export class UserController {
             if (subCategory.selected === true) {
               console.log('selected Categories : ', subCategory.categoryname);
               selectedSubCategory = subCategory.categoryname;
+              console.log(selectedSubCategory, 'subCategory');
             }
           });
         });
@@ -689,6 +692,7 @@ export class UserController {
         const placeType: any = await this.categoriesRepository.find({
           where: {categoryname: selectedSubCategory},
         });
+        console.log(placeType, 'placeType');
         const locationData = {
           lat: '30.2672',
           long: '-97.7431',
@@ -745,7 +749,9 @@ export class UserController {
     console.log(response, 'respnse');
 
     setTimeout(() => {
+      console.log('helloWorld');
       response.map(async (value2: any) => {
+        console.log(value2.name, 'name');
         const notification =
           'Hello' +
           ' ' +
@@ -768,28 +774,6 @@ export class UserController {
       });
       // console.log(notify.notification, 'notifysss');
     }, 3000);
-
-    response.map(async (value2: any) => {
-      const notification =
-        'Hello' +
-        ' ' +
-        body.firstname +
-        ',' +
-        'These are some of the famous places near you' +
-        ' ' +
-        ' ' +
-        value2.name;
-      const data = {
-        date: Date.now(),
-        notification: notification,
-
-        placeId: value2.place_id,
-        userId: body.id,
-      };
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      const test = await this.notificationsRepository.create(data);
-      console.log('test : ', test);
-    });
 
     if (response.length !== 0) {
       return {
@@ -815,7 +799,7 @@ export class UserController {
     },
   })
   async statusUpdate(): Promise<any> {
-    const currentDate: string = moment().format();
+    const currentDate: any = moment().format();
     console.log('current day :', currentDate);
     let budgetPerDay = 0;
     let response: any = [];
@@ -908,10 +892,11 @@ export class UserController {
       console.log(body.id, 'body');
     });
 
-    console.log(response, 'respnse');
+    // console.log(response, 'respnse');
 
     setTimeout(() => {
       response.map(async (value2: any) => {
+        console.log('value222:', value2.name);
         const notification =
           'Hello' +
           ' ' +
@@ -934,28 +919,6 @@ export class UserController {
       });
       // console.log(notify.notification, 'notifysss');
     }, 3000);
-
-    response.map(async (value2: any) => {
-      const notification =
-        'Hello' +
-        ' ' +
-        body.firstname +
-        ',' +
-        'These are some of the famous places near you' +
-        ' ' +
-        ' ' +
-        value2.name;
-      const data = {
-        date: Date.now(),
-        notification: notification,
-
-        placeId: value2.place_id,
-        userId: body.id,
-      };
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      const test = await this.notificationsRepository.create(data);
-      console.log('test : ', test);
-    });
 
     if (response.length !== 0) {
       return {

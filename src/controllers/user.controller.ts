@@ -804,7 +804,171 @@ export class UserController {
     }
   }
 
+  @get('/users/status-update', {
+    responses: {
+      '200': {
+        description: 'Array of Admin model instances',
+        headers: {
+          'content-type': 'application/json',
+        },
+      },
+    },
+  })
+  async statusUpdate(): Promise<any> {
+    const currentDate: string = moment().format();
+    console.log('current day :', currentDate);
+    let budgetPerDay = 0;
+    let response: any = [];
+    let body: any = {};
 
+    const activePreferences = await this.travelPreferenceRepository.find(
+      {
+        where: {
+          and: [
+            {travelDate: {lte: currentDate}},
+            {endDate: {gte: currentDate}},
+          ],
+        },
+      },
+      {
+        strictObjectIDCoercion: true,
+      },
+    );
+    console.log('active preference :', activePreferences);
+    let finalResult: Array<object> = [];
+    activePreferences.map(async (preference: any) => {
+      if (preference.selectedCategories !== null) {
+        const userData = await this.userRepository.findById(preference.userId);
+
+        let selectedSubCategory = '';
+        preference.selectedCategories.map((categores: any) => {
+          categores.subCategories.map((subCategory: any) => {
+            if (subCategory.selected === true) {
+              console.log('selected Categories : ', subCategory.categoryname);
+              selectedSubCategory = subCategory.categoryname;
+            }
+          });
+        });
+        console.log('selected sub category : ', selectedSubCategory);
+        budgetPerDay = preference.totalBudget / preference.daysCount;
+        console.log('Budget per day : ', budgetPerDay);
+        const placeType: any = await this.categoriesRepository.find({
+          where: {categoryname: selectedSubCategory},
+        });
+        const locationData = {
+          lat: '30.2672',
+          long: '-97.7431',
+        };
+        const result = await this.getTypes(
+          placeType[0].googleCategory,
+          locationData,
+        );
+        // console.log('Near preferences types : ', result);
+
+        if (result.length !== 0) {
+          if (budgetPerDay >= 100) {
+            result.map((rating: any) => {
+              if (rating.rating >= 4) {
+                finalResult = finalResult.concat(rating);
+              }
+            });
+          } else if (budgetPerDay < 100 && budgetPerDay >= 50) {
+            result.map((rating: any) => {
+              if (rating.rating >= 3 && rating.rating < 4) {
+                finalResult = finalResult.concat(rating);
+              }
+            });
+          } else if (budgetPerDay < 50) {
+            result.map((rating: any) => {
+              if (rating.rating < 3) {
+                finalResult = finalResult.concat(rating);
+              }
+            });
+          } else {
+            console.log('error');
+          }
+        }
+        console.log(' /********************* / ');
+        finalResult = await finalResult.slice(0, 1);
+        console.log('final result : ', finalResult);
+        const userInterest: any = finalResult.map((type1: any) => type1.name);
+        console.log('userInterest : ', userInterest);
+        const data = {
+          id: userData.deviceId,
+        };
+        await this.notifications(
+          data,
+          userInterest,
+          placeType[0].googleCategory,
+        );
+        console.log(' /********************* / ');
+        body = userData;
+      }
+      response = await response.concat(finalResult);
+      console.log(body.id, 'body');
+    });
+
+    console.log(response, 'respnse');
+
+    setTimeout(() => {
+      response.map(async (value2: any) => {
+        const notification =
+          'Hello' +
+          ' ' +
+          body.firstname +
+          ',' +
+          'These are some of the famous places near you' +
+          ' ' +
+          ' ' +
+          value2.name;
+        const data = {
+          date: Date.now(),
+          notification: notification,
+
+          placeId: value2.place_id,
+          userId: body.id,
+        };
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        const test = await this.notificationsRepository.create(data);
+        return test;
+      });
+      // console.log(notify.notification, 'notifysss');
+    }, 3000);
+
+    response.map(async (value2: any) => {
+      const notification =
+        'Hello' +
+        ' ' +
+        body.firstname +
+        ',' +
+        'These are some of the famous places near you' +
+        ' ' +
+        ' ' +
+        value2.name;
+      const data = {
+        date: Date.now(),
+        notification: notification,
+
+        placeId: value2.place_id,
+        userId: body.id,
+      };
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      const test = await this.notificationsRepository.create(data);
+      console.log('test : ', test);
+    });
+
+    if (response.length !== 0) {
+      return {
+        status: 'Success',
+        statuscode: 200,
+      };
+    } else {
+      return {
+        status: 'failure',
+        statuscode: '400',
+      };
+    }
+  }
 
   @post('/users/login', {
     responses: {

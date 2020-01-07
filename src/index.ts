@@ -1,11 +1,11 @@
 import {StayTuneApplication} from './application';
 import {ApplicationConfig} from '@loopback/core';
 const cron = require('node-cron');
-import {UserController} from './controllers/user.controller';
+
 import axios from 'axios';
 
 cron.schedule('0 17 * * *', async () => {
-  console.log('running a task every day at 1 pm');
+  // console.log('running a task every day at 1 pm');
   const result = await axios.get(
     'https://staytune.austinconversionoptimization.com/users/push-notifications',
   );

@@ -76,10 +76,10 @@ export class TravelPreferencesController {
     console.log('test1', travelData.id);
     travelData.userCheck = '1' + travelData.userId;
     const a: any = moment(travelData.travelDate, 'DD-MM-YYYY');
-
+    console.log(a, 'a');
     const endDate = a.add(travelData.daysCount, 'days');
-    const dates: any = endDate.format('DD-MM-YYYY');
-    console.log('end date : ', endDate);
+    const dates: any = endDate.format();
+    console.log('end date : ', dates);
     travelData.endDate = dates;
     console.log('travel end date : ', travelData.endDate);
     await this.travelPreferencesRepository.updateById(
@@ -89,12 +89,10 @@ export class TravelPreferencesController {
     let finalList: Array<string> = [];
 
     const selectedData = travelPreferences.selectedTravelPreferences;
-    // console.log(selectedData);
+
     let j: any;
-    // selectedData.map(async (dataPreference: any) => {
+
     for (j = 0; j < selectedData.length; j++) {
-      // console.log('selected categories by surya', dataPreference);
-      // console.log('testdfdfd', dataPreference.name);
       if (selectedData[j].selected === true) {
         const preferenceCategoriesData = await this.travelPreferenceTypesRepository.find(
           {
@@ -121,7 +119,7 @@ export class TravelPreferencesController {
       const subCategories = await this.categoriesRepository.find({
         where: {parentcategory: mainCategories[i].categoryname},
       });
-      // console.log(subCategories, 'sub');
+
       categoriesList.push({
         id: mainCategories[i].id,
         categoryname: mainCategories[i].categoryname,

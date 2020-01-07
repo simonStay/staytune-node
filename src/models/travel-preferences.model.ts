@@ -36,25 +36,20 @@ export class TravelPreferences extends Entity {
   })
   city?: string;
 
-  // @property({
-  //   type: 'string',
-  // })
-  // userId?: string;
-
   @property({
     type: 'string',
   })
   locationImage?: string;
 
   @property({
-    type: 'string',
+    type: 'date',
   })
-  travelDate?: string;
+  travelDate?: Date;
 
   @property({
-    type: 'string',
+    type: 'date',
   })
-  endDate?: string;
+  endDate?: Date;
 
   @property({
     type: 'string',

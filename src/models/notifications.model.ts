@@ -25,6 +25,16 @@ export class Notifications extends Entity {
   })
   placeId?: string;
 
+  @property({
+    type: 'number',
+  })
+  lat: number;
+
+  @property({
+    type: 'number',
+  })
+  long: number;
+
   @belongsTo(() => User)
   userId: string;
 

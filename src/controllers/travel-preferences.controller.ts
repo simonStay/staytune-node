@@ -448,6 +448,8 @@ export class TravelPreferencesController {
       long: userData.long,
     };
 
+    listCategories = await listCategories.slice(0, 1);
+
     listCategories.map(async (type: any) => {
       console.log('Category Name : ', type);
       const placeType: any = await this.categoriesRepository.find({
@@ -489,15 +491,16 @@ export class TravelPreferencesController {
           console.log('error');
         }
 
-        finalResult = await finalResult.slice(0, 1);
+        finalResult = await finalResult.slice(0, 4);
 
         const userInterest: any = finalResult.map((type1: any) => type1.name);
-
-        // await this.notifications(
-        //   body,
-        //   userInterest,
-        //   placeType[0].googleCategory,
-        // );
+        finalResult.map(async (type1: any) => {
+          await this.notifications(
+            userData.deviceId,
+            userInterest,
+            placeType[0].googleCategory,
+          );
+        });
       }
 
       // eslint-disable-next-line require-atomic-updates
@@ -508,14 +511,14 @@ export class TravelPreferencesController {
 
     setTimeout(() => {
       console.log('Notifications Response : ', response);
-      let message = '';
-      if (Object.keys(response).length !== 0) {
-        message =
-          'Here are some suggestions based on your interests. Please check in  notifications';
-      } else {
-        message = 'Sorry, There are no suggestions based on your interets';
-      }
-      const data = this.notifications(userData.deviceId, message);
+      // let message = '';
+      // if (Object.keys(response).length !== 0) {
+      //   message =
+      //     'Here are some suggestions based on your interests. Please check in  notifications';
+      // } else {
+      //   message = 'Sorry, There are no suggestions based on your interets';
+      // }
+      // const data = this.notifications(userData.deviceId, message);
 
       response.map((res: any) => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -712,19 +715,56 @@ export class TravelPreferencesController {
     };
   }
 
-  public async notifications(data: any, message: any) {
+  // public async notifications(data: any, message: any) {
+  //   const information: any = {
+  //     // eslint-disable-next-line @typescript-eslint/camelcase
+  //     app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
+
+  //     // eslint-disable-next-line @typescript-eslint/camelcase
+  //     include_player_ids: [data],
+
+  //     contents: {
+  //       en: message,
+  //     },
+  //   };
+  //   const details = await axios.post(
+  //     'https://onesignal.com/api/v1/notifications',
+  //     information,
+  //     {
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         Authorization:
+  //           'Basic NDA5YWNmM2UtODFhZi00MzMzLTg0OTItYTFiODg0OTA4Njlk',
+  //       },
+  //     },
+  //   );
+  //   // console.log('details', details);
+
+  //   // console.log(data, text, 'any');
+  // }
+
+  public async notifications(data: any, text: any, parentCategory: any) {
+    console.log('data information : ', data);
+
     const information: any = {
       // eslint-disable-next-line @typescript-eslint/camelcase
       app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
 
       // eslint-disable-next-line @typescript-eslint/camelcase
-      include_player_ids: [data],
+      include_player_ids: [data.id],
 
       contents: {
-        en: message,
+        en:
+          'These are the famous' +
+          ' ' +
+          parentCategory +
+          ' ' +
+          'near you' +
+          ' ' +
+          text,
       },
     };
-    const details = await axios.post(
+    const details = axios.post(
       'https://onesignal.com/api/v1/notifications',
       information,
       {
@@ -735,7 +775,7 @@ export class TravelPreferencesController {
         },
       },
     );
-    // console.log('details', details);
+    console.log('details', details);
 
     // console.log(data, text, 'any');
   }

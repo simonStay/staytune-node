@@ -832,7 +832,7 @@ export class UserController {
     }
   }
 
-  @get('/users/status-update', {
+  @get('/users/push-notifications-for-culniry', {
     responses: {
       '200': {
         description: 'Array of Admin model instances',
@@ -870,12 +870,14 @@ export class UserController {
 
         let selectedSubCategory = '';
         preference.selectedCategories.map((categores: any) => {
-          categores.subCategories.map((subCategory: any) => {
-            if (subCategory.selected === true) {
-              console.log('selected Categories : ', subCategory.categoryname);
-              selectedSubCategory = subCategory.categoryname;
-            }
-          });
+          if (categores.categoryname === 'Culinary') {
+            categores.subCategories.map((subCategory: any) => {
+              if (subCategory.selected === true) {
+                console.log('selected Categories : ', subCategory.categoryname);
+                selectedSubCategory = subCategory.categoryname;
+              }
+            });
+          }
         });
         console.log('selected sub category : ', selectedSubCategory);
         budgetPerDay = preference.totalBudget / preference.daysCount;

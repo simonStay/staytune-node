@@ -527,6 +527,7 @@ export class TravelPreferencesController {
       // const data = this.notifications(userData.deviceId, message);
 
       response.map((res: any) => {
+        console.log('notificationIcon:', res.icon);
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.notificationsRepository.create({
           date: Date.now(),
@@ -545,11 +546,36 @@ export class TravelPreferencesController {
           userId: userData.id,
           lat: res.geometry.location.lat,
           long: res.geometry.location.lng,
+          icon: res.icon,
+          name: res.name,
         });
         console.log('lat : ', res.geometry.location.lat);
       });
       // console.log(notify.notification, 'notifysss');
     }, 3000);
+    // response.map(async (value2: any) => {
+    //   const notification =
+    //     'Hello' +
+    //     ' ' +
+    //     body.firstname +
+    //     ',' +
+    //     'These are some of the famous places near you' +
+    //     ' ' +
+    //     ' ' +
+    //     value2.name;
+    //   const data = {
+    //     date: Date.now(),
+    //     notification: notification,
+
+    //     placeId: value2.place_id,
+    //     userId: body.id,
+    //     lat: value2.geometry.location.lat,
+    //     lng: value2.geometry.location.lng,
+    //   };
+    //   // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    //   const test = await this.notificationsRepository.create(data);
+    //   console.log('test : ', test);
+    // });
 
     return {
       status: 'success',

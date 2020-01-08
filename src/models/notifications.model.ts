@@ -35,6 +35,16 @@ export class Notifications extends Entity {
   })
   long: number;
 
+  @property({
+    type: 'string',
+  })
+  icon: string;
+
+  @property({
+    type: 'string',
+  })
+  name: string;
+
   @belongsTo(() => User)
   userId: string;
 

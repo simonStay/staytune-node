@@ -294,11 +294,15 @@ export class TravelPreferencesController {
         finalList = finalList.concat(item);
       }
     });
-    const a: any = moment(travelPreferences.travelDate, 'DD-MM-YYYY');
 
-    const endDate = a.add(travelPreferences.daysCount, 'days');
-    const dates: any = endDate.format('DD-MM-YYYY');
-    // console.log('end date : ', endDate);
+    const startDate = moment(travelPreferences.travelDate).format();
+    // const a: any = moment(startDate, 'DD-MM-YYYY');
+    const a: any = moment(startDate).format();
+    console.log('startdate:', startDate);
+    console.log(' a :', a);
+    const endDate = moment(startDate).add(travelPreferences.daysCount, 'days');
+    const dates: any = moment(endDate).format();
+    console.log('end date : ', dates);
     // travelData.endDate = dates;
 
     travelPreferences.endDate = dates;
@@ -597,12 +601,14 @@ export class TravelPreferencesController {
     let daysCompleted = 0;
     if (travelPreferenceData.travelDate) {
       console.log(travelPreferenceData.travelDate);
-      const startDate = moment().format(
-        travelPreferenceData.travelDate,
-        'DD-MM-YYYY',
-      );
+      // const startDate = moment().format(
+      //   travelPreferenceData.travelDate,
+      //   'DD-MM-YYYY',
+      // );
+      const startDate = moment(travelPreferenceData.travelDate).format();
+      console.log(startDate, 'startdate');
 
-      const currentDate = moment().format('DD-MM-YYYY');
+      const currentDate = moment().format();
       let a = moment(startDate, 'DD-MM-YYYY');
       let b = moment(currentDate, 'DD-MM-YYYY');
 

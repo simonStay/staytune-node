@@ -740,7 +740,6 @@ export class UserController {
                 subCategory.categoryname,
               );
               selectedSubCategory = subCategory.categoryname;
-              console.log('selected sub category : ', selectedSubCategory);
             }
           });
           budgetPerDay = preference.totalBudget / preference.daysCount;

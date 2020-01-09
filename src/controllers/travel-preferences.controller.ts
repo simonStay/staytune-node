@@ -506,7 +506,6 @@ export class TravelPreferencesController {
             }
           });
         }
-
         finalResult = await finalResult.slice(0, 4);
 
         // const userInterest: any = finalResult.map((type1: any) => type1.name);

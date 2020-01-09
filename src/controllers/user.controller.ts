@@ -411,29 +411,57 @@ export class UserController {
     return finalResponse;
   }
 
-  public async notifications(data: any, text: any, parentCategory: any) {
-    console.log(text, 'text');
-    console.log('hello');
+  // public async notifications(data: any, text: any, parentCategory: any) {
+  //   console.log(text, 'text');
+  //   console.log('hello');
 
+  //   const information: any = {
+  //     // eslint-disable-next-line @typescript-eslint/camelcase
+  //     app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
+
+  //     // eslint-disable-next-line @typescript-eslint/camelcase
+  //     include_player_ids: [data.id],
+
+  //     contents: {
+  //       en:
+  //         'These are the famous' +
+  //         ' ' +
+  //         parentCategory +
+  //         ' ' +
+  //         'near you' +
+  //         ' ' +
+  //         text,
+  //     },
+  //   };
+  //   const details = axios.post(
+  //     'https://onesignal.com/api/v1/notifications',
+  //     information,
+  //     {
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         Authorization:
+  //           'Basic NDA5YWNmM2UtODFhZi00MzMzLTg0OTItYTFiODg0OTA4Njlk',
+  //       },
+  //     },
+  //   );
+  //   // console.log('details', details);
+
+  //   // console.log(data, text, 'any');
+  // }
+
+  public async notifications(data: any, message: any) {
     const information: any = {
       // eslint-disable-next-line @typescript-eslint/camelcase
       app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
 
       // eslint-disable-next-line @typescript-eslint/camelcase
-      include_player_ids: [data.id],
+      include_player_ids: [data],
 
       contents: {
-        en:
-          'These are the famous' +
-          ' ' +
-          parentCategory +
-          ' ' +
-          'near you' +
-          ' ' +
-          text,
+        en: message,
       },
     };
-    const details = axios.post(
+    const details = await axios.post(
       'https://onesignal.com/api/v1/notifications',
       information,
       {
@@ -679,7 +707,7 @@ export class UserController {
     console.log('current day :', currentDate);
     let budgetPerDay = 0;
     let response: any = [];
-    let body: any = {};
+    const body: any = {};
 
     const activePreferences = await this.travelPreferenceRepository.find(
       {
@@ -696,10 +724,11 @@ export class UserController {
     );
     console.log('active preferences', activePreferences);
     let finalResult: Array<object> = [];
+    let userData: any;
     activePreferences.map(async (preference: any) => {
       let selectedSubCategory: any;
       if (preference.selectedCategories !== null) {
-        const userData = await this.userRepository.findById(preference.userId);
+        userData = await this.userRepository.findById(preference.userId);
         console.log('selectedCategories', preference.selectedCategories);
         preference.selectedCategories.map(async (categories: any) => {
           console.log('categories', categories);
@@ -751,24 +780,24 @@ export class UserController {
               console.log('error');
             }
           }
-          const notificationResult: any = [];
+          // const notificationResult: any = [];
           console.log(' /********************* / ');
           finalResult = await finalResult.slice(0, 1);
           console.log('final result : ', finalResult);
           const userInterest: any = finalResult.map((type1: any) => type1.name);
           console.log('userInterest : ', userInterest);
-          const data = {
-            id: userData.deviceId,
-          };
-          await this.notifications(
-            data,
-            userInterest,
-            placeType[0].googleCategory,
-          );
+          // const data = {
+          //   id: userData.deviceId,
+          // };
+          // await this.notifications(
+          //   data,
+          //   userInterest,
+          //   placeType[0].googleCategory,
+          // );
           console.log(' /********************* / ');
-          body = userData;
+          // body = userData;
           response = await response.concat(finalResult);
-          console.log(body.id, 'body');
+          // console.log(body.id, 'body');
           console.log(response, 'respnse');
         });
       }
@@ -776,6 +805,14 @@ export class UserController {
 
     setTimeout(() => {
       console.log('Notifications Response : ', response);
+      let message = '';
+      if (Object.keys(response).length !== 0) {
+        message =
+          'Here are some suggestions based on your interests. Please check in  notifications';
+      } else {
+        message = 'Sorry, There are no suggestions based on your interets';
+      }
+      const data = this.notifications(userData.deviceId, message);
 
       response.map((res: any) => {
         console.log('notificationIcon:', res.icon);
@@ -877,9 +914,10 @@ export class UserController {
     console.log('active preference :', activePreferences);
     let finalResult: Array<object> = [];
     let selectedSubCategory = '';
+    let userData: any;
     activePreferences.map(async (preference: any) => {
       if (preference.selectedCategories !== null) {
-        const userData = await this.userRepository.findById(preference.userId);
+        userData = await this.userRepository.findById(preference.userId);
 
         preference.selectedCategories.map((categores: any) => {
           if (categores.categoryname === 'Culinary') {
@@ -935,14 +973,14 @@ export class UserController {
         console.log('final result : ', finalResult);
         const userInterest: any = finalResult.map((type1: any) => type1.name);
         console.log('userInterest : ', userInterest);
-        const data = {
-          id: userData.deviceId,
-        };
-        await this.notifications(
-          data,
-          userInterest,
-          placeType[0].googleCategory,
-        );
+        // const data = {
+        //   id: userData.deviceId,
+        // };
+        // await this.notifications(
+        //   data,
+        //   userInterest,
+        //   placeType[0].googleCategory,
+        // );
         console.log(' /********************* / ');
         body = userData;
       }
@@ -981,6 +1019,14 @@ export class UserController {
 
     setTimeout(() => {
       console.log('Notifications Response : ', response);
+      let message = '';
+      if (Object.keys(response).length !== 0) {
+        message =
+          'Here are some suggestions based on your interests. Please check in  notifications';
+      } else {
+        message = 'Sorry, There are no suggestions based on your interets';
+      }
+      const data = this.notifications(userData.deviceId, message);
 
       response.map((res: any) => {
         console.log('notificationIcon:', res.icon);

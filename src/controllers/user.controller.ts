@@ -701,78 +701,76 @@ export class UserController {
       if (preference.selectedCategories !== null) {
         const userData = await this.userRepository.findById(preference.userId);
         console.log('selectedCategories', preference.selectedCategories);
-        preference.selectedCategories.map((categories: any) => {
+        preference.selectedCategories.map(async (categories: any) => {
           console.log('categories', categories);
           categories.subCategories.map((subCategory: any) => {
             // console.log('subcategory:', subCategory);
             if (subCategory.selected === true) {
-              console.log('selected Categories : ', subCategory.categoryname);
+              console.log(
+                'selected sub Categories : ',
+                subCategory.categoryname,
+              );
               selectedSubCategory = subCategory.categoryname;
             }
           });
-        });
-
-        budgetPerDay = preference.totalBudget / preference.daysCount;
-        console.log('Budget per day : ', budgetPerDay);
-        const placeType: any = await this.categoriesRepository.find({
-          where: {categoryname: selectedSubCategory},
-        });
-        const locationData = {
-          lat: '30.2672',
-          long: '-97.7431',
-        };
-        const result = await this.getTypes(
-          placeType[0].googleCategory,
-          locationData,
-        );
-        console.log('Near preferences types : ', result);
-
-        if (result.length !== 0) {
-          if (budgetPerDay >= 100) {
-            result.map((rating: any) => {
-              if (rating.rating >= 4) {
-                finalResult = finalResult.concat(rating);
-                console.log('final:', finalResult);
-              }
-            });
-          } else if (budgetPerDay < 100 && budgetPerDay >= 50) {
-            result.map((rating: any) => {
-              if (rating.rating >= 3 && rating.rating < 4) {
-                finalResult = finalResult.concat(rating);
-                console.log('final:', finalResult);
-              }
-            });
-          } else if (budgetPerDay < 50) {
-            result.map((rating: any) => {
-              if (rating.rating < 3) {
-                finalResult = finalResult.concat(rating);
-                console.log('final:', finalResult);
-              }
-            });
-          } else {
-            console.log('error');
+          budgetPerDay = preference.totalBudget / preference.daysCount;
+          console.log('Budget per day : ', budgetPerDay);
+          const placeType: any = await this.categoriesRepository.find({
+            where: {categoryname: selectedSubCategory},
+          });
+          const locationData = {
+            lat: '30.2672',
+            long: '-97.7431',
+          };
+          const result = await this.getTypes(
+            placeType[0].googleCategory,
+            locationData,
+          );
+          // console.log('Near preferences types : ', result);
+          if (result.length !== 0) {
+            if (budgetPerDay >= 100) {
+              result.map((rating: any) => {
+                if (rating.rating >= 4) {
+                  finalResult = finalResult.concat(rating);
+                }
+              });
+            } else if (budgetPerDay < 100 && budgetPerDay >= 50) {
+              result.map((rating: any) => {
+                if (rating.rating >= 3 && rating.rating < 4) {
+                  finalResult = finalResult.concat(rating);
+                }
+              });
+            } else if (budgetPerDay < 50) {
+              result.map((rating: any) => {
+                if (rating.rating < 3) {
+                  finalResult = finalResult.concat(rating);
+                }
+              });
+            } else {
+              console.log('error');
+            }
           }
-        }
-
-        console.log(' /********************* / ');
-        finalResult = await finalResult.slice(0, 1);
-        console.log('final result : ', finalResult);
-        const userInterest: any = finalResult.map((type1: any) => type1.name);
-        console.log('userInterest : ', userInterest);
-        const data = {
-          id: userData.deviceId,
-        };
-        await this.notifications(
-          data,
-          userInterest,
-          placeType[0].googleCategory,
-        );
-        console.log(' /********************* / ');
-        body = userData;
+          const notificationResult: any = [];
+          console.log(' /********************* / ');
+          finalResult = await finalResult.slice(0, 1);
+          console.log('final result : ', finalResult);
+          const userInterest: any = finalResult.map((type1: any) => type1.name);
+          console.log('userInterest : ', userInterest);
+          const data = {
+            id: userData.deviceId,
+          };
+          await this.notifications(
+            data,
+            userInterest,
+            placeType[0].googleCategory,
+          );
+          console.log(' /********************* / ');
+          body = userData;
+          response = await response.concat(finalResult);
+          console.log(body.id, 'body');
+          console.log(response, 'respnse');
+        });
       }
-      response = await response.concat(finalResult);
-      console.log(body.id, 'body');
-      console.log(response, 'respnse');
     });
 
     setTimeout(() => {

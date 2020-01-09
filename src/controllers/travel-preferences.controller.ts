@@ -456,8 +456,11 @@ export class TravelPreferencesController {
     console.log('Days Count : ', updatedData.daysCount);
     if (updatedData.totalBudget && updatedData.daysCount) {
       budgetPerDay = updatedData.totalBudget / updatedData.daysCount;
+      console.log('Budget per Day : ', budgetPerDay);
+    } else {
+      budgetPerDay = 0;
     }
-    console.log('Budget per Day : ', budgetPerDay);
+
     const locationData = {
       lat: userData.lat,
       long: userData.long,
@@ -474,36 +477,46 @@ export class TravelPreferencesController {
       result = await this.getTypes(placeType[0].googleCategory, locationData);
 
       if (result.length !== 0) {
-        console.log('case 1 : ');
-        if (budgetPerDay >= 100) {
-          finalResult = [];
-          result.map((rating: any) => {
-            if (rating.rating >= 3) {
-              console.log('shop name : ', rating.name);
+        if (budgetPerDay !== 0) {
+          if (budgetPerDay >= 100) {
+            finalResult = [];
+            result.map((rating: any) => {
+              if (rating.rating >= 3) {
+                console.log('shop name : ', rating.name);
 
-              finalResult = finalResult.concat(rating);
-            }
-          });
-        } else if (budgetPerDay < 100 && budgetPerDay >= 50) {
-          finalResult = [];
-          result.map((rating: any) => {
-            if (rating.rating >= 2 && rating.rating < 3) {
-              console.log('shop name123 : ', rating.name);
+                finalResult = finalResult.concat(rating);
+              }
+            });
+          } else if (budgetPerDay < 100 && budgetPerDay >= 50) {
+            finalResult = [];
+            result.map((rating: any) => {
+              if (rating.rating >= 2 && rating.rating < 3) {
+                console.log('Budget between 50 and 100 : ', rating.name);
 
-              finalResult = finalResult.concat(rating);
-            }
-          });
-        } else if (budgetPerDay < 50) {
-          finalResult = [];
-          result.map((rating: any) => {
-            if (rating.rating < 2) {
-              console.log('shop name1234 : ', rating.name);
+                finalResult = finalResult.concat(rating);
+              }
+            });
+          } else if (budgetPerDay < 50) {
+            finalResult = [];
+            result.map((rating: any) => {
+              if (rating.rating < 2) {
+                console.log('Budget below 50 $ : ', rating.name);
 
-              finalResult = finalResult.concat(rating);
-            }
-          });
+                finalResult = finalResult.concat(rating);
+              }
+            });
+          } else {
+            console.log('error');
+          }
         } else {
-          console.log('error');
+          finalResult = [];
+          result.map((rating: any) => {
+            if (rating.rating < 5) {
+              console.log('No Budget : ', rating.name);
+
+              finalResult = finalResult.concat(rating);
+            }
+          });
         }
 
         finalResult = await finalResult.slice(0, 4);

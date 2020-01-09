@@ -708,7 +708,6 @@ export class UserController {
             if (subCategory.selected === true) {
               console.log('selected Categories : ', subCategory.categoryname);
               selectedSubCategory = subCategory.categoryname;
-              console.log('selected sub category : ', selectedSubCategory);
             }
           });
         });
@@ -726,32 +725,35 @@ export class UserController {
           placeType[0].googleCategory,
           locationData,
         );
-        // console.log('Near preferences types : ', result);
+        console.log('Near preferences types : ', result);
 
         if (result.length !== 0) {
           if (budgetPerDay >= 100) {
             result.map((rating: any) => {
               if (rating.rating >= 4) {
                 finalResult = finalResult.concat(rating);
+                console.log('final:', finalResult);
               }
             });
           } else if (budgetPerDay < 100 && budgetPerDay >= 50) {
             result.map((rating: any) => {
               if (rating.rating >= 3 && rating.rating < 4) {
                 finalResult = finalResult.concat(rating);
+                console.log('final:', finalResult);
               }
             });
           } else if (budgetPerDay < 50) {
             result.map((rating: any) => {
               if (rating.rating < 3) {
                 finalResult = finalResult.concat(rating);
+                console.log('final:', finalResult);
               }
             });
           } else {
             console.log('error');
           }
         }
-        const notificationResult: any = [];
+
         console.log(' /********************* / ');
         finalResult = await finalResult.slice(0, 1);
         console.log('final result : ', finalResult);

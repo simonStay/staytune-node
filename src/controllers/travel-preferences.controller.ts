@@ -76,17 +76,29 @@ export class TravelPreferencesController {
     console.log('test1', travelData.id);
     travelData.userCheck = '1' + travelData.userId;
     console.log('travelDate:', travelData.travelDate);
-    const a: any = moment(travelData.travelDate, 'DD-MM-YYYY');
-    console.log(a, 'a');
-    const endDate = a.add(travelData.daysCount, 'days');
-    const dates: any = endDate.format();
-    console.log('end date : ', dates);
-    travelData.endDate = dates;
-    console.log('travel end date : ', travelData.endDate);
-    await this.travelPreferencesRepository.updateById(
-      travelData.id,
-      travelData,
-    );
+    // const a: any = moment(travelData.travelDate, 'DD-MM-YYYY');
+    // console.log(a, 'a');
+    // const endDate = a.add(travelData.daysCount, 'days');
+    // const dates: any = endDate.format();
+    // console.log('end date : ', dates);
+    // travelData.endDate = dates;
+    // console.log('travel end date : ', travelData.endDate);
+    if (travelData.travelDate) {
+      const startDate = moment(travelData.travelDate).format();
+      // const a: any = moment(startDate, 'DD-MM-YYYY');
+      const a: any = moment(startDate).format();
+      console.log('startdate:', startDate);
+      console.log(' a :', a);
+      const endDate = moment(startDate).add(travelData.daysCount, 'days');
+      const dates: any = moment(endDate).format();
+      console.log('end date : ', dates);
+      travelData.endDate = dates;
+    } else {
+      await this.travelPreferencesRepository.updateById(
+        travelData.id,
+        travelData,
+      );
+    }
     let finalList: Array<string> = [];
 
     const selectedData = travelPreferences.selectedTravelPreferences;

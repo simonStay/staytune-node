@@ -614,11 +614,11 @@ export class UserController {
           console.log('final result : ', finalResult);
           const userInterest: any = finalResult.map((type1: any) => type1.name);
           console.log('userInterest : ', userInterest);
-          await this.notifications(
-            body,
-            userInterest,
-            placeType[0].googleCategory,
-          );
+          // await this.notifications(
+          //   body,
+          //   userInterest,
+          //   placeType[0].googleCategory,
+          // );
         }
 
         // eslint-disable-next-line require-atomic-updates
@@ -821,16 +821,16 @@ export class UserController {
           notification:
             'Hello' +
             ' ' +
-            body.firstname +
+            userData.firstname +
             ' ' +
-            body.lastname +
+            userData.lastname +
             ',' +
             'These are some of the famous places near you' +
             ' ' +
             ' ' +
             res.name,
           placeId: res.place_id,
-          userId: body.id,
+          userId: userData.id,
           lat: res.geometry.location.lat,
           long: res.geometry.location.lng,
           icon: res.icon,

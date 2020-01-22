@@ -110,7 +110,9 @@ export class UserController {
       subject: 'Email Verification from Staytune',
       html:
         'Hello ' +
-        user.fullname +
+        user.firstname +
+        ' ' +
+        user.lastname +
         ', The otp to verify your email address is ' +
         otp +
         '<br>',
@@ -1146,7 +1148,9 @@ export class UserController {
           subject: 'Email Verification from Staytune',
           html:
             'Hello ' +
-            extUser.fullname +
+            extUser.firstname +
+            ' ' +
+            extUser.lastname +
             ', The otp to verify your email address is ' +
             otp +
             '<br>',

@@ -76,16 +76,9 @@ export class TravelPreferencesController {
     console.log('test1', travelData.id);
     travelData.userCheck = '1' + travelData.userId;
     console.log('travelDate:', travelData.travelDate);
-    // const a: any = moment(travelData.travelDate, 'DD-MM-YYYY');
-    // console.log(a, 'a');
-    // const endDate = a.add(travelData.daysCount, 'days');
-    // const dates: any = endDate.format();
-    // console.log('end date : ', dates);
-    // travelData.endDate = dates;
-    // console.log('travel end date : ', travelData.endDate);
 
     const startDate = moment(travelData.travelDate).format();
-    // const a: any = moment(startDate, 'DD-MM-YYYY');
+
     const a: any = moment(startDate).format();
     console.log('startdate:', startDate);
     console.log(' a :', a);
@@ -362,9 +355,6 @@ export class TravelPreferencesController {
             id: tid,
             categoriesList,
           };
-          // return {
-          //   status: 'Success',
-          // };
         }
       }
     }
@@ -432,6 +422,7 @@ export class TravelPreferencesController {
     let result: any = [];
     let finalResult: Array<object> = [];
     let response: Array<object> = [];
+    let finalType: any = [];
     await this.travelPreferencesRepository.updateById(id, travelPreferences);
     const updatedData = await this.travelPreferencesRepository.findById(id);
     //console.log(updatedData, 'updateddata');
@@ -522,15 +513,13 @@ export class TravelPreferencesController {
 
         // const userInterest: any = finalResult.map((type1: any) => type1.name);
         finalResult.map(async (type1: any) => {
-          const data = {
-            id: userData.deviceId,
-          };
-          await this.notifications(
-            data,
-            type1.name,
-            placeType[0].googleCategory,
-          );
+          finalType = finalType.concat(type1.name);
         });
+        console.log('finaltYPE', finalType);
+        const data = {
+          id: userData.deviceId,
+        };
+        await this.notifications(data, finalType, placeType[0].googleCategory);
       }
 
       // eslint-disable-next-line require-atomic-updates

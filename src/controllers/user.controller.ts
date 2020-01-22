@@ -99,32 +99,6 @@ export class UserController {
     })
     user: Omit<User, 'id'>,
   ): Promise<object> {
-    const link =
-      'https://staytune.austinconversionoptimization.com/email-verification/?email=' +
-      user.email;
-    const id = Math.random() * 10000;
-    const otp = Math.floor(id);
-    const mailOptions = {
-      from: 'info@staytune.com',
-      to: user.email,
-      subject: 'Email Verification from Staytune',
-      html:
-        'Hello ' +
-        user.firstname +
-        ' ' +
-        user.lastname +
-        ', The otp to verify your email address is ' +
-        otp +
-        '<br>',
-    };
-
-    transporter.sendMail(mailOptions, function(error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log('Email sent: ' + info.message);
-      }
-    });
     const extUser = await this.userRepository.findOne({
       where: {email: user.email},
     });
@@ -134,6 +108,33 @@ export class UserController {
         status: 'failed',
       };
     } else {
+      const link =
+        'https://staytune.austinconversionoptimization.com/email-verification/?email=' +
+        user.email;
+      const id = Math.random() * 10000;
+      const otp = Math.floor(id);
+      const mailOptions = {
+        from: 'info@staytune.com',
+        to: user.email,
+        subject: 'Email Verification from Staytune',
+        html:
+          'Hello ' +
+          user.firstname +
+          ' ' +
+          user.lastname +
+          ', The otp to verify your email address is ' +
+          otp +
+          '<br>',
+      };
+
+      transporter.sendMail(mailOptions, function(error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.message);
+        }
+      });
+
       const mykey = crypto.createCipher('aes-128-cbc', 'mypassword');
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       let mystr = mykey.update(user.password, 'utf8', 'hex');
@@ -189,20 +190,20 @@ export class UserController {
     return this.userRepository.find(filter);
   }
 
-  @get('/surya', {
-    responses: {
-      '200': {
-        description: 'Array of User model instances',
-        headers: {
-          'content-type': 'application/json',
-        },
-      },
-    },
-  })
-  async test() {
-    console.log('hello surya by cron');
-    return 'hai';
-  }
+  // @get('/surya', {
+  //   responses: {
+  //     '200': {
+  //       description: 'Array of User model instances',
+  //       headers: {
+  //         'content-type': 'application/json',
+  //       },
+  //     },
+  //   },
+  // })
+  // async test() {
+  //   console.log('hello surya by cron');
+  //   return 'hai';
+  // }
 
   @get('/users/me', {
     responses: {

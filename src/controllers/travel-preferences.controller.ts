@@ -530,6 +530,7 @@ export class TravelPreferencesController {
 
     setTimeout(() => {
       console.log('Notifications Response : ', response);
+      console.log('id', id);
       // let message = '';
       // if (Object.keys(response).length !== 0) {
       //   message =
@@ -540,7 +541,6 @@ export class TravelPreferencesController {
       // const data = this.notifications(userData.deviceId, message);
 
       response.map((res: any) => {
-        console.log('notificationIcon:', res.icon);
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.notificationsRepository.create({
           date: Date.now(),
@@ -561,6 +561,7 @@ export class TravelPreferencesController {
           long: res.geometry.location.lng,
           icon: res.icon,
           name: res.name,
+          travelPreferenceId: id,
         });
         console.log('lat : ', res.geometry.location.lat);
       });

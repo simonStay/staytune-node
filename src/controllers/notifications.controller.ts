@@ -1,15 +1,8 @@
-import {
-  Count,
-  CountSchema,
-  Filter,
-  repository,
-  Where,
-} from '@loopback/repository';
+import {Count, CountSchema, repository, Where} from '@loopback/repository';
 import {
   post,
   param,
   get,
-  getFilterSchemaFor,
   getModelSchemaRef,
   getWhereSchemaFor,
   patch,
@@ -127,6 +120,34 @@ export class NotificationsController {
     return this.notificationsRepository.findById(id);
   }
 
+  @get('/notificationslist/{travelPreferenceId}', {
+    responses: {
+      '200': {
+        description: 'Notifications model instance',
+        content: {
+          'application/json': {schema: getModelSchemaRef(Notifications)},
+        },
+      },
+    },
+  })
+  async findBytravelId(
+    @param.path.string('travelPreferenceId') travelPreferenceId: string,
+  ): Promise<any> {
+    const data: any = await this.notificationsRepository.find(
+      {
+        where: {
+          travelPreferenceId: travelPreferenceId,
+        },
+      },
+      {
+        strictObjectIDCoercion: true,
+      },
+    );
+    return {
+      data: data,
+    };
+  }
+
   @patch('/notifications/{id}', {
     responses: {
       '204': {
@@ -172,17 +193,6 @@ export class NotificationsController {
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.notificationsRepository.deleteById(id);
   }
-
-  // @del('/notifications/{userid}', {
-  //   responses: {
-  //     '204': {
-  //       description: 'Notifications DELETE success',
-  //     },
-  //   },
-  // })
-  // async delete(@param.path.string('userId') userid: string): Promise<void> {
-  //   await this.notificationsRepository.deleteAll({userId: userid});
-  // }
 
   @del('/delete', {
     responses: {

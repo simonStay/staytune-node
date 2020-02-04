@@ -572,9 +572,7 @@ export class UserController {
           where: {categoryname: type},
         });
         result = await this.getTypes(placeType[0].googleCategory, body);
-        // if (budgetPerDay > 50) {
-        //   console.log('hello');
-        // }
+
         console.log('Api result : ', result);
         if (result.length !== 0) {
           console.log('case 1 : ');
@@ -610,18 +608,10 @@ export class UserController {
           }
 
           finalResult = await finalResult.slice(0, 3);
-          // finalResult = await finalResult.slice(
-          //   finalResult.length,
-          //   finalResult.length + 3,
-          // );
+
           console.log('final result : ', finalResult);
           const userInterest: any = finalResult.map((type1: any) => type1.name);
           console.log('userInterest : ', userInterest);
-          // await this.notifications(
-          //   body,
-          //   userInterest,
-          //   placeType[0].googleCategory,
-          // );
         }
 
         // eslint-disable-next-line require-atomic-updates
@@ -631,32 +621,6 @@ export class UserController {
 
       console.log(response, 'respnse');
 
-      // setTimeout(() => {
-      //   response.map((value2: any) => {
-      //     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      //     this.notificationsRepository.create({
-      //       date: Date.now(),
-      //       notification:
-      //         'Hello' +
-      //         ' ' +
-      //         body.userName +
-      //         ',' +
-      //         'These are some of the famous places near you' +
-      //         ' ' +
-      //         ' ' +
-      //         value2.name,
-      //       placeId: value2.place_id,
-      //       userId: body.userId,
-      //     });
-      //   });
-      //   // console.log(notify.notification, 'notifysss');
-      // }, 3000);
-      // const notifylist = await this.notificationsRepository.find({
-      //   where: {
-      //     userId: body.userId,
-      //   },
-      // });
-      // console.log(notifylist, 'suryaaa');
       response.map(async (value2: any) => {
         const notification =
           'Hello' +
@@ -788,16 +752,10 @@ export class UserController {
                 (type1: any) => type1.name,
               );
               console.log('userInterest : ', userInterest);
-              // const data = {
-              //   id: userData.deviceId,
-              // };
-              // await this.notifications(
-              //   data,
-              //   userInterest,
-              //   placeType[0].googleCategory,
-              // );
+
               console.log(' /********************* / ');
               // body = userData;
+
               response = await response.concat(finalResult);
               // console.log(body.id, 'body');
               console.log(response, 'respnse');

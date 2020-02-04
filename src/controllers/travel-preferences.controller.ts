@@ -640,7 +640,6 @@ export class TravelPreferencesController {
     // const budgetPerDay = data.totalBudget / data.daysCount;
     let daysCompleted = 0;
     if (travelPreferenceData.travelDate) {
-      console.log(travelPreferenceData.travelDate);
       // const startDate = moment().format(
       //   travelPreferenceData.travelDate,
       //   'DD-MM-YYYY',
@@ -649,108 +648,111 @@ export class TravelPreferencesController {
       console.log(startDate, 'startdate');
 
       const currentDate = moment().format();
-      let a = moment(startDate, 'DD-MM-YYYY');
-      let b = moment(currentDate, 'DD-MM-YYYY');
+      console.log('current date', currentDate);
+      // let a = moment(startDate, 'DD-MM-YYYY');
+      // console.log('a', a);
+      // let b = moment(currentDate, 'DD-MM-YYYY');
+      // console.log('b', b);
 
-      if (startDate) {
-        console.log('start date ', startDate);
-        console.log('current date ', currentDate);
+      //   if (startDate) {
+      //     // console.log('start date ', startDate);
+      //     // console.log('current date ', currentDate);
+      //     // daysCompleted = b.diff(a, 'days');
+      //     // console.log('Completed days', daysCompleted);
+      //     // let differenceInTime = currentDate.getTime() - startDate.getTime();
+      //     // To calculate the no. of days between two dates
+      //     // let days = differenceInTime / (1000 * 3600 * 24);
+      //     // console.log('Completed days', days);
+      //   }
+      // }
 
-        daysCompleted = b.diff(a, 'days');
-        console.log('Completed days', daysCompleted);
-        // let differenceInTime = currentDate.getTime() - startDate.getTime();
-        // To calculate the no. of days between two dates
-        // let days = differenceInTime / (1000 * 3600 * 24);
-        // console.log('Completed days', days);
-      }
-    }
+      let response: Array<object> = [];
 
-    let response: Array<object> = [];
+      const oldBudgetInfo = await this.budgetinfoRepository.find(
+        {
+          where: {travelId: body.id},
+        },
+        {
+          strictObjectIDCoercion: true,
+        },
+      );
+      console.log(oldBudgetInfo, 'budgetrepo');
+      let expenditure = 0;
+      if (oldBudgetInfo) {
+        oldBudgetInfo.forEach(budget => {
+          if (
+            budget.mealsExpenditure !== undefined &&
+            budget.entExpenditure !== undefined
+          ) {
+            let dayBudget = budget.mealsExpenditure + budget.entExpenditure;
+            let startDate = moment(
+              travelPreferenceData.travelDate,
+              'DD-MM-YYYY',
+            );
+            let a = moment(startDate, 'DD-MM-YYYY');
+            if (budget.day) {
+              const nextDay = a.add(budget.day - 1, 'days');
+              console.log(nextDay, 'next');
 
-    const oldBudgetInfo = await this.budgetinfoRepository.find(
-      {
-        where: {travelId: body.id},
-      },
-      {
-        strictObjectIDCoercion: true,
-      },
-    );
-    console.log(oldBudgetInfo);
-    let expenditure = 0;
-    if (oldBudgetInfo) {
-      oldBudgetInfo.forEach(budget => {
-        if (
-          budget.mealsExpenditure !== undefined &&
-          budget.entExpenditure !== undefined
-        ) {
-          let dayBudget = budget.mealsExpenditure + budget.entExpenditure;
-          const startDate = moment().format(
-            travelPreferenceData.travelDate,
-            'DD-MM-YYYY',
-          );
-          let a = moment(startDate, 'DD-MM-YYYY');
-          if (budget.day) {
-            const nextDay = a.add(budget.day - 1, 'days');
-
-            response.push({
-              id: budget.day,
-              day: budget.day,
-              dayBudget: dayBudget,
-              meals: budget.mealsExpenditure,
-              entertainment: budget.entExpenditure,
-              date: nextDay.format('DD-MM-YYYY'),
-            });
+              response.push({
+                id: budget.day,
+                day: budget.day,
+                dayBudget: dayBudget,
+                meals: budget.mealsExpenditure,
+                entertainment: budget.entExpenditure,
+                date: nextDay.format('DD-MM-YYYY'),
+              });
+            }
+            expenditure = expenditure + dayBudget;
           }
-          expenditure = expenditure + dayBudget;
-        }
-      });
-
-      // response = response.concat(oldBudgetInfo);
-    }
-    console.log(response);
-
-    let totalBudget: any;
-    let daysCount: any;
-    let totalExpen: any;
-    let i: any;
-    let daysLeft: any;
-
-    const completedDays = oldBudgetInfo.length;
-    totalBudget = travelPreferenceData.totalBudget;
-    totalExpen = expenditure;
-    const remaingBudget = totalBudget - totalExpen;
-    daysCount = travelPreferenceData.daysCount;
-    daysLeft = daysCount - completedDays;
-    console.log(daysLeft, 'daysleft');
-    console.log(completedDays, 'days');
-    if (daysLeft !== 0) {
-      let startDate = moment(travelPreferenceData.travelDate, 'DD-MM-YYYY');
-      const nextDay = startDate.add(completedDays - 1, 'days');
-      console.log(nextDay, 'next');
-
-      const budgetPerDay = remaingBudget / daysLeft;
-      const budgetDivide = budgetPerDay / 2;
-      for (i = completedDays + 1; i <= daysCount; i++) {
-        const dayNext = nextDay.add(1, 'days');
-        // eslint-disable-next-line require-atomic-updates
-        response = await response.concat({
-          id: i,
-          day: i,
-          dayBudget: budgetPerDay,
-          meals: budgetDivide,
-          entertainment: budgetDivide,
-          date: dayNext.format('DD-MM-YYYY'),
         });
-        // await response.push({
-        //   id: i,
-        //   day: i,
-        //   dayBudget: budgetPerDay,
-        //   meals: budgetDivide,
-        //   entertainment: budgetDivide,
-        //   date: dayNext.format('DD-MM-YYYY'),
-        // });
+
+        // response = response.concat(oldBudgetInfo);
       }
-      console.log(response, 'dta123');
+      console.log(response);
+
+      let totalBudget: any;
+      let daysCount: any;
+      let totalExpen: any;
+      let i: any;
+      let daysLeft: any;
+
+      const completedDays = oldBudgetInfo.length;
+      totalBudget = travelPreferenceData.totalBudget;
+      totalExpen = expenditure;
+      const remaingBudget = totalBudget - totalExpen;
+      daysCount = travelPreferenceData.daysCount;
+      daysLeft = daysCount - completedDays;
+      console.log(daysLeft, 'daysleft');
+      console.log(completedDays, 'days');
+      if (daysLeft !== 0) {
+        let startDate = moment(travelPreferenceData.travelDate, 'DD-MM-YYYY');
+        let a = moment(startDate, 'DD-MM-YYYY');
+        const nextDay = a.add(completedDays - 1, 'days');
+        console.log(nextDay, 'next');
+
+        const budgetPerDay = remaingBudget / daysLeft;
+        const budgetDivide = budgetPerDay / 2;
+        for (i = completedDays + 1; i <= daysCount; i++) {
+          const dayNext = nextDay.add(1, 'days');
+          // eslint-disable-next-line require-atomic-updates
+          response = await response.concat({
+            id: i,
+            day: i,
+            dayBudget: budgetPerDay,
+            meals: budgetDivide,
+            entertainment: budgetDivide,
+            date: dayNext.format('DD-MM-YYYY'),
+          });
+        }
+        console.log(response, 'dta123');
+        return {
+          budget: response,
+          totalBudget: travelPreferenceData.totalBudget,
+          expBudget: expenditure,
+          completedDays: daysCompleted,
+        };
+      }
       return {
         budget: response,
         totalBudget: travelPreferenceData.totalBudget,
@@ -758,42 +760,7 @@ export class TravelPreferencesController {
         completedDays: daysCompleted,
       };
     }
-    return {
-      budget: response,
-      totalBudget: travelPreferenceData.totalBudget,
-      expBudget: expenditure,
-      completedDays: daysCompleted,
-    };
   }
-
-  // public async notifications(data: any, message: any) {
-  //   const information: any = {
-  //     // eslint-disable-next-line @typescript-eslint/camelcase
-  //     app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
-
-  //     // eslint-disable-next-line @typescript-eslint/camelcase
-  //     include_player_ids: [data],
-
-  //     contents: {
-  //       en: message,
-  //     },
-  //   };
-  //   const details = await axios.post(
-  //     'https://onesignal.com/api/v1/notifications',
-  //     information,
-  //     {
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         Authorization:
-  //           'Basic NDA5YWNmM2UtODFhZi00MzMzLTg0OTItYTFiODg0OTA4Njlk',
-  //       },
-  //     },
-  //   );
-  //   // console.log('details', details);
-
-  //   // console.log(data, text, 'any');
-  // }
-
   public async notifications(data: any, text: any, parentCategory: any) {
     console.log('data information : ', data);
 

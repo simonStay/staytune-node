@@ -452,6 +452,171 @@ export class TravelPreferencesController {
       budgetPerDay = 0;
     }
 
+    // const locationData = {
+    //   lat: userData.lat,
+    //   long: userData.long,
+    // };
+
+    // listCategories = await listCategories.slice(0, 1);
+
+    // listCategories.map(async (type: any) => {
+    //   console.log('Category Name : ', type);
+    //   const placeType: any = await this.categoriesRepository.find({
+    //     where: {categoryname: type},
+    //   });
+
+    //   result = await this.getTypes(placeType[0].googleCategory, locationData);
+
+    //   if (result.length !== 0) {
+    //     if (budgetPerDay !== 0) {
+    //       if (budgetPerDay >= 100) {
+    //         finalResult = [];
+    //         result.map((rating: any) => {
+    //           if (rating.rating >= 3) {
+    //             console.log('shop name : ', rating.name);
+
+    //             finalResult = finalResult.concat(rating);
+    //           }
+    //         });
+    //       } else if (budgetPerDay < 100 && budgetPerDay >= 50) {
+    //         finalResult = [];
+    //         result.map((rating: any) => {
+    //           if (rating.rating >= 2 && rating.rating < 3) {
+    //             console.log('Budget between 50 and 100 : ', rating.name);
+
+    //             finalResult = finalResult.concat(rating);
+    //           }
+    //         });
+    //       } else if (budgetPerDay < 50) {
+    //         finalResult = [];
+    //         result.map((rating: any) => {
+    //           if (rating.rating < 2) {
+    //             console.log('Budget below 50 $ : ', rating.name);
+
+    //             finalResult = finalResult.concat(rating);
+    //           }
+    //         });
+    //       } else {
+    //         console.log('error');
+    //       }
+    //     } else {
+    //       finalResult = [];
+    //       result.map((rating: any) => {
+    //         if (rating.rating < 5) {
+    //           console.log('No Budget : ', rating.name);
+
+    //           finalResult = finalResult.concat(rating);
+    //         }
+    //       });
+    //     }
+    //     finalResult = await finalResult.slice(0, 4);
+
+    //     finalResult.map(async (type1: any) => {
+    //       finalType = finalType.concat(type1.name);
+    //     });
+    //     console.log('finaltYPE', finalType);
+    //     const data = {
+    //       id: userData.deviceId,
+    //     };
+    //     await this.notifications(data, finalType, placeType[0].googleCategory);
+    //   }
+
+    //   // eslint-disable-next-line require-atomic-updates
+    //   // eslint-disable-next-line @typescript-eslint/await-thenable
+    //   console.log('Final Result : ', finalResult);
+    //   response = await response.concat(finalResult);
+    // });
+
+    // setTimeout(() => {
+    //   console.log('Notifications Response : ', response);
+    //   console.log('id', id);
+
+    //   response.map((res: any) => {
+    //     // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    //     this.notificationsRepository.create({
+    //       date: Date.now(),
+    //       notification:
+    //         'Hello' +
+    //         ' ' +
+    //         userData.firstname +
+    //         ' ' +
+    //         userData.lastname +
+    //         ',' +
+    //         'These are some of the famous places near you' +
+    //         ' ' +
+    //         ' ' +
+    //         res.name,
+    //       placeId: res.place_id,
+    //       userId: userData.id,
+    //       lat: res.geometry.location.lat,
+    //       long: res.geometry.location.lng,
+    //       icon: res.icon,
+    //       name: res.name,
+    //       travelPreferenceId: id,
+    //     });
+    //     console.log('lat : ', res.geometry.location.lat);
+    //   });
+    // }, 3000);
+
+    return {
+      status: 'success',
+      message: 'successfully Updated',
+      data: updatedData,
+    };
+  }
+
+  @post('/travel-preferencesNotifications', {
+    responses: {
+      '204': {
+        description: 'TravelPreferences PATCH success',
+      },
+    },
+  })
+  async notificationsList(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(TravelPreferences, {partial: true}),
+        },
+      },
+    })
+    travelPreferences: any,
+  ): Promise<void> {
+    let listCategories: Array<object> = [];
+    let budgetPerDay: any;
+    let result: any = [];
+    let finalResult: Array<object> = [];
+    let response: Array<object> = [];
+    let finalType: any = [];
+
+    const updatedData = await this.travelPreferencesRepository.findById(
+      travelPreferences.id,
+    );
+
+    const userData = await this.userRepository.findById(updatedData.userId);
+    console.log('User Data : ', userData);
+    console.log('device id : ', userData.deviceId);
+    console.log('Selected Categories : ', updatedData.selectedCategories);
+    if (updatedData.selectedCategories !== null) {
+      updatedData.selectedCategories.map((categories: any) => {
+        categories.subCategories.map((subCategory: any) => {
+          if (subCategory.selected === true) {
+            if (!listCategories.includes(subCategory.categoryname)) {
+              listCategories = listCategories.concat(subCategory.categoryname);
+            }
+          }
+        });
+      });
+    }
+    console.log('Total Budget : ', updatedData.totalBudget);
+    console.log('Days Count : ', updatedData.daysCount);
+    if (updatedData.totalBudget && updatedData.daysCount) {
+      budgetPerDay = updatedData.totalBudget / updatedData.daysCount;
+      console.log('Budget per Day : ', budgetPerDay);
+    } else {
+      budgetPerDay = 0;
+    }
+
     const locationData = {
       lat: userData.lat,
       long: userData.long,
@@ -511,7 +676,6 @@ export class TravelPreferencesController {
         }
         finalResult = await finalResult.slice(0, 4);
 
-        // const userInterest: any = finalResult.map((type1: any) => type1.name);
         finalResult.map(async (type1: any) => {
           finalType = finalType.concat(type1.name);
         });
@@ -530,15 +694,6 @@ export class TravelPreferencesController {
 
     setTimeout(() => {
       console.log('Notifications Response : ', response);
-      console.log('id', id);
-      // let message = '';
-      // if (Object.keys(response).length !== 0) {
-      //   message =
-      //     'Here are some suggestions based on your interests. Please check in  notifications';
-      // } else {
-      //   message = 'Sorry, There are no suggestions based on your interets';
-      // }
-      // const data = this.notifications(userData.deviceId, message);
 
       response.map((res: any) => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -561,41 +716,11 @@ export class TravelPreferencesController {
           long: res.geometry.location.lng,
           icon: res.icon,
           name: res.name,
-          travelPreferenceId: id,
+          travelPreferenceId: travelPreferences.id,
         });
         console.log('lat : ', res.geometry.location.lat);
       });
-      // console.log(notify.notification, 'notifysss');
     }, 3000);
-    // response.map(async (value2: any) => {
-    //   const notification =
-    //     'Hello' +
-    //     ' ' +
-    //     body.firstname +
-    //     ',' +
-    //     'These are some of the famous places near you' +
-    //     ' ' +
-    //     ' ' +
-    //     value2.name;
-    //   const data = {
-    //     date: Date.now(),
-    //     notification: notification,
-
-    //     placeId: value2.place_id,
-    //     userId: body.id,
-    //     lat: value2.geometry.location.lat,
-    //     lng: value2.geometry.location.lng,
-    //   };
-    //   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    //   const test = await this.notificationsRepository.create(data);
-    //   console.log('test : ', test);
-    // });
-
-    return {
-      status: 'success',
-      message: 'successfully Updated',
-      data: updatedData,
-    };
   }
 
   @put('/travel-preferences/{id}', {

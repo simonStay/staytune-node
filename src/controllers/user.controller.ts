@@ -393,7 +393,7 @@ export class UserController {
         body.lat +
         ',' +
         body.long +
-        '&radius=1500&type=' +
+        '&radius=700&type=' +
         type +
         '&key=AIzaSyBI_ae3Hvrib8Bao3_WrhXLEHKuGj1J8pQ',
       {
@@ -519,17 +519,10 @@ export class UserController {
         lat: body.lat,
         long: body.long,
       };
-      // console.log(preference, 'prefererencedeec');
 
       await this.userRepository.updateById(id, data1);
       preference.map(async (data2: any) => {
-        // console.log(data2.travelDate, 'traveldate');
         if (data2.travelDate) {
-          // const startDate = data2.travelDate
-          //   .split('-')
-          //   .reverse()
-          //   .join('-');
-
           const currentDate: any = moment().format('YYYY-MM-DD');
           console.log(currentDate, 'if current date is not between ');
 
@@ -571,6 +564,7 @@ export class UserController {
         const placeType: any = await this.categoriesRepository.find({
           where: {categoryname: type},
         });
+        console.log('placeType', placeType[0].googleCategory);
         result = await this.getTypes(placeType[0].googleCategory, body);
         // if (budgetPerDay > 50) {
         //   console.log('hello');
@@ -657,6 +651,7 @@ export class UserController {
       //   },
       // });
       // console.log(notifylist, 'suryaaa');
+
       response.map(async (value2: any) => {
         const notification =
           'Hello' +
@@ -816,9 +811,8 @@ export class UserController {
         message = 'Sorry, There are no suggestions based on your interets';
       }
       const data = this.notifications(userData.deviceId, message);
-      response.map((res: any) => {
-        console.log('data', res['0']);
-      });
+      console.log('data1', data);
+      response.map((res: any) => {});
 
       response.map((res: any) => {
         if (res['0'] !== undefined) {

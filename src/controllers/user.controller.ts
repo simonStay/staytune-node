@@ -705,7 +705,7 @@ export class UserController {
     console.log('current day :', currentDate);
     let budgetPerDay = 0;
     const response: any = [];
-    const body: any = {};
+    const body: any = [];
 
     const activePreferences = await this.travelPreferenceRepository.find(
       {
@@ -727,6 +727,7 @@ export class UserController {
       let selectedSubCategory: any;
       if (preference.selectedCategories !== null) {
         userData = await this.userRepository.findById(preference.userId);
+        console.log('userData', userData);
         console.log('selectedCategories', preference.selectedCategories);
         preference.selectedCategories.map(async (categories: any) => {
           console.log('categories', categories);
@@ -798,46 +799,52 @@ export class UserController {
             finalResult = [];
           });
         });
+        body.push(userData);
       }
     });
 
     setTimeout(() => {
-      console.log('Notifications Response : ', response);
-      let message = '';
-      if (Object.keys(response).length !== 0) {
-        message =
-          'Here are some suggestions based on your interests. Please check in  notifications';
-      } else {
-        message = 'Sorry, There are no suggestions based on your interets';
-      }
-      const data = this.notifications(userData.deviceId, message);
-      console.log('data1', data);
-      response.map((res: any) => {});
+      body.map((user: any) => {
+        if (user !== undefined) {
+          console.log('Notifications Response : ', response);
+          let message = '';
+          if (Object.keys(response).length !== 0) {
+            message =
+              'Here are some suggestions based on your interests. Please check in  notifications';
+          } else {
+            message = 'Sorry, There are no suggestions based on your interets';
+          }
+          console.log(userData.deviceId, 'deviceID');
+          const data = this.notifications(user.deviceId, message);
+          console.log('data1', data);
+          response.map((res: any) => {});
 
-      response.map((res: any) => {
-        if (res['0'] !== undefined) {
-          console.log('notificationIcon:', res['0']);
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          this.notificationsRepository.create({
-            date: Date.now(),
-            notification:
-              'Hello' +
-              ' ' +
-              userData.firstname +
-              ' ' +
-              userData.lastname +
-              ',' +
-              'These are some of the famous places near you' +
-              ' ' +
-              ' ' +
-              res['0'].name,
-            placeId: res['0'].place_id,
-            userId: userData.id,
-            lat: res['0'].geometry.location.lat,
-            long: res['0'].geometry.location.lng,
-            icon: res['0'].icon,
-            name: res['0'].name,
-            travelPreferenceId: res.travelPreferenceId,
+          response.map((res: any) => {
+            if (res['0'] !== undefined) {
+              console.log('notificationIcon:', res['0']);
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
+              this.notificationsRepository.create({
+                date: Date.now(),
+                notification:
+                  'Hello' +
+                  ' ' +
+                  user.firstname +
+                  ' ' +
+                  user.lastname +
+                  ',' +
+                  'These are some of the famous places near you' +
+                  ' ' +
+                  ' ' +
+                  res['0'].name,
+                placeId: res['0'].place_id,
+                userId: user.id,
+                lat: res['0'].geometry.location.lat,
+                long: res['0'].geometry.location.lng,
+                icon: res['0'].icon,
+                name: res['0'].name,
+                travelPreferenceId: res.travelPreferenceId,
+              });
+            }
           });
         }
       });
@@ -871,7 +878,7 @@ export class UserController {
     console.log('current day :', currentDate);
     let budgetPerDay = 0;
     const response: any = [];
-    let body: any = {};
+    let body: any = [];
 
     const activePreferences = await this.travelPreferenceRepository.find(
       {
@@ -951,50 +958,63 @@ export class UserController {
                   ...finalResult,
                   travelPreferenceId: preference.id,
                 };
-                body = userData;
+                // body = userData;
                 response.push(newResult);
               }
               finalResult = [];
             });
           }
         });
+
+        // console.log('body data', body);
       }
+
+      body = await body.concat(userData);
+      console.log('body', body);
     });
 
     setTimeout(() => {
-      let message = '';
-      if (Object.keys(response).length !== 0) {
-        message =
-          'Here are some suggestions based on your interests. Please check in  notifications';
-      } else {
-        message = 'Sorry, There are no suggestions based on your interets';
-      }
-      const data = this.notifications(userData.deviceId, message);
+      body.map(async (user: any) => {
+        if (user !== undefined) {
+          console.log('Notifications Response : ', response);
+          let message = '';
+          if (Object.keys(response).length !== 0) {
+            message =
+              'Here are some suggestions based on your interests. Please check in  notifications';
+          } else {
+            message = 'Sorry, There are no suggestions based on your interets';
+          }
 
-      response.map((res: any) => {
-        if (res['0'] !== undefined) {
-          console.log('notificationIcon:', res);
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          this.notificationsRepository.create({
-            date: Date.now(),
-            notification:
-              'Hello' +
-              ' ' +
-              body.firstname +
-              ' ' +
-              body.lastname +
-              ',' +
-              'These are some of the famous places near you' +
-              ' ' +
-              ' ' +
-              res['0'].name,
-            placeId: res['0'].place_id,
-            userId: body.id,
-            lat: res['0'].geometry.location.lat,
-            long: res['0'].geometry.location.lng,
-            icon: res['0'].icon,
-            name: res['0'].name,
-            travelPreferenceId: res.travelPreferenceId,
+          const data = await this.notifications(user.deviceId, message);
+          console.log('data1', data);
+          response.map((res: any) => {});
+
+          response.map((res: any) => {
+            if (res['0'] !== undefined) {
+              console.log('notificationIcon:', res['0']);
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
+              this.notificationsRepository.create({
+                date: Date.now(),
+                notification:
+                  'Hello' +
+                  ' ' +
+                  user.firstname +
+                  ' ' +
+                  user.lastname +
+                  ',' +
+                  'These are some of the famous places near you' +
+                  ' ' +
+                  ' ' +
+                  res['0'].name,
+                placeId: res['0'].place_id,
+                userId: user.id,
+                lat: res['0'].geometry.location.lat,
+                long: res['0'].geometry.location.lng,
+                icon: res['0'].icon,
+                name: res['0'].name,
+                travelPreferenceId: res.travelPreferenceId,
+              });
+            }
           });
         }
       });

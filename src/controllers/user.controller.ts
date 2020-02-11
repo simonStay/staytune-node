@@ -727,10 +727,10 @@ export class UserController {
       let selectedSubCategory: any;
       if (preference.selectedCategories !== null) {
         userData = await this.userRepository.findById(preference.userId);
-        console.log('userData', userData);
-        console.log('selectedCategories', preference.selectedCategories);
+        // console.log('userData', userData);
+        // console.log('selectedCategories', preference.selectedCategories);
         preference.selectedCategories.map(async (categories: any) => {
-          console.log('categories', categories);
+          // console.log('categories', categories);
           categories.subCategories.map(async (subCategory: any) => {
             // console.log('subcategory:', subCategory);
             if (subCategory.selected === true) {
@@ -740,7 +740,7 @@ export class UserController {
               );
               selectedSubCategory = subCategory.categoryname;
               budgetPerDay = preference.totalBudget / preference.daysCount;
-              console.log('Budget per day : ', budgetPerDay);
+              // console.log('Budget per day : ', budgetPerDay);
               const placeType: any = await this.categoriesRepository.find({
                 where: {categoryname: selectedSubCategory},
               });
@@ -779,11 +779,11 @@ export class UserController {
               // const notificationResult: any = [];
               console.log(' /********************* / ');
               finalResult = await finalResult.slice(0, 1);
-              console.log('final result : ', finalResult);
+              // console.log('final result : ', finalResult);
               const userInterest: any = finalResult.map(
                 (type1: any) => type1.name,
               );
-              console.log('userInterest : ', userInterest);
+              // console.log('userInterest : ', userInterest);
 
               console.log(' /********************* / ');
               const newResult = {
@@ -801,12 +801,27 @@ export class UserController {
         });
         body.push(userData);
       }
+      // console.log(userData, 'userData');
+      console.log(body, 'body');
     });
-
     setTimeout(() => {
-      body.map((user: any) => {
+      // console.log('body', body);
+      body.map(async (user: any) => {
         if (user !== undefined) {
-          console.log('Notifications Response : ', response);
+          console.log('user info', user.id);
+          const travelData: any = await this.travelPreferenceRepository.find(
+            {
+              where: {
+                userId: user.id,
+              },
+            },
+            {
+              strictObjectIDCoercion: true,
+            },
+          );
+
+          const result = travelData.map((a: any) => a.id.toString());
+
           let message = '';
           if (Object.keys(response).length !== 0) {
             message =
@@ -817,33 +832,41 @@ export class UserController {
           console.log(userData.deviceId, 'deviceID');
           const data = this.notifications(user.deviceId, message);
           console.log('data1', data);
-          response.map((res: any) => {});
+          console.log('response', response);
 
           response.map((res: any) => {
             if (res['0'] !== undefined) {
-              console.log('notificationIcon:', res['0']);
-              // eslint-disable-next-line @typescript-eslint/no-floating-promises
-              this.notificationsRepository.create({
-                date: Date.now(),
-                notification:
-                  'Hello' +
-                  ' ' +
-                  user.firstname +
-                  ' ' +
-                  user.lastname +
-                  ',' +
-                  'These are some of the famous places near you' +
-                  ' ' +
-                  ' ' +
-                  res['0'].name,
-                placeId: res['0'].place_id,
-                userId: user.id,
-                lat: res['0'].geometry.location.lat,
-                long: res['0'].geometry.location.lng,
-                icon: res['0'].icon,
-                name: res['0'].name,
-                travelPreferenceId: res.travelPreferenceId,
-              });
+              console.log('travel data', result);
+              console.log('type of ', typeof result[0]);
+              console.log('type of preferenc', typeof res.travelPreferenceId);
+
+              // console.log('notificationIcon:', res['0']);
+              if (result.includes(res.travelPreferenceId.toString())) {
+                console.log('each id ', res.travelPreferenceId);
+
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                this.notificationsRepository.create({
+                  date: Date.now(),
+                  notification:
+                    'Hello' +
+                    ' ' +
+                    user.firstname +
+                    ' ' +
+                    user.lastname +
+                    ',' +
+                    'These are some of the famous places near you' +
+                    ' ' +
+                    ' ' +
+                    res['0'].name,
+                  placeId: res['0'].preslace_id,
+                  userId: user.id,
+                  lat: res['0'].geometry.location.lat,
+                  long: res['0'].geometry.location.lng,
+                  icon: res['0'].icon,
+                  name: res['0'].name,
+                  travelPreferenceId: res.travelPreferenceId,
+                });
+              }
             }
           });
         }
@@ -878,7 +901,7 @@ export class UserController {
     console.log('current day :', currentDate);
     let budgetPerDay = 0;
     const response: any = [];
-    let body: any = [];
+    const body: any = [];
 
     const activePreferences = await this.travelPreferenceRepository.find(
       {
@@ -951,32 +974,40 @@ export class UserController {
                 const userInterest: any = finalResult.map(
                   (type1: any) => type1.name,
                 );
-                console.log('userInterest : ', userInterest);
-
-                console.log(' /********************* / ');
                 const newResult = {
                   ...finalResult,
                   travelPreferenceId: preference.id,
                 };
-                // body = userData;
+                // finalResult.push({
+                //   travelPreferenceId: preference.id,
+                // });
+
                 response.push(newResult);
               }
               finalResult = [];
             });
           }
         });
-
-        // console.log('body data', body);
+        body.push(userData);
       }
-
-      body = await body.concat(userData);
-      console.log('body', body);
     });
 
     setTimeout(() => {
+      console.log('body', body);
       body.map(async (user: any) => {
         if (user !== undefined) {
-          console.log('Notifications Response : ', response);
+          const travelData: any = await this.travelPreferenceRepository.find(
+            {
+              where: {
+                userId: user.id,
+              },
+            },
+            {
+              strictObjectIDCoercion: true,
+            },
+          );
+
+          const result = travelData.map((a: any) => a.id.toString());
           let message = '';
           if (Object.keys(response).length !== 0) {
             message =
@@ -987,33 +1018,34 @@ export class UserController {
 
           const data = await this.notifications(user.deviceId, message);
           console.log('data1', data);
-          response.map((res: any) => {});
 
           response.map((res: any) => {
             if (res['0'] !== undefined) {
-              console.log('notificationIcon:', res['0']);
-              // eslint-disable-next-line @typescript-eslint/no-floating-promises
-              this.notificationsRepository.create({
-                date: Date.now(),
-                notification:
-                  'Hello' +
-                  ' ' +
-                  user.firstname +
-                  ' ' +
-                  user.lastname +
-                  ',' +
-                  'These are some of the famous places near you' +
-                  ' ' +
-                  ' ' +
-                  res['0'].name,
-                placeId: res['0'].place_id,
-                userId: user.id,
-                lat: res['0'].geometry.location.lat,
-                long: res['0'].geometry.location.lng,
-                icon: res['0'].icon,
-                name: res['0'].name,
-                travelPreferenceId: res.travelPreferenceId,
-              });
+              if (result.includes(res.travelPreferenceId.toString())) {
+                console.log('notificationIcon:', res['0']);
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                this.notificationsRepository.create({
+                  date: Date.now(),
+                  notification:
+                    'Hello' +
+                    ' ' +
+                    user.firstname +
+                    ' ' +
+                    user.lastname +
+                    ',' +
+                    'These are some of the famous places near you' +
+                    ' ' +
+                    ' ' +
+                    res['0'].name,
+                  placeId: res['0'].place_id,
+                  userId: user.id,
+                  lat: res['0'].geometry.location.lat,
+                  long: res['0'].geometry.location.lng,
+                  icon: res['0'].icon,
+                  name: res['0'].name,
+                  travelPreferenceId: res.travelPreferenceId,
+                });
+              }
             }
           });
         }

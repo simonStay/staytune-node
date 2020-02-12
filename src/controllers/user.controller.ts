@@ -858,7 +858,7 @@ export class UserController {
                     ' ' +
                     ' ' +
                     res['0'].name,
-                  placeId: res['0'].preslace_id,
+                  placeId: res['0'].place_id,
                   userId: user.id,
                   lat: res['0'].geometry.location.lat,
                   long: res['0'].geometry.location.lng,

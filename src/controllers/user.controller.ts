@@ -854,8 +854,9 @@ export class UserController {
                     ' ' +
                     user.lastname +
                     ',' +
-                    'These are some of the famous places near you' +
+                    'here is a recommendation near you' +
                     ' ' +
+                    '-' +
                     ' ' +
                     res['0'].name,
                   placeId: res['0'].place_id,
@@ -1033,8 +1034,9 @@ export class UserController {
                     ' ' +
                     user.lastname +
                     ',' +
-                    'These are some of the famous places near you' +
+                    'here is a recommendation near you' +
                     ' ' +
+                    '-' +
                     ' ' +
                     res['0'].name,
                   placeId: res['0'].place_id,

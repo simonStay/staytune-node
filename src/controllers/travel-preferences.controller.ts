@@ -706,8 +706,9 @@ export class TravelPreferencesController {
             ' ' +
             userData.lastname +
             ',' +
-            'These are some of the famous places near you' +
+            'here is a recommendation near you' +
             ' ' +
+            '-' +
             ' ' +
             res.name,
           placeId: res.place_id,

@@ -851,9 +851,8 @@ export class UserController {
                     'Hello' +
                     ' ' +
                     user.firstname +
-                    ' ' +
-                    user.lastname +
                     ',' +
+                    ' ' +
                     'here is a recommendation near you' +
                     ' ' +
                     '-' +
@@ -1031,9 +1030,8 @@ export class UserController {
                     'Hello' +
                     ' ' +
                     user.firstname +
-                    ' ' +
-                    user.lastname +
                     ',' +
+                    ' ' +
                     'here is a recommendation near you' +
                     ' ' +
                     '-' +

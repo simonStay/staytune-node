@@ -703,9 +703,8 @@ export class TravelPreferencesController {
             'Hello' +
             ' ' +
             userData.firstname +
-            ' ' +
-            userData.lastname +
             ',' +
+            ' ' +
             'here is a recommendation near you' +
             ' ' +
             '-' +

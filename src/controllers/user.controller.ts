@@ -726,8 +726,9 @@ export class UserController {
     activePreferences.map(async (preference: any) => {
       let selectedSubCategory: any;
       if (preference.selectedCategories !== null) {
+        console.log('preference', preference.userId);
         userData = await this.userRepository.findById(preference.userId);
-        // console.log('userData', userData);
+        console.log('userData', userData);
         // console.log('selectedCategories', preference.selectedCategories);
         preference.selectedCategories.map(async (categories: any) => {
           // console.log('categories', categories);
@@ -745,8 +746,8 @@ export class UserController {
                 where: {categoryname: selectedSubCategory},
               });
               const locationData = {
-                lat: '30.2672',
-                long: '-97.7431',
+                lat: userData.lat,
+                long: userData.long,
               };
               const result = await this.getTypes(
                 placeType[0].googleCategory,
@@ -802,7 +803,7 @@ export class UserController {
         body.push(userData);
       }
       // console.log(userData, 'userData');
-      console.log(body, 'body');
+      // console.log(body, 'body');
     });
     setTimeout(() => {
       console.log('response', response);
@@ -942,8 +943,8 @@ export class UserController {
                   where: {categoryname: selectedSubCategory},
                 });
                 const locationData = {
-                  lat: '30.2672',
-                  long: '-97.7431',
+                  lat: userData.lat,
+                  long: userData.long,
                 };
                 const result = await this.getTypes(
                   placeType[0].googleCategory,

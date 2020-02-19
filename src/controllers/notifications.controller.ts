@@ -69,8 +69,9 @@ export class NotificationsController {
       },
     },
   })
-  async findByUserId(@requestBody() body: any): Promise<Notifications[]> {
-    return this.notificationsRepository.find(
+  async findByUserId(@requestBody() body: any): Promise<any> {
+    const list: any = [];
+    const data: any = await this.notificationsRepository.find(
       {
         where: {
           userId: body.userId,
@@ -81,6 +82,29 @@ export class NotificationsController {
         strictObjectIDCoercion: true,
       },
     );
+    // console.log('data', data);
+    // const set = new Set(data);
+    // const data1 = [...set];
+    // console.log('data1', data1);
+    // return data1;
+    console.log('data', data);
+    // let notifications: any = data[0];
+
+    data.map((res: any) => {
+      if (list.length === 0) {
+        console.log('hello');
+        list.push(res);
+      } else {
+        list.map((res1: any) => {
+          console.log(res1.placeId, 'testing', res.placeId);
+          if (res1.placeId === res.placeId) {
+            console.log('data exists');
+          } else {
+            list.push(res);
+          }
+        });
+      }
+    });
   }
 
   @patch('/notifications', {

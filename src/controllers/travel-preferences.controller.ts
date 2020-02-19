@@ -693,9 +693,14 @@ export class TravelPreferencesController {
     });
 
     setTimeout(() => {
+      const set = new Set(response);
+      const response1 = [...set];
+      console.log('response1', response1);
+      console.log('response', response);
+
       console.log('Notifications Response : ', response);
 
-      response.map((res: any) => {
+      response1.map((res: any) => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.notificationsRepository.create({
           date: Date.now(),

@@ -805,6 +805,11 @@ export class UserController {
       console.log(body, 'body');
     });
     setTimeout(() => {
+      console.log('response', response);
+      const set = new Set(response);
+      const response1 = [...set];
+      console.log('response1', response1);
+
       // console.log('body', body);
       body.map(async (user: any) => {
         if (user !== undefined) {
@@ -830,11 +835,11 @@ export class UserController {
             message = 'Sorry, There are no suggestions based on your interets';
           }
           console.log(userData.deviceId, 'deviceID');
-          const data = this.notifications(user.deviceId, message);
+          const data = await this.notifications(user.deviceId, message);
           console.log('data1', data);
-          console.log('response', response);
+          // console.log('response', response);
 
-          response.map((res: any) => {
+          response1.map((res: any) => {
             if (res['0'] !== undefined) {
               console.log('travel data', result);
               console.log('type of ', typeof result[0]);
@@ -898,7 +903,7 @@ export class UserController {
   })
   async statusUpdate(): Promise<any> {
     const currentDate: any = moment().format();
-    console.log('current day :', currentDate);
+    // console.log('current day :', currentDate);
     let budgetPerDay = 0;
     const response: any = [];
     const body: any = [];
@@ -916,7 +921,7 @@ export class UserController {
         strictObjectIDCoercion: true,
       },
     );
-    console.log('active preference :', activePreferences);
+    // console.log('active preference :', activePreferences);
     let finalResult: Array<object> = [];
     let selectedSubCategory = '';
     let userData: any;
@@ -928,11 +933,11 @@ export class UserController {
           if (categores.categoryname === 'Culinary') {
             categores.subCategories.map(async (subCategory: any) => {
               if (subCategory.selected === true) {
-                console.log('selected Categories : ', subCategory.categoryname);
+                // console.log('selected Categories : ', subCategory.categoryname);
                 selectedSubCategory = subCategory.categoryname;
-                console.log('selected sub category : ', selectedSubCategory);
+                // console.log('selected sub category : ', selectedSubCategory);
                 budgetPerDay = preference.totalBudget / preference.daysCount;
-                console.log('Budget per day : ', budgetPerDay);
+                // console.log('Budget per day : ', budgetPerDay);
                 const placeType: any = await this.categoriesRepository.find({
                   where: {categoryname: selectedSubCategory},
                 });
@@ -968,21 +973,22 @@ export class UserController {
                     console.log('error');
                   }
                 }
-                console.log(' /********************* / ');
+                // console.log(' /********************* / ');
                 finalResult = await finalResult.slice(0, 1);
-                // console.log('final result : ', finalResult);
+
+                console.log('final result : ', finalResult);
                 const userInterest: any = finalResult.map(
                   (type1: any) => type1.name,
                 );
-                const newResult = {
-                  ...finalResult,
-                  travelPreferenceId: preference.id,
-                };
+                // const newResult = {
+                //   ...finalResult,
+                //   travelPreferenceId: preference.id,
+                // };
                 // finalResult.push({
                 //   travelPreferenceId: preference.id,
                 // });
 
-                response.push(newResult);
+                // response.push(newResult);
               }
               finalResult = [];
             });
@@ -994,6 +1000,11 @@ export class UserController {
 
     setTimeout(() => {
       console.log('body', body);
+      console.log('response', response);
+      const set = new Set(response);
+      const response1 = [...set];
+      console.log('response1', response1);
+
       body.map(async (user: any) => {
         if (user !== undefined) {
           const travelData: any = await this.travelPreferenceRepository.find(
@@ -1017,12 +1028,12 @@ export class UserController {
           }
 
           const data = await this.notifications(user.deviceId, message);
-          console.log('data1', data);
+          // console.log('data1', data);
 
-          response.map((res: any) => {
+          response1.map((res: any) => {
             if (res['0'] !== undefined) {
               if (result.includes(res.travelPreferenceId.toString())) {
-                console.log('notificationIcon:', res['0']);
+                // console.log('notificationIcon:', res['0']);
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 this.notificationsRepository.create({
                   date: Date.now(),

@@ -99,8 +99,12 @@ export class UserController {
     })
     user: Omit<User, 'id'>,
   ): Promise<object> {
+    const email: any = user.email.toLowerCase();
+    user.email = email;
+    console.log('email', email);
+    console.log('useremail', user.email);
     const extUser = await this.userRepository.findOne({
-      where: {email: user.email},
+      where: {email: email},
     });
     if (extUser) {
       return {
@@ -115,7 +119,7 @@ export class UserController {
       const otp = Math.floor(id);
       const mailOptions = {
         from: 'info@staytune.com',
-        to: user.email,
+        to: email,
         subject: 'Email Verification from Staytune',
         html:
           'Hello ' +
@@ -357,8 +361,9 @@ export class UserController {
     },
   })
   async forgotPassword(@requestBody() body: User): Promise<object> {
+    const email: any = body.email.toLowerCase();
     const user = await this.userRepository.findOne({
-      where: {email: body.email},
+      where: {email: email},
     });
     if (user != null) {
       const id = Math.random() * 10000;
@@ -367,9 +372,9 @@ export class UserController {
 
       const mailOptions = {
         from: 'info@staytune.com',
-        to: user.email,
+        to: email,
         subject: 'Email Verification from Staytune',
-        html: 'Hello ' + user.fullname + 'your otp is' + otp,
+        html: 'Hello' + ' ' + user.firstname + ' ' + 'your otp is' + ' ' + otp,
       };
 
       const response = await transporter.sendMail(mailOptions);
@@ -1068,7 +1073,8 @@ export class UserController {
     @requestBody(CredentialsRequestBody) credentials: Credentials,
   ): Promise<any> {
     // ensure the user exists, and the password is correct
-
+    const email: any = credentials.email.toLowerCase();
+    credentials.email = email;
     const mykey = await crypto.createCipher('aes-128-cbc', 'mypassword');
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let mystr = mykey.update(credentials.password, 'utf8', 'hex');

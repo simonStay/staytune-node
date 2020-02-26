@@ -420,10 +420,7 @@ export class TravelPreferencesController {
   ): Promise<object> {
     let listCategories: Array<object> = [];
     let budgetPerDay: any;
-    let result: any = [];
-    let finalResult: Array<object> = [];
-    let response: Array<object> = [];
-    let finalType: any = [];
+
     await this.travelPreferencesRepository.updateById(id, travelPreferences);
     const updatedData = await this.travelPreferencesRepository.findById(id);
     //console.log(updatedData, 'updateddata');
@@ -710,10 +707,10 @@ export class TravelPreferencesController {
             budget.entExpenditure !== undefined
           ) {
             let dayBudget = budget.mealsExpenditure + budget.entExpenditure;
-            let startDate = moment(
-              travelPreferenceData.travelDate,
-              'DD-MM-YYYY',
-            );
+            // let startDate = moment(
+            //   travelPreferenceData.travelDate,
+            //   'DD-MM-YYYY',
+            // );
             let a = moment(startDate, 'DD-MM-YYYY');
             if (budget.day) {
               const nextDay = a.add(budget.day - 1, 'days');

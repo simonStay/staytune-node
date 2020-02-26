@@ -310,6 +310,38 @@ export class UserController {
     };
   }
 
+  @patch('/usersValidation/{id}', {
+    responses: {
+      '204': {
+        description: 'User PATCH success',
+      },
+    },
+  })
+  async updateByIdValidation(
+    @param.path.string('id') id: string,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(User, {partial: true}),
+        },
+      },
+    })
+    user: User,
+  ): Promise<object> {
+    await this.userRepository.updateById(id, user);
+
+    const updatedData = await this.userRepository.findById(id);
+    // console.log(checkUser, '5d9ab8211113661189ffb735');
+
+    // console.log(updatedUser, 'userupdated');
+
+    return {
+      status: 'success',
+      message: 'successfully Updated',
+      data: updatedData,
+    };
+  }
+
   @put('/users/{id}', {
     responses: {
       '204': {

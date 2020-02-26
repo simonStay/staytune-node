@@ -73,18 +73,19 @@ export class TravelPreferencesController {
     );
     let tid = '';
     tid = travelData.id;
-    console.log('test1', travelData.id);
+    console.log('Travel User ID: ', travelData.userId);
+    console.log('Travel Preference ID: ', travelData.id);
     travelData.userCheck = '1' + travelData.userId;
-    console.log('travelDate:', travelData.travelDate);
+    console.log('TravelDate: ', travelData.travelDate);
 
     const startDate = moment(travelData.travelDate).format();
 
     const a: any = moment(startDate).format();
-    console.log('startdate:', startDate);
+    console.log('Travel Start-date:', startDate);
     console.log(' a :', a);
     const endDate = moment(startDate).add(travelData.daysCount, 'days');
     const dates: any = moment(endDate).format();
-    console.log('end date : ', dates);
+    console.log('Travel End-date : ', dates);
     travelData.endDate = dates;
 
     await this.travelPreferencesRepository.updateById(
@@ -106,14 +107,14 @@ export class TravelPreferencesController {
           },
         );
         let categories = preferenceCategoriesData[0].categories;
-        console.log('surya categories : ', categories);
+        console.log('Selected categories : ', categories);
         if (categories) {
           finalList = finalList.concat(categories);
         }
       }
     }
 
-    console.log('final list by surya today : ', finalList);
+    console.log('final list : ', finalList);
 
     const mainCategories = await this.categoriesRepository.find({
       where: {categoryname: {inq: finalList}},
@@ -133,7 +134,7 @@ export class TravelPreferencesController {
       });
 
       if (i === mainCategories.length - 1) {
-        console.log('test2', tid);
+        // console.log('test2', tid);
         return {
           status: 'Success',
           id: tid,

@@ -287,16 +287,18 @@ export class UserController {
     })
     user: User,
   ): Promise<object> {
-    const mykey = crypto.createCipher('aes-128-cbc', 'mypassword');
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    let mystr = mykey.update(user.password, 'utf8', 'hex');
-    mystr = mystr + mykey.final('hex');
+    if (user.password) {
+      const mykey = crypto.createCipher('aes-128-cbc', 'mypassword');
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      let mystr = mykey.update(user.password, 'utf8', 'hex');
+      mystr = mystr + mykey.final('hex');
 
-    // eslint-disable-next-line require-atomic-updates
-    user.password = mystr;
-    console.log('user', user.password);
-
-    await this.userRepository.updateById(id, user);
+      // eslint-disable-next-line require-atomic-updates
+      user.password = mystr;
+      await this.userRepository.updateById(id, user);
+    } else {
+      await this.userRepository.updateById(id, user);
+    }
 
     const updatedData = await this.userRepository.findById(id);
     // console.log(checkUser, '5d9ab8211113661189ffb735');

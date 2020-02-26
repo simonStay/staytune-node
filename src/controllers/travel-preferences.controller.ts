@@ -452,112 +452,6 @@ export class TravelPreferencesController {
       budgetPerDay = 0;
     }
 
-    // const locationData = {
-    //   lat: userData.lat,
-    //   long: userData.long,
-    // };
-
-    // listCategories = await listCategories.slice(0, 1);
-
-    // listCategories.map(async (type: any) => {
-    //   console.log('Category Name : ', type);
-    //   const placeType: any = await this.categoriesRepository.find({
-    //     where: {categoryname: type},
-    //   });
-
-    //   result = await this.getTypes(placeType[0].googleCategory, locationData);
-
-    //   if (result.length !== 0) {
-    //     if (budgetPerDay !== 0) {
-    //       if (budgetPerDay >= 100) {
-    //         finalResult = [];
-    //         result.map((rating: any) => {
-    //           if (rating.rating >= 3) {
-    //             console.log('shop name : ', rating.name);
-
-    //             finalResult = finalResult.concat(rating);
-    //           }
-    //         });
-    //       } else if (budgetPerDay < 100 && budgetPerDay >= 50) {
-    //         finalResult = [];
-    //         result.map((rating: any) => {
-    //           if (rating.rating >= 2 && rating.rating < 3) {
-    //             console.log('Budget between 50 and 100 : ', rating.name);
-
-    //             finalResult = finalResult.concat(rating);
-    //           }
-    //         });
-    //       } else if (budgetPerDay < 50) {
-    //         finalResult = [];
-    //         result.map((rating: any) => {
-    //           if (rating.rating < 2) {
-    //             console.log('Budget below 50 $ : ', rating.name);
-
-    //             finalResult = finalResult.concat(rating);
-    //           }
-    //         });
-    //       } else {
-    //         console.log('error');
-    //       }
-    //     } else {
-    //       finalResult = [];
-    //       result.map((rating: any) => {
-    //         if (rating.rating < 5) {
-    //           console.log('No Budget : ', rating.name);
-
-    //           finalResult = finalResult.concat(rating);
-    //         }
-    //       });
-    //     }
-    //     finalResult = await finalResult.slice(0, 4);
-
-    //     finalResult.map(async (type1: any) => {
-    //       finalType = finalType.concat(type1.name);
-    //     });
-    //     console.log('finaltYPE', finalType);
-    //     const data = {
-    //       id: userData.deviceId,
-    //     };
-    //     await this.notifications(data, finalType, placeType[0].googleCategory);
-    //   }
-
-    //   // eslint-disable-next-line require-atomic-updates
-    //   // eslint-disable-next-line @typescript-eslint/await-thenable
-    //   console.log('Final Result : ', finalResult);
-    //   response = await response.concat(finalResult);
-    // });
-
-    // setTimeout(() => {
-    //   console.log('Notifications Response : ', response);
-    //   console.log('id', id);
-
-    //   response.map((res: any) => {
-    //     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    //     this.notificationsRepository.create({
-    //       date: Date.now(),
-    //       notification:
-    //         'Hello' +
-    //         ' ' +
-    //         userData.firstname +
-    //         ' ' +
-    //         userData.lastname +
-    //         ',' +
-    //         'These are some of the famous places near you' +
-    //         ' ' +
-    //         ' ' +
-    //         res.name,
-    //       placeId: res.place_id,
-    //       userId: userData.id,
-    //       lat: res.geometry.location.lat,
-    //       long: res.geometry.location.lng,
-    //       icon: res.icon,
-    //       name: res.name,
-    //       travelPreferenceId: id,
-    //     });
-    //     console.log('lat : ', res.geometry.location.lat);
-    //   });
-    // }, 3000);
-
     return {
       status: 'success',
       message: 'successfully Updated',
@@ -936,7 +830,7 @@ export class TravelPreferencesController {
         body.lat +
         ',' +
         body.long +
-        '&radius=1500&type=' +
+        '&radius=2000&type=' +
         type +
         '&key=AIzaSyBI_ae3Hvrib8Bao3_WrhXLEHKuGj1J8pQ',
       {

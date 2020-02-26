@@ -387,13 +387,15 @@ export class UserController {
 
   public async getTypes(type: any, body: any) {
     let data: any = {};
+    console.log('body', body);
+    console.log(type, 'type');
 
     data = await axios.post(
       'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' +
         body.lat +
         ',' +
         body.long +
-        '&radius=700&type=' +
+        '&radius=2000&type=' +
         type +
         '&key=AIzaSyBI_ae3Hvrib8Bao3_WrhXLEHKuGj1J8pQ',
       {
@@ -413,44 +415,6 @@ export class UserController {
 
     return finalResponse;
   }
-
-  // public async notifications(data: any, text: any, parentCategory: any) {
-  //   console.log(text, 'text');
-  //   console.log('hello');
-
-  //   const information: any = {
-  //     // eslint-disable-next-line @typescript-eslint/camelcase
-  //     app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
-
-  //     // eslint-disable-next-line @typescript-eslint/camelcase
-  //     include_player_ids: [data.id],
-
-  //     contents: {
-  //       en:
-  //         'These are the famous' +
-  //         ' ' +
-  //         parentCategory +
-  //         ' ' +
-  //         'near you' +
-  //         ' ' +
-  //         text,
-  //     },
-  //   };
-  //   const details = axios.post(
-  //     'https://onesignal.com/api/v1/notifications',
-  //     information,
-  //     {
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         Authorization:
-  //           'Basic NDA5YWNmM2UtODFhZi00MzMzLTg0OTItYTFiODg0OTA4Njlk',
-  //       },
-  //     },
-  //   );
-  //   // console.log('details', details);
-
-  //   // console.log(data, text, 'any');
-  // }
 
   public async notifications(data: any, message: any) {
     const information: any = {
@@ -745,14 +709,17 @@ export class UserController {
               const placeType: any = await this.categoriesRepository.find({
                 where: {categoryname: selectedSubCategory},
               });
+              console.log(placeType[0].googleCategory, 'placessss');
               const locationData = {
                 lat: userData.lat,
                 long: userData.long,
               };
+              console.log(locationData, 'dataloc');
               const result = await this.getTypes(
                 placeType[0].googleCategory,
                 locationData,
               );
+              console.log('result', result);
               // console.log('Near preferences types : ', result);
               if (result.length !== 0) {
                 if (budgetPerDay >= 100) {
@@ -780,7 +747,7 @@ export class UserController {
               // const notificationResult: any = [];
               console.log(' /********************* / ');
               finalResult = await finalResult.slice(0, 1);
-              // console.log('final result : ', finalResult);
+              console.log('final result : ', finalResult);
               const userInterest: any = finalResult.map(
                 (type1: any) => type1.name,
               );
@@ -836,8 +803,8 @@ export class UserController {
             message = 'Sorry, There are no suggestions based on your interets';
           }
           console.log(userData.deviceId, 'deviceID');
+          console.log('message', message);
           const data = await this.notifications(user.deviceId, message);
-          console.log('data1', data);
           // console.log('response', response);
 
           response1.map((res: any) => {
@@ -849,6 +816,7 @@ export class UserController {
               // console.log('notificationIcon:', res['0']);
               if (result.includes(res.travelPreferenceId.toString())) {
                 console.log('each id ', res.travelPreferenceId);
+                console.log('resss', res['0'].name);
 
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 this.notificationsRepository.create({

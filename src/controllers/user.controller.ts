@@ -760,8 +760,8 @@ export class UserController {
               });
               console.log(placeType[0].googleCategory, 'placessss');
               const locationData = {
-                lat: userData.lat,
-                long: userData.long,
+                lat: 30.2672,
+                long: -97.7431,
               };
               console.log(locationData, 'dataloc');
               const result = await this.getTypes(
@@ -960,8 +960,8 @@ export class UserController {
                   where: {categoryname: selectedSubCategory},
                 });
                 const locationData = {
-                  lat: userData.lat,
-                  long: userData.long,
+                  lat: 30.2672,
+                  long: -97.7431,
                 };
                 const result = await this.getTypes(
                   placeType[0].googleCategory,

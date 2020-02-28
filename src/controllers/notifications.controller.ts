@@ -82,29 +82,7 @@ export class NotificationsController {
         strictObjectIDCoercion: true,
       },
     );
-    // // console.log('data', data);
-    // // const set = new Set(data);
-    // // const data1 = [...set];
-    // // console.log('data1', data1);
-    // // return data1;
-    // console.log('data', data);
-    // // let notifications: any = data[0];
-
-    // data.map((res: any) => {
-    //   if (list.length === 0) {
-    //     console.log('hello');
-    //     list.push(res);
-    //   } else {
-    //     list.map((res1: any) => {
-    //       console.log(res1.placeId, 'testing', res.placeId);
-    //       if (res1.placeId === res.placeId) {
-    //         console.log('data exists');
-    //       } else {
-    //         list.push(res);
-    //       }
-    //     });
-    //   }
-    // });
+    console.log('data', data);
     if (data.length !== 0) {
       return data;
     } else {

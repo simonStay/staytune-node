@@ -82,7 +82,7 @@ export class TravelPreferencesController {
 
     const a: any = moment(startDate).format();
     console.log('Travel Start-date:', startDate);
-    console.log(' a :', a);
+    console.log(' converted startDate :', a);
     const endDate = moment(startDate).add(travelData.daysCount, 'days');
     const dates: any = moment(endDate).format();
     console.log('Travel End-date : ', dates);
@@ -134,7 +134,6 @@ export class TravelPreferencesController {
       });
 
       if (i === mainCategories.length - 1) {
-        // console.log('test2', tid);
         return {
           status: 'Success',
           id: tid,
@@ -202,7 +201,7 @@ export class TravelPreferencesController {
         strictObjectIDCoercion: true,
       },
     );
-    console.log(listPreferences);
+    console.log('list preferences', listPreferences);
     return listPreferences;
   }
 
@@ -249,10 +248,10 @@ export class TravelPreferencesController {
     const oldSelectedData: any = await travelData.selectedTravelPreferences;
     const newSelectedData: any = travelPreferences.selectedTravelPreferences;
     if (oldSelectedData) {
-      //console.log('data values : ', oldSelectedData);
+      console.log('data values : ', oldSelectedData);
       let j: any;
       for (j = 0; j < oldSelectedData.length; j++) {
-        // console.log('selected pt : ', oldSelectedData[j].name);
+        console.log('selected preference type : ', oldSelectedData[j].name);
 
         if (oldSelectedData[j].selected === true) {
           const preferenceCategoriesData = await this.travelPreferenceTypesRepository.find(
@@ -260,8 +259,9 @@ export class TravelPreferencesController {
               where: {name: oldSelectedData[j].name},
             },
           );
+          console.log('preference categories data', preferenceCategoriesData);
           let categories = preferenceCategoriesData[0].categories;
-          console.log('surya categories : ', categories);
+          console.log('categories : ', categories);
           if (categories) {
             oldPreferencesTypes = oldPreferencesTypes.concat(categories);
           }
@@ -279,7 +279,7 @@ export class TravelPreferencesController {
             },
           );
           let categories = preferenceCategoriesData[0].categories;
-          console.log('surya categories : ', categories);
+          console.log('categories : ', categories);
           if (categories) {
             newPreferencesTypes = newPreferencesTypes.concat(categories);
           }
@@ -305,7 +305,7 @@ export class TravelPreferencesController {
     // const a: any = moment(startDate, 'DD-MM-YYYY');
     const a: any = moment(startDate).format();
     console.log('startdate:', startDate);
-    console.log(' a :', a);
+    console.log(' formated start date :', a);
     const endDate = moment(startDate).add(travelPreferences.daysCount, 'days');
     const dates: any = moment(endDate).format();
     console.log('end date : ', dates);
@@ -342,15 +342,14 @@ export class TravelPreferencesController {
           where: {parentcategory: mainCategories[i].categoryname},
         });
         // console.log(subCategories, 'sub');
+        console.log('sub categories', subCategories);
         categoriesList.push({
           id: mainCategories[i].id,
           categoryname: mainCategories[i].categoryname,
           subCategories: subCategories,
         });
-
         if (i === mainCategories.length - 1) {
-          console.log('test2', tid);
-          console.log(categoriesList, 'category');
+          console.log('category', categoriesList);
           return {
             status: 'Success',
             id: tid,
@@ -423,9 +422,7 @@ export class TravelPreferencesController {
 
     await this.travelPreferencesRepository.updateById(id, travelPreferences);
     const updatedData = await this.travelPreferencesRepository.findById(id);
-    //console.log(updatedData, 'updateddata');
-    // console.log(updatedUser, 'userupdated');
-    //console.log('Travel Preference Data : ', updatedData);
+    console.log('Travel Preference Data : ', updatedData);
     const userData = await this.userRepository.findById(updatedData.userId);
     console.log('User Data : ', userData);
     console.log('device id : ', userData.deviceId);
@@ -484,6 +481,7 @@ export class TravelPreferencesController {
     const updatedData = await this.travelPreferencesRepository.findById(
       travelPreferences.id,
     );
+    console.log('updated data', updatedData);
 
     const userData = await this.userRepository.findById(updatedData.userId);
     console.log('User Data : ', userData);
@@ -571,7 +569,7 @@ export class TravelPreferencesController {
         finalResult.map(async (type1: any) => {
           finalType = finalType.concat(type1.name);
         });
-        console.log('finaltYPE', finalType);
+        console.log('finaltype', finalType);
         const data = {
           id: userData.deviceId,
         };
@@ -615,7 +613,6 @@ export class TravelPreferencesController {
           name: res.name,
           travelPreferenceId: travelPreferences.id,
         });
-        console.log('lat : ', res.geometry.location.lat);
       });
     }, 3000);
   }
@@ -659,34 +656,13 @@ export class TravelPreferencesController {
     const travelPreferenceData = await this.travelPreferencesRepository.findById(
       body.id,
     );
-    // const budgetPerDay = data.totalBudget / data.daysCount;
     let daysCompleted = 0;
     if (travelPreferenceData.travelDate) {
-      // const startDate = moment().format(
-      //   travelPreferenceData.travelDate,
-      //   'DD-MM-YYYY',
-      // );
       const startDate = moment(travelPreferenceData.travelDate).format();
-      console.log(startDate, 'startdate');
+      console.log('startDate', startDate);
 
       const currentDate = moment().format();
       console.log('current date', currentDate);
-      // let a = moment(startDate, 'DD-MM-YYYY');
-      // console.log('a', a);
-      // let b = moment(currentDate, 'DD-MM-YYYY');
-      // console.log('b', b);
-
-      //   if (startDate) {
-      //     // console.log('start date ', startDate);
-      //     // console.log('current date ', currentDate);
-      //     // daysCompleted = b.diff(a, 'days');
-      //     // console.log('Completed days', daysCompleted);
-      //     // let differenceInTime = currentDate.getTime() - startDate.getTime();
-      //     // To calculate the no. of days between two dates
-      //     // let days = differenceInTime / (1000 * 3600 * 24);
-      //     // console.log('Completed days', days);
-      //   }
-      // }
 
       let response: Array<object> = [];
 
@@ -698,7 +674,7 @@ export class TravelPreferencesController {
           strictObjectIDCoercion: true,
         },
       );
-      console.log(oldBudgetInfo, 'budgetrepo');
+      console.log('oldBudgetInfo', oldBudgetInfo);
       let expenditure = 0;
       if (oldBudgetInfo) {
         oldBudgetInfo.forEach(budget => {
@@ -707,14 +683,11 @@ export class TravelPreferencesController {
             budget.entExpenditure !== undefined
           ) {
             let dayBudget = budget.mealsExpenditure + budget.entExpenditure;
-            // let startDate = moment(
-            //   travelPreferenceData.travelDate,
-            //   'DD-MM-YYYY',
-            // );
+
             let a = moment(startDate, 'DD-MM-YYYY');
             if (budget.day) {
               const nextDay = a.add(budget.day - 1, 'days');
-              console.log(nextDay, 'next');
+              console.log('next day', nextDay);
 
               response.push({
                 id: budget.day,
@@ -728,10 +701,8 @@ export class TravelPreferencesController {
             expenditure = expenditure + dayBudget;
           }
         });
-
-        // response = response.concat(oldBudgetInfo);
       }
-      console.log(response);
+      console.log('response:', response);
 
       let totalBudget: any;
       let daysCount: any;
@@ -745,13 +716,13 @@ export class TravelPreferencesController {
       const remaingBudget = totalBudget - totalExpen;
       daysCount = travelPreferenceData.daysCount;
       daysLeft = daysCount - completedDays;
-      console.log(daysLeft, 'daysleft');
-      console.log(completedDays, 'days');
+      console.log('daysleft', daysLeft);
+      console.log('days', completedDays);
       if (daysLeft !== 0) {
         let startDate = moment(travelPreferenceData.travelDate, 'DD-MM-YYYY');
         let a = moment(startDate, 'DD-MM-YYYY');
         const nextDay = a.add(completedDays - 1, 'days');
-        console.log(nextDay, 'next');
+        console.log('nextDay', nextDay);
 
         const budgetPerDay = remaingBudget / daysLeft;
         const budgetDivide = budgetPerDay / 2;
@@ -839,12 +810,9 @@ export class TravelPreferencesController {
     );
 
     let finalResponse: any = [];
-    //let result: any = [];
-    //let response1 = await data.data.results.map((result: any) => result.name);
-    // response1 = await response1.concat(data.data.results);
+
     finalResponse = await finalResponse.concat(data.data.results);
-    // console.log(finalResponse, 'final');
-    // console.log(data, 'datadad');
+    console.log('final', finalResponse);
 
     return finalResponse;
   }

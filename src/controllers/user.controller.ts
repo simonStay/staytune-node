@@ -135,7 +135,7 @@ export class UserController {
         if (error) {
           console.log(error);
         } else {
-          console.log('Email sent: ' + info.message);
+          console.log('Email sent: ');
         }
       });
 
@@ -148,6 +148,7 @@ export class UserController {
       user.password = mystr;
 
       const newUser = await this.userRepository.create(user);
+      console.log('new User', newUser);
       return {
         id: newUser.id,
         message: 'User has been registered successfully ',
@@ -193,21 +194,6 @@ export class UserController {
     currentUserProfile.id = currentUserProfile[securityId];
     return this.userRepository.find(filter);
   }
-
-  // @get('/surya', {
-  //   responses: {
-  //     '200': {
-  //       description: 'Array of User model instances',
-  //       headers: {
-  //         'content-type': 'application/json',
-  //       },
-  //     },
-  //   },
-  // })
-  // async test() {
-  //   console.log('hello surya by cron');
-  //   return 'hai';
-  // }
 
   @get('/users/me', {
     responses: {
@@ -304,6 +290,7 @@ export class UserController {
     // console.log(checkUser, '5d9ab8211113661189ffb735');
 
     // console.log(updatedUser, 'userupdated');
+    console.log('updated user', updatedData);
 
     return {
       status: 'success',
@@ -312,37 +299,37 @@ export class UserController {
     };
   }
 
-  @patch('/usersValidation/{id}', {
-    responses: {
-      '204': {
-        description: 'User PATCH success',
-      },
-    },
-  })
-  async updateByIdValidation(
-    @param.path.string('id') id: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(User, {partial: true}),
-        },
-      },
-    })
-    user: User,
-  ): Promise<object> {
-    await this.userRepository.updateById(id, user);
+  // @patch('/usersValidation/{id}', {
+  //   responses: {
+  //     '204': {
+  //       description: 'User PATCH success',
+  //     },
+  //   },
+  // })
+  // async updateByIdValidation(
+  //   @param.path.string('id') id: string,
+  //   @requestBody({
+  //     content: {
+  //       'application/json': {
+  //         schema: getModelSchemaRef(User, {partial: true}),
+  //       },
+  //     },
+  //   })
+  //   user: User,
+  // ): Promise<object> {
+  //   await this.userRepository.updateById(id, user);
 
-    const updatedData = await this.userRepository.findById(id);
-    // console.log(checkUser, '5d9ab8211113661189ffb735');
+  //   const updatedData = await this.userRepository.findById(id);
+  //   // console.log(checkUser, '5d9ab8211113661189ffb735');
 
-    // console.log(updatedUser, 'userupdated');
+  //   // console.log(updatedUser, 'userupdated');
 
-    return {
-      status: 'success',
-      message: 'successfully Updated',
-      data: updatedData,
-    };
-  }
+  //   return {
+  //     status: 'success',
+  //     message: 'successfully Updated',
+  //     data: updatedData,
+  //   };
+  // }
 
   @put('/users/{id}', {
     responses: {
@@ -369,32 +356,32 @@ export class UserController {
     await this.userRepository.deleteById(id);
   }
 
-  @post('/users/{email}/', {
-    responses: {
-      '200': {
-        description: 'Array of Admin model instances',
-        headers: {
-          'content-type': 'application/json',
-        },
-      },
-    },
-  })
-  async update(@param.path.string('email') email: string): Promise<object> {
-    const User1 = await this.userRepository.findOne({where: {email: email}});
-    let Id: string;
-    if (User1 !== null) {
-      Id = User1.id;
+  // @post('/users/{email}/', {
+  //   responses: {
+  //     '200': {
+  //       description: 'Array of Admin model instances',
+  //       headers: {
+  //         'content-type': 'application/json',
+  //       },
+  //     },
+  //   },
+  // })
+  // async update(@param.path.string('email') email: string): Promise<object> {
+  //   const User1 = await this.userRepository.findOne({where: {email: email}});
+  //   let Id: string;
+  //   if (User1 !== null) {
+  //     Id = User1.id;
 
-      User1.verified = true;
-      await this.userRepository.updateById(Id, User1);
-      return {
-        data: User1.verified,
-      };
-    }
-    return {
-      data: 'false',
-    };
-  }
+  //     User1.verified = true;
+  //     await this.userRepository.updateById(Id, User1);
+  //     return {
+  //       data: User1.verified,
+  //     };
+  //   }
+  //   return {
+  //     data: 'false',
+  //   };
+  // }
 
   @post('/user/forgot-password', {
     responses: {
@@ -412,7 +399,7 @@ export class UserController {
     if (user != null) {
       const id = Math.random() * 10000;
       const otp = Math.floor(id);
-      console.log(otp, 'otp');
+      console.log('otp', otp);
 
       const mailOptions = {
         from: 'info@staytune.com',
@@ -455,11 +442,9 @@ export class UserController {
     );
 
     let finalResponse: any = [];
-    //let result: any = [];
-    //let response1 = await data.data.results.map((result: any) => result.name);
-    // response1 = await response1.concat(data.data.results);
+
     finalResponse = await finalResponse.concat(data.data.results);
-    // console.log(finalResponse, 'final');
+    //  console.log(finalResponse, 'final');
     // console.log(data, 'datadad');
 
     return finalResponse;
@@ -520,7 +505,7 @@ export class UserController {
         status: '400',
       };
     } else {
-      console.log(location.lat, location.long, body.lat, body.long, 'location');
+      console.log('location', location.lat, location.long, body.lat, body.long);
       const preference: any = await this.travelPreferenceRepository.find(
         {
           where: {userId: body.userId},
@@ -537,16 +522,16 @@ export class UserController {
       preference.map(async (data2: any) => {
         if (data2.travelDate) {
           const currentDate: any = moment().format('YYYY-MM-DD');
-          console.log(currentDate, 'if current date is not between ');
+          console.log('if current date is not between ', currentDate);
 
           const a: any = moment(data2.travelDate, 'DD-MM-YYYY');
           const b: any = moment(data2.travelDate, 'DD-MM-YYYY');
           const startDate = b.format('YYYY-MM-DD');
-          console.log(startDate, 'startdate');
+          console.log('startdate', startDate);
           endDate = a.add(data2.daysCount, 'days');
           const dates: any = endDate.format('YYYY-MM-DD');
 
-          console.log(dates, 'dates');
+          console.log('end date', dates);
 
           if (
             moment(currentDate).isBetween(startDate, dates) ||
@@ -562,15 +547,15 @@ export class UserController {
                   }
                 });
               });
-              console.log(data2.totalBudget, 'total123');
-              console.log(data2.daysCount, 'count123');
+              console.log('total budget', data2.totalBudget);
+              console.log('days count', data2.daysCount);
               budgetPerDay = data2.totalBudget / data2.daysCount;
             }
           }
         }
       });
-      console.log(value, 'valuees');
-      console.log(budgetPerDay, 'budget');
+      console.log('valuees', value);
+      console.log('budget', budgetPerDay);
 
       value.map(async (type: any) => {
         console.log(type, 'type');
@@ -636,34 +621,7 @@ export class UserController {
         response = response.concat(finalResult);
       });
 
-      console.log(response, 'respnse');
-
-      // setTimeout(() => {
-      //   response.map((value2: any) => {
-      //     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      //     this.notificationsRepository.create({
-      //       date: Date.now(),
-      //       notification:
-      //         'Hello' +
-      //         ' ' +
-      //         body.userName +
-      //         ',' +
-      //         'These are some of the famous places near you' +
-      //         ' ' +
-      //         ' ' +
-      //         value2.name,
-      //       placeId: value2.place_id,
-      //       userId: body.userId,
-      //     });
-      //   });
-      //   // console.log(notify.notification, 'notifysss');
-      // }, 3000);
-      // const notifylist = await this.notificationsRepository.find({
-      //   where: {
-      //     userId: body.userId,
-      //   },
-      // });
-      // console.log(notifylist, 'suryaaa');
+      console.log('response: ', response);
 
       response.map(async (value2: any) => {
         const notification =
@@ -685,8 +643,10 @@ export class UserController {
           lng: value2.geometry.location.lng,
         };
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        const test = await this.notificationsRepository.create(data);
-        console.log('test : ', test);
+        const NotificationData = await this.notificationsRepository.create(
+          data,
+        );
+        console.log('Notification Data : ', NotificationData);
       });
 
       if (value) {
@@ -807,6 +767,7 @@ export class UserController {
                 ...finalResult,
                 travelPreferenceId: preference.id,
               };
+              console.log('new result', newResult);
               // finalResult.push({
               //   travelPreferenceId: preference.id,
               // });
@@ -818,8 +779,6 @@ export class UserController {
         });
         body.push(userData);
       }
-      // console.log(userData, 'userData');
-      // console.log(body, 'body');
     });
     setTimeout(() => {
       console.log('response', response);
@@ -827,7 +786,6 @@ export class UserController {
       const response1 = [...set];
       console.log('response1', response1);
 
-      // console.log('body', body);
       body.map(async (user: any) => {
         if (user !== undefined) {
           console.log('user info', user.id);
@@ -859,10 +817,9 @@ export class UserController {
           response1.map((res: any) => {
             if (res['0'] !== undefined) {
               console.log('travel data', result);
-              console.log('type of ', typeof result[0]);
-              console.log('type of preferenc', typeof res.travelPreferenceId);
+              console.log('type of :', typeof result[0]);
+              console.log('type of preference', typeof res.travelPreferenceId);
 
-              // console.log('notificationIcon:', res['0']);
               if (result.includes(res.travelPreferenceId.toString())) {
                 console.log('each id ', res.travelPreferenceId);
                 console.log('resss', res['0'].name);
@@ -921,7 +878,7 @@ export class UserController {
   })
   async statusUpdate(): Promise<any> {
     const currentDate: any = moment().format();
-    // console.log('current day :', currentDate);
+    console.log('current day :', currentDate);
     let budgetPerDay = 0;
     const response: any = [];
     const body: any = [];
@@ -939,7 +896,7 @@ export class UserController {
         strictObjectIDCoercion: true,
       },
     );
-    // console.log('active preference :', activePreferences);
+    console.log('active preference :', activePreferences);
     let finalResult: Array<object> = [];
     let selectedSubCategory = '';
     let userData: any;
@@ -951,11 +908,11 @@ export class UserController {
           if (categores.categoryname === 'Culinary') {
             categores.subCategories.map(async (subCategory: any) => {
               if (subCategory.selected === true) {
-                // console.log('selected Categories : ', subCategory.categoryname);
+                console.log('selected Categories : ', subCategory.categoryname);
                 selectedSubCategory = subCategory.categoryname;
-                // console.log('selected sub category : ', selectedSubCategory);
+                console.log('selected sub category : ', selectedSubCategory);
                 budgetPerDay = preference.totalBudget / preference.daysCount;
-                // console.log('Budget per day : ', budgetPerDay);
+                console.log('Budget per day : ', budgetPerDay);
                 const placeType: any = await this.categoriesRepository.find({
                   where: {categoryname: selectedSubCategory},
                 });
@@ -967,7 +924,7 @@ export class UserController {
                   placeType[0].googleCategory,
                   locationData,
                 );
-                // console.log('Near preferences types : ', result);
+                console.log('Near preferences types : ', result);
                 if (result.length !== 0) {
                   if (budgetPerDay >= 100) {
                     result.map((rating: any) => {
@@ -998,15 +955,6 @@ export class UserController {
                 const userInterest: any = finalResult.map(
                   (type1: any) => type1.name,
                 );
-                // const newResult = {
-                //   ...finalResult,
-                //   travelPreferenceId: preference.id,
-                // };
-                // finalResult.push({
-                //   travelPreferenceId: preference.id,
-                // });
-
-                // response.push(newResult);
               }
               finalResult = [];
             });
@@ -1119,6 +1067,7 @@ export class UserController {
     // ensure the user exists, and the password is correct
     const email: any = credentials.email.toLowerCase();
     credentials.email = email;
+    console.log('email', credentials.email);
     const mykey = await crypto.createCipher('aes-128-cbc', 'mypassword');
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let mystr = mykey.update(credentials.password, 'utf8', 'hex');
@@ -1126,7 +1075,7 @@ export class UserController {
 
     // eslint-disable-next-line require-atomic-updates
     credentials.password = mystr;
-    console.log(credentials.password, 'pnascnnn');
+    console.log('encrypted password', credentials.password);
 
     const extUser: any = await this.userRepository.findOne({
       where: {email: credentials.email, password: credentials.password},
@@ -1171,6 +1120,7 @@ export class UserController {
         id = user.id;
         await this.userRepository.updateById(id, user);
         const userData = await this.userRepository.findById(id);
+        console.log('user Data', userData);
 
         // convert a User object into a UserProfile object (reduced set of properties)
         const userProfile = this.userService.convertToUserProfile(user);

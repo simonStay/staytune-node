@@ -79,6 +79,7 @@ export class NotificationsController {
           userId: body.userId,
         },
         order: ['date DESC'],
+        limit: 20,
       },
       {
         strictObjectIDCoercion: true,
@@ -86,6 +87,7 @@ export class NotificationsController {
     );
     console.log('data', data);
     if (data.length !== 0) {
+      console.log('hello');
       return data;
     } else {
       return [];

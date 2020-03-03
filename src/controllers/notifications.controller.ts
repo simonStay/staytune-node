@@ -70,6 +70,8 @@ export class NotificationsController {
     },
   })
   async findByUserId(@requestBody() body: any): Promise<any> {
+    console.log('post/notifications-list');
+    console.log('***********');
     const list: any = [];
     const data: any = await this.notificationsRepository.find(
       {
@@ -140,6 +142,8 @@ export class NotificationsController {
   async findBytravelId(
     @param.path.string('travelPreferenceId') travelPreferenceId: string,
   ): Promise<any> {
+    console.log('get/notificationlist/travelPreferenceId');
+    console.log('***********');
     const data: any = await this.notificationsRepository.find(
       {
         where: {

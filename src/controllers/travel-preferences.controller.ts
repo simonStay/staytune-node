@@ -68,6 +68,8 @@ export class TravelPreferencesController {
     })
     travelPreferences: Omit<TravelPreferences, 'id'>,
   ): Promise<any> {
+    console.log('post/travelpreferences');
+    console.log('********');
     const travelData = await this.travelPreferencesRepository.create(
       travelPreferences,
     );
@@ -191,6 +193,8 @@ export class TravelPreferencesController {
     },
   })
   async findByUserId(@requestBody() body: any): Promise<TravelPreferences[]> {
+    console.log('post/travel-prefences/userId');
+    console.log('***********');
     const userId = body.userId;
     const listPreferences = await this.travelPreferencesRepository.find(
       {
@@ -225,6 +229,8 @@ export class TravelPreferencesController {
     })
     travelPreferences: TravelPreferences,
   ): Promise<any> {
+    console.log('post/travel-preference/update');
+    console.log('**********');
     const travelData = await this.travelPreferencesRepository.findById(
       travelPreferences.id,
     );
@@ -380,6 +386,8 @@ export class TravelPreferencesController {
     @param.query.object('where', getWhereSchemaFor(TravelPreferences))
     where?: Where<TravelPreferences>,
   ): Promise<Count> {
+    console.log('ptach/travel-preferences');
+    console.log('***************');
     return this.travelPreferencesRepository.updateAll(travelPreferences, where);
   }
 
@@ -417,6 +425,8 @@ export class TravelPreferencesController {
     })
     travelPreferences: TravelPreferences,
   ): Promise<object> {
+    console.log('patch/travel-preference/id');
+    console.log('*********');
     let listCategories: Array<object> = [];
     let budgetPerDay: any;
 
@@ -471,6 +481,8 @@ export class TravelPreferencesController {
     })
     travelPreferences: any,
   ): Promise<void> {
+    console.log('post/travel-preferencesNotifications');
+    console.log('*********');
     let listCategories: Array<object> = [];
     let budgetPerDay: any;
     let result: any = [];
@@ -653,6 +665,8 @@ export class TravelPreferencesController {
     },
   })
   async budgetInfo(@requestBody() body: any): Promise<any> {
+    console.log('post/budget-info');
+    console.log('***********');
     const travelPreferenceData = await this.travelPreferencesRepository.findById(
       body.id,
     );

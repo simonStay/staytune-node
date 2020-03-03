@@ -148,6 +148,8 @@ export class UserController {
       user.password = mystr;
 
       const newUser = await this.userRepository.create(user);
+      console.log('user/create');
+      console.log('**********');
       console.log('new User', newUser);
       return {
         id: newUser.id,
@@ -193,28 +195,6 @@ export class UserController {
   ): Promise<User[]> {
     currentUserProfile.id = currentUserProfile[securityId];
     return this.userRepository.find(filter);
-  }
-
-  @get('/users/me', {
-    responses: {
-      '200': {
-        description: 'The current user profile',
-        content: {
-          'application/json': {
-            schema: UserProfileSchema,
-          },
-        },
-      },
-    },
-  })
-  @authenticate('jwt')
-  async printCurrentUser(
-    @inject(SecurityBindings.USER)
-    currentUserProfile: UserProfile,
-  ): Promise<UserProfile> {
-    currentUserProfile.id = currentUserProfile[securityId];
-    delete currentUserProfile[securityId];
-    return currentUserProfile;
   }
 
   @patch('/users', {
@@ -289,6 +269,10 @@ export class UserController {
     const updatedData = await this.userRepository.findById(id);
     // console.log(checkUser, '5d9ab8211113661189ffb735');
 
+    console.log('patch/users/id');
+
+    console.log('***********');
+
     // console.log(updatedUser, 'userupdated');
     console.log('updated user', updatedData);
 
@@ -356,32 +340,32 @@ export class UserController {
     await this.userRepository.deleteById(id);
   }
 
-  // @post('/users/{email}/', {
-  //   responses: {
-  //     '200': {
-  //       description: 'Array of Admin model instances',
-  //       headers: {
-  //         'content-type': 'application/json',
-  //       },
-  //     },
-  //   },
-  // })
-  // async update(@param.path.string('email') email: string): Promise<object> {
-  //   const User1 = await this.userRepository.findOne({where: {email: email}});
-  //   let Id: string;
-  //   if (User1 !== null) {
-  //     Id = User1.id;
+  @post('/users/{email}/', {
+    responses: {
+      '200': {
+        description: 'Array of Admin model instances',
+        headers: {
+          'content-type': 'application/json',
+        },
+      },
+    },
+  })
+  async update(@param.path.string('email') email: string): Promise<object> {
+    const User1 = await this.userRepository.findOne({where: {email: email}});
+    let Id: string;
+    if (User1 !== null) {
+      Id = User1.id;
 
-  //     User1.verified = true;
-  //     await this.userRepository.updateById(Id, User1);
-  //     return {
-  //       data: User1.verified,
-  //     };
-  //   }
-  //   return {
-  //     data: 'false',
-  //   };
-  // }
+      User1.verified = true;
+      await this.userRepository.updateById(Id, User1);
+      return {
+        data: User1.verified,
+      };
+    }
+    return {
+      data: 'false',
+    };
+  }
 
   @post('/user/forgot-password', {
     responses: {
@@ -393,6 +377,10 @@ export class UserController {
   })
   async forgotPassword(@requestBody() body: User): Promise<object> {
     const email: any = body.email.toLowerCase();
+
+    console.log('post/user/forgot-password');
+    console.log('***********');
+    console.log(email, 'email');
     const user = await this.userRepository.findOne({
       where: {email: email},
     });
@@ -499,6 +487,10 @@ export class UserController {
     let finalResult: Array<object> = [];
 
     const location = await this.userRepository.findById(body.userId);
+
+    console.log('post/user/userDetails');
+
+    console.log('***********');
 
     if (location.lat === body.lat && location.long === body.long) {
       return {
@@ -674,6 +666,8 @@ export class UserController {
     },
   })
   async notify(): Promise<any> {
+    console.log('get/users/push-notifications');
+    console.log('*********');
     const currentDate: any = moment().format();
     console.log('current day :', currentDate);
     let budgetPerDay = 0;
@@ -807,7 +801,8 @@ export class UserController {
             message =
               'Here are some suggestions based on your interests. Please check in  notifications';
           } else {
-            message = 'Sorry, There are no suggestions based on your interets';
+            message =
+              'Sorry, There are no suggestions based on your interest selection';
           }
           console.log(userData.deviceId, 'deviceID');
           console.log('message', message);
@@ -877,6 +872,8 @@ export class UserController {
     },
   })
   async statusUpdate(): Promise<any> {
+    console.log('get/users/push-notifications-for-culniry');
+    console.log('***********');
     const currentDate: any = moment().format();
     console.log('current day :', currentDate);
     let budgetPerDay = 0;
@@ -990,7 +987,8 @@ export class UserController {
             message =
               'Here are some suggestions based on your interests. Please check in  notifications';
           } else {
-            message = 'Sorry, There are no suggestions based on your interets';
+            message =
+              'Sorry, There are no suggestions based on your interest selection';
           }
 
           const data = await this.notifications(user.deviceId, message);
@@ -1065,6 +1063,8 @@ export class UserController {
     @requestBody(CredentialsRequestBody) credentials: Credentials,
   ): Promise<any> {
     // ensure the user exists, and the password is correct
+    console.log('users/login');
+    console.log('***********');
     const email: any = credentials.email.toLowerCase();
     credentials.email = email;
     console.log('email', credentials.email);

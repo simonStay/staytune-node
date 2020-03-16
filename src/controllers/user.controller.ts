@@ -726,21 +726,75 @@ export class UserController {
               // console.log('Near preferences types : ', result);
               if (result.length !== 0) {
                 if (budgetPerDay >= 100) {
-                  result.map((rating: any) => {
-                    if (rating.rating >= 4) {
-                      finalResult = finalResult.concat(rating);
+                  result.map(async (rating: any) => {
+                    const notificationData: any = await this.notificationsRepository.find(
+                      {
+                        where: {
+                          and: [
+                            {
+                              travelPreferenceId: preference.id,
+                            },
+                            {
+                              placeId: rating.place_id,
+                            },
+                          ],
+                        },
+                      },
+                    );
+                    if (notificationData.length > 0) {
+                      console.log('dupliacte', notificationData.place_id);
+                    } else {
+                      if (rating.rating >= 4) {
+                        finalResult = finalResult.concat(rating);
+                      }
                     }
                   });
                 } else if (budgetPerDay < 100 && budgetPerDay >= 50) {
-                  result.map((rating: any) => {
-                    if (rating.rating >= 3 && rating.rating < 4) {
-                      finalResult = finalResult.concat(rating);
+                  result.map(async (rating: any) => {
+                    const notificationData: any = await this.notificationsRepository.find(
+                      {
+                        where: {
+                          and: [
+                            {
+                              travelPreferenceId: preference.id,
+                            },
+                            {
+                              placeId: rating.place_id,
+                            },
+                          ],
+                        },
+                      },
+                    );
+                    if (notificationData.length > 0) {
+                      console.log('dupliacte', notificationData.place_id);
+                    } else {
+                      if (rating.rating >= 3 && rating.rating < 4) {
+                        finalResult = finalResult.concat(rating);
+                      }
                     }
                   });
                 } else if (budgetPerDay < 50) {
-                  result.map((rating: any) => {
-                    if (rating.rating < 3) {
-                      finalResult = finalResult.concat(rating);
+                  result.map(async (rating: any) => {
+                    const notificationData: any = await this.notificationsRepository.find(
+                      {
+                        where: {
+                          and: [
+                            {
+                              travelPreferenceId: preference.id,
+                            },
+                            {
+                              placeId: rating.place_id,
+                            },
+                          ],
+                        },
+                      },
+                    );
+                    if (notificationData.length > 0) {
+                      console.log('dupliacte', notificationData.place_id);
+                    } else {
+                      if (rating.rating < 3) {
+                        finalResult = finalResult.concat(rating);
+                      }
                     }
                   });
                 } else {
@@ -924,21 +978,75 @@ export class UserController {
                 console.log('Near preferences types : ', result);
                 if (result.length !== 0) {
                   if (budgetPerDay >= 100) {
-                    result.map((rating: any) => {
-                      if (rating.rating >= 4) {
-                        finalResult = finalResult.concat(rating);
+                    result.map(async (rating: any) => {
+                      const notificationData: any = await this.notificationsRepository.find(
+                        {
+                          where: {
+                            and: [
+                              {
+                                travelPreferenceId: preference.id,
+                              },
+                              {
+                                placeId: rating.place_id,
+                              },
+                            ],
+                          },
+                        },
+                      );
+                      if (notificationData.length > 0) {
+                        console.log('dupliacte', notificationData.place_id);
+                      } else {
+                        if (rating.rating >= 4) {
+                          finalResult = finalResult.concat(rating);
+                        }
                       }
                     });
                   } else if (budgetPerDay < 100 && budgetPerDay >= 50) {
-                    result.map((rating: any) => {
-                      if (rating.rating >= 3 && rating.rating < 4) {
-                        finalResult = finalResult.concat(rating);
+                    result.map(async (rating: any) => {
+                      const notificationData: any = await this.notificationsRepository.find(
+                        {
+                          where: {
+                            and: [
+                              {
+                                travelPreferenceId: preference.id,
+                              },
+                              {
+                                placeId: rating.place_id,
+                              },
+                            ],
+                          },
+                        },
+                      );
+                      if (notificationData.length > 0) {
+                        console.log('dupliacte', notificationData.place_id);
+                      } else {
+                        if (rating.rating >= 3 && rating.rating < 4) {
+                          finalResult = finalResult.concat(rating);
+                        }
                       }
                     });
                   } else if (budgetPerDay < 50) {
-                    result.map((rating: any) => {
-                      if (rating.rating < 3) {
-                        finalResult = finalResult.concat(rating);
+                    result.map(async (rating: any) => {
+                      const notificationData: any = await this.notificationsRepository.find(
+                        {
+                          where: {
+                            and: [
+                              {
+                                travelPreferenceId: preference.id,
+                              },
+                              {
+                                placeId: rating.place_id,
+                              },
+                            ],
+                          },
+                        },
+                      );
+                      if (notificationData.length > 0) {
+                        console.log('dupliacte', notificationData.place_id);
+                      } else {
+                        if (rating.rating < 3) {
+                          finalResult = finalResult.concat(rating);
+                        }
                       }
                     });
                   } else {

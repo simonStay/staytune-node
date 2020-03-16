@@ -50,6 +50,11 @@ export class Notifications extends Entity {
   })
   travelPreferenceId?: string;
 
+  // @property({
+  //   type: 'string',
+  // })
+  // notificationId?: string;
+
   @belongsTo(() => User)
   userId: string;
 

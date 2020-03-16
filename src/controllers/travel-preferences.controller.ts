@@ -523,8 +523,10 @@ export class TravelPreferencesController {
       lat: userData.lat,
       long: userData.long,
     };
+    console.log('list categories,', listCategories);
 
     listCategories = await listCategories.slice(0, 1);
+    console.log('after slice list categories,', listCategories);
 
     listCategories.map(async (type: any) => {
       console.log('Category Name : ', type);
@@ -579,6 +581,7 @@ export class TravelPreferencesController {
         finalResult = await finalResult.slice(0, 4);
 
         finalResult.map(async (type1: any) => {
+          console.log('type', type.name);
           finalType = finalType.concat(type1.name);
         });
         console.log('finaltype', finalType);

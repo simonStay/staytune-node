@@ -863,38 +863,86 @@ export class UserController {
           const data = await this.notifications(user.deviceId, message);
           // console.log('response', response);
 
-          response1.map((res: any) => {
+          response1.map(async (res: any) => {
             if (res['0'] !== undefined) {
               console.log('travel data', result);
               console.log('type of :', typeof result[0]);
               console.log('type of preference', typeof res.travelPreferenceId);
+              console.log('user.id', user.id);
 
               if (result.includes(res.travelPreferenceId.toString())) {
-                console.log('each id ', res.travelPreferenceId);
-                console.log('resss', res['0'].name);
+                const notificationData: any = await this.notificationsRepository.find(
+                  {
+                    where: {
+                      userId: user.id,
+                    },
+                  },
+                  {
+                    strictObjectIDCoercion: true,
+                  },
+                );
+                console.log('notification-data', notificationData);
+                console.log('type of notifications', typeof notificationData);
+                if (notificationData.length > 0) {
+                  notificationData.forEach((Data: any) => {
+                    console.log('type of notification data', typeof Data);
+                    if (Data.placeId === res['0'].place_id) {
+                      console.log('duplicate-exit');
+                    } else {
+                      console.log('notificationssssssss');
+                      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                      this.notificationsRepository.create({
+                        date: Date.now(),
+                        notification:
+                          'Hello' +
+                          ' ' +
+                          user.firstname +
+                          ',' +
+                          ' ' +
+                          'here is a recommendation near you' +
+                          ' ' +
+                          '-' +
+                          ' ' +
+                          res['0'].name,
+                        placeId: res['0'].place_id,
+                        userId: user.id,
+                        lat: res['0'].geometry.location.lat,
+                        long: res['0'].geometry.location.lng,
+                        icon: res['0'].icon,
+                        name: res['0'].name,
+                        travelPreferenceId: res.travelPreferenceId,
+                      });
+                    }
+                  });
+                }
+                // console.log('each id ', res.travelPreferenceId);
+                // console.log('resss', res['0'].name);
 
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                this.notificationsRepository.create({
-                  date: Date.now(),
-                  notification:
-                    'Hello' +
-                    ' ' +
-                    user.firstname +
-                    ',' +
-                    ' ' +
-                    'here is a recommendation near you' +
-                    ' ' +
-                    '-' +
-                    ' ' +
-                    res['0'].name,
-                  placeId: res['0'].place_id,
-                  userId: user.id,
-                  lat: res['0'].geometry.location.lat,
-                  long: res['0'].geometry.location.lng,
-                  icon: res['0'].icon,
-                  name: res['0'].name,
-                  travelPreferenceId: res.travelPreferenceId,
-                });
+                else {
+                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                  this.notificationsRepository.create({
+                    date: Date.now(),
+                    notification:
+                      'Hello' +
+                      ' ' +
+                      user.firstname +
+                      ',' +
+                      ' ' +
+                      'here is a recommendation near you' +
+                      ' ' +
+                      '-' +
+                      ' ' +
+                      res['0'].name,
+                    placeId: res['0'].place_id,
+                    userId: user.id,
+                    lat: res['0'].geometry.location.lat,
+                    long: res['0'].geometry.location.lng,
+                    icon: res['0'].icon,
+                    name: res['0'].name,
+                    travelPreferenceId: res.travelPreferenceId,
+                  });
+                }
               }
             }
           });
@@ -948,6 +996,7 @@ export class UserController {
       },
     );
     console.log('active preference :', activePreferences);
+
     let finalResult: Array<object> = [];
     let selectedSubCategory = '';
     let userData: any;
@@ -1102,32 +1151,81 @@ export class UserController {
           const data = await this.notifications(user.deviceId, message);
           // console.log('data1', data);
 
-          response1.map((res: any) => {
+          response1.map(async (res: any) => {
             if (res['0'] !== undefined) {
               if (result.includes(res.travelPreferenceId.toString())) {
-                // console.log('notificationIcon:', res['0']);
+                const notificationData: any = await this.notificationsRepository.find(
+                  {
+                    where: {
+                      userId: user.id,
+                    },
+                  },
+                  {
+                    strictObjectIDCoercion: true,
+                  },
+                );
+                console.log('notification-data', notificationData);
+                console.log('type of notifications', typeof notificationData);
+                if (notificationData.length > 0) {
+                  notificationData.forEach((Data: any) => {
+                    console.log('type of notification data', typeof Data);
+                    if (Data.placeId === res['0'].place_id) {
+                      console.log('duplicate-exit');
+                    } else {
+                      console.log('notificationssssssss');
+                      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                      this.notificationsRepository.create({
+                        date: Date.now(),
+                        notification:
+                          'Hello' +
+                          ' ' +
+                          user.firstname +
+                          ',' +
+                          ' ' +
+                          'here is a recommendation near you' +
+                          ' ' +
+                          '-' +
+                          ' ' +
+                          res['0'].name,
+                        placeId: res['0'].place_id,
+                        userId: user.id,
+                        lat: res['0'].geometry.location.lat,
+                        long: res['0'].geometry.location.lng,
+                        icon: res['0'].icon,
+                        name: res['0'].name,
+                        travelPreferenceId: res.travelPreferenceId,
+                      });
+                    }
+                  });
+                }
+                // console.log('each id ', res.travelPreferenceId);
+                // console.log('resss', res['0'].name);
+
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                this.notificationsRepository.create({
-                  date: Date.now(),
-                  notification:
-                    'Hello' +
-                    ' ' +
-                    user.firstname +
-                    ',' +
-                    ' ' +
-                    'here is a recommendation near you' +
-                    ' ' +
-                    '-' +
-                    ' ' +
-                    res['0'].name,
-                  placeId: res['0'].place_id,
-                  userId: user.id,
-                  lat: res['0'].geometry.location.lat,
-                  long: res['0'].geometry.location.lng,
-                  icon: res['0'].icon,
-                  name: res['0'].name,
-                  travelPreferenceId: res.travelPreferenceId,
-                });
+                else {
+                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                  this.notificationsRepository.create({
+                    date: Date.now(),
+                    notification:
+                      'Hello' +
+                      ' ' +
+                      user.firstname +
+                      ',' +
+                      ' ' +
+                      'here is a recommendation near you' +
+                      ' ' +
+                      '-' +
+                      ' ' +
+                      res['0'].name,
+                    placeId: res['0'].place_id,
+                    userId: user.id,
+                    lat: res['0'].geometry.location.lat,
+                    long: res['0'].geometry.location.lng,
+                    icon: res['0'].icon,
+                    name: res['0'].name,
+                    travelPreferenceId: res.travelPreferenceId,
+                  });
+                }
               }
             }
           });

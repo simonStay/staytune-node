@@ -889,7 +889,7 @@ export class UserController {
 
           console.log('response', response);
 
-          response1.map((res: any) => {
+          response1.map(async (res: any) => {
             if (res['0'] !== undefined) {
               if (result.includes(res.travelPreferenceId.toString())) {
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises

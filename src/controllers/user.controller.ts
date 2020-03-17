@@ -718,7 +718,7 @@ export class UserController {
           strictObjectIDCoercion: true,
         },
       );
-      console.log('notificationDtaa', notificationData);
+      // console.log('notificationDtaa', notificationData);
       // activePreferencesCount = activePreferencesCount + 1;
       let selectedSubCategory: any;
       if (preference.selectedCategories !== null) {
@@ -732,117 +732,67 @@ export class UserController {
 
         await preference.selectedCategories.map(async (categories: any) => {
           CategoriesCount = CategoriesCount + 1;
-          // console.log('categories', categories);
           await categories.subCategories.map(async (subCategory: any) => {
-            console.log('subcategory:');
             if (subCategory.selected === true) {
               selectedSubCategory = subCategory.categoryname;
-              console.log('subCategory.categoryname', subCategory.categoryname);
               budgetPerDay = preference.totalBudget / preference.daysCount;
-              // console.log('Budget per day : ', budgetPerDay);
               const placeType: any = await this.categoriesRepository.find({
                 where: {categoryname: selectedSubCategory},
               });
-              // console.log(placeType[0].googleCategory, 'placessss');
               const locationData = {
                 lat: 30.2672,
                 long: -97.7431,
               };
-              // console.log(locationData, 'dataloc');
               const result = await this.getTypes(
                 placeType[0].googleCategory,
                 locationData,
               );
-              // console.log('result', result);
-              // console.log('Near preferences types : ', result);
-
-              const placeArray: any = notificationData.map((type123: any) => {
-                return type123.place_id;
+              const placeArray: any = [];
+              await notificationData.map((type123: any) => {
+                placeArray.push(type123.placeId);
               });
-              console.log('placearray.length', placeArray.length);
-              // const resultPlace: any = result.map((place: any) => {
-              //   place.placeId;
-              // });
+              console.log('placearray', placeArray);
               console.log(result.length, 'klength');
-              if (result.length !== 0) {
-                // console.log('testing');
-                // if (budgetPerDay >= 100) {
-                //   console.log('testing1');
-                //   await result.map(async (rating: any) => {
-                //     if (rating.rating >= 4) {
-                //       finalResult = finalResult.concat(rating);
-                //       console.log(' 1 notification', finalResult);
-                //     }
-                //   });
-                // } else if (budgetPerDay < 100 && budgetPerDay >= 50) {
-                //   console.log('testing2');
-                //   await result.map(async (rating: any) => {
-                //     if (rating.rating >= 3 && rating.rating < 4) {
-                //       finalResult = finalResult.concat(rating);
-                //       console.log(' 2 notification', finalResult);
-                //     }
-                //     //   }
-                //     // });
-                //   });
-                // } else if (budgetPerDay < 50) {
-                //   console.log('testing3');
-                //   await result.map(async (rating: any) => {
-                //     if (rating.rating < 3) {
-                //       finalResult = finalResult.concat(rating);
-                //       console.log(' 3 notification', finalResult);
-                //     }
-                //     //   }
-                //     // });
-                //   });
-                // } else {
-                //   console.log('error');
-                // }
-                await result.map((rating: any) => {
-                  console.log(
-                    'rating_123',
-                    placeArray.indexOf(rating.place_id),
-                  );
-                  if (placeArray.indexOf(rating.place_id) !== -1) {
-                    console.log('value exists');
-                  } else {
-                    placeArray.push(rating.place_id);
-                    if (budgetPerDay > 100 && rating.rating >= 4) {
-                      return (finalResult = finalResult.concat(rating));
-                    } else if (
-                      budgetPerDay < 100 &&
-                      budgetPerDay >= 50 &&
-                      rating.rating >= 3 &&
-                      rating.rating < 4
-                    ) {
-                      return (finalResult = finalResult.concat(rating));
-                    } else if (budgetPerDay < 50 && rating.rating < 3) {
-                      return (finalResult = finalResult.concat(rating));
+              if (placeArray.length === notificationData.length) {
+                if (result.length !== 0) {
+                  await result.map((rating: any) => {
+                    console.log('rating_123', rating.place_id);
+                    if (placeArray.includes(rating.place_id)) {
+                      console.log('value exists');
                     } else {
-                      console.log('error');
+                      placeArray.push(rating.place_id);
+                      if (budgetPerDay >= 100) {
+                        if (rating.rating >= 4) {
+                          finalResult = finalResult.concat(rating);
+                        }
+                      } else if (budgetPerDay < 100 && budgetPerDay >= 50) {
+                        if (rating.rating >= 3 && rating.rating < 4) {
+                          finalResult = finalResult.concat(rating);
+                        }
+                      } else if (budgetPerDay < 50) {
+                        if (rating.rating < 3) {
+                          finalResult = finalResult.concat(rating);
+                        }
+                      } else {
+                        console.log('error');
+                      }
                     }
-                  }
-                });
+                  });
+                }
               }
-              // const notificationResult: any = [];
-              // console.log(' /********************* / ');
               finalResult = await finalResult.slice(0, 1);
-              // console.log('final result : ', finalResult);
 
-              const newResult = {
-                ...finalResult,
-                travelPreferenceId: preference.id,
-              };
-              // console.log('new result', newResult);
-              // finalResult.push({
-              //   travelPreferenceId: preference.id,
-              // });
+              console.log(' /********************* / ');
+              if (finalResult.length !== 0) {
+                const newResult = {
+                  ...finalResult,
+                  travelPreferenceId: preference.id,
+                };
 
-              response.push(newResult);
+                console.log('new result', newResult);
 
-              // console.log('set', set);
-              // response = [...set];
-              response.push(finalResult);
-              // console.log('after response', response);
+                response.push(newResult);
+              }
             }
             finalResult = [];
           });
@@ -852,17 +802,11 @@ export class UserController {
     });
 
     setTimeout(() => {
-      console.log('before response', response);
-      console.log('body', body);
-      // console.log('set time out', body);
-      // console.log('response', response);
       const set = new Set(response);
       const response1 = [...set];
-      // console.log('response1', response1);
 
       body.map(async (user: any) => {
         if (user !== undefined) {
-          // console.log('user info', user.id);
           const travelData: any = await this.travelPreferenceRepository.find(
             {
               where: {
@@ -893,27 +837,50 @@ export class UserController {
             if (res['0'] !== undefined) {
               if (result.includes(res.travelPreferenceId.toString())) {
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                this.notificationsRepository.create({
-                  date: Date.now(),
-                  notification:
-                    'Hello' +
-                    ' ' +
-                    user.firstname +
-                    ',' +
-                    ' ' +
-                    'here is a recommendation near you' +
-                    ' ' +
-                    '-' +
-                    ' ' +
-                    res['0'].name,
-                  placeId: res['0'].place_id,
-                  userId: user.id,
-                  // lat: res.geometry.location.lat,
-                  // long: res.geometry.location.lng,
-                  icon: res['0'].icon,
-                  name: res['0'].name,
-                  travelPreferenceId: res.travelPreferenceId,
+                const notifyData: any = await this.notificationsRepository.find(
+                  {
+                    where: {
+                      travelPreferenceId: res.travelPreferenceId,
+                    },
+                  },
+                  {
+                    strictObjectIDCoercion: true,
+                  },
+                );
+                console.log('notify', notifyData);
+                const notifyPlaces: any = notifyData.map((test: any) => {
+                  return test.placeId;
                 });
+                if (notifyPlaces.length === notifyData.length) {
+                  console.log('notify places', notifyPlaces);
+                  console.log("res['0'].placeid", res['0'].place_id);
+                  if (notifyPlaces.includes(res['0'].place_id)) {
+                    console.log('duplicate data');
+                  } else {
+                    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                    this.notificationsRepository.create({
+                      date: Date.now(),
+                      notification:
+                        'Hello' +
+                        ' ' +
+                        user.firstname +
+                        ',' +
+                        ' ' +
+                        'here is a recommendation near you' +
+                        ' ' +
+                        '-' +
+                        ' ' +
+                        res['0'].name,
+                      placeId: res['0'].place_id,
+                      userId: user.id,
+                      lat: res['0'].geometry.location.lat,
+                      long: res['0'].geometry.location.lng,
+                      icon: res['0'].icon,
+                      name: res['0'].name,
+                      travelPreferenceId: res.travelPreferenceId,
+                    });
+                  }
+                }
               }
             }
           });
@@ -934,184 +901,225 @@ export class UserController {
     }
   }
 
-  // @get('/users/push-notifications-for-culniry', {
-  //   responses: {
-  //     '200': {
-  //       description: 'Array of Admin model instances',
-  //       headers: {
-  //         'content-type': 'application/json',
-  //       },
-  //     },
-  //   },
-  // })
-  // async statusUpdate(): Promise<any> {
-  //   console.log('get/users/push-notifications-for-culniry');
-  //   console.log('***********');
-  //   const currentDate: any = moment().format();
-  //   console.log('current day :', currentDate);
-  //   let budgetPerDay = 0;
-  //   const response: any = [];
-  //   const body: any = [];
+  @get('/users/push-notifications-for-culniry', {
+    responses: {
+      '200': {
+        description: 'Array of Admin model instances',
+        headers: {
+          'content-type': 'application/json',
+        },
+      },
+    },
+  })
+  async statusUpdate(): Promise<any> {
+    console.log('get/users/push-notifications-for-culniry');
+    console.log('***********');
+    const currentDate: any = moment().format();
+    console.log('current day :', currentDate);
+    let budgetPerDay = 0;
+    const response: any = [];
+    const body: any = [];
 
-  //   const activePreferences = await this.travelPreferenceRepository.find(
-  //     {
-  //       where: {
-  //         and: [
-  //           {travelDate: {lte: currentDate}},
-  //           {endDate: {gte: currentDate}},
-  //         ],
-  //       },
-  //     },
-  //     {
-  //       strictObjectIDCoercion: true,
-  //     },
-  //   );
-  //   console.log('active preference :', activePreferences);
-  //   let finalResult: Array<object> = [];
-  //   let selectedSubCategory = '';
-  //   let userData: any;
-  //   activePreferences.map(async (preference: any) => {
-  //     if (preference.selectedCategories !== null) {
-  //       userData = await this.userRepository.findById(preference.userId);
+    const activePreferences = await this.travelPreferenceRepository.find(
+      {
+        where: {
+          and: [
+            {travelDate: {lte: currentDate}},
+            {endDate: {gte: currentDate}},
+          ],
+        },
+      },
+      {
+        strictObjectIDCoercion: true,
+      },
+    );
+    console.log('active preference :', activePreferences);
+    let finalResult: Array<object> = [];
+    let selectedSubCategory = '';
+    let userData: any;
+    activePreferences.map(async (preference: any) => {
+      const notificationData: any = await this.notificationsRepository.find(
+        {
+          where: {
+            travelPreferenceId: preference.id,
+          },
+        },
+        {
+          strictObjectIDCoercion: true,
+        },
+      );
+      if (preference.selectedCategories !== null) {
+        userData = await this.userRepository.findById(preference.userId);
 
-  //       preference.selectedCategories.map((categores: any) => {
-  //         if (categores.categoryname === 'Culinary') {
-  //           categores.subCategories.map(async (subCategory: any) => {
-  //             if (subCategory.selected === true) {
-  //               console.log('selected Categories : ', subCategory.categoryname);
-  //               selectedSubCategory = subCategory.categoryname;
-  //               console.log('selected sub category : ', selectedSubCategory);
-  //               budgetPerDay = preference.totalBudget / preference.daysCount;
-  //               console.log('Budget per day : ', budgetPerDay);
-  //               const placeType: any = await this.categoriesRepository.find({
-  //                 where: {categoryname: selectedSubCategory},
-  //               });
-  //               const locationData = {
-  //                 lat: 30.2672,
-  //                 long: -97.7431,
-  //               };
-  //               const result = await this.getTypes(
-  //                 placeType[0].googleCategory,
-  //                 locationData,
-  //               );
-  //               console.log('Near preferences types : ', result);
-  //               if (result.length !== 0) {
-  //                 if (budgetPerDay >= 100) {
-  //                   result.map((rating: any) => {
-  //                     if (rating.rating >= 4) {
-  //                       finalResult = finalResult.concat(rating);
-  //                     }
-  //                   });
-  //                 } else if (budgetPerDay < 100 && budgetPerDay >= 50) {
-  //                   result.map((rating: any) => {
-  //                     if (rating.rating >= 3 && rating.rating < 4) {
-  //                       finalResult = finalResult.concat(rating);
-  //                     }
-  //                   });
-  //                 } else if (budgetPerDay < 50) {
-  //                   result.map((rating: any) => {
-  //                     if (rating.rating < 3) {
-  //                       finalResult = finalResult.concat(rating);
-  //                     }
-  //                   });
-  //                 } else {
-  //                   console.log('error');
-  //                 }
-  //               }
-  //               // console.log(' /********************* / ');
-  //               finalResult = await finalResult.slice(0, 1);
+        preference.selectedCategories.map((categores: any) => {
+          if (categores.categoryname === 'Culinary') {
+            categores.subCategories.map(async (subCategory: any) => {
+              if (subCategory.selected === true) {
+                console.log('selected Categories : ', subCategory.categoryname);
+                selectedSubCategory = subCategory.categoryname;
+                console.log('selected sub category : ', selectedSubCategory);
+                budgetPerDay = preference.totalBudget / preference.daysCount;
+                console.log('Budget per day : ', budgetPerDay);
+                const placeType: any = await this.categoriesRepository.find({
+                  where: {categoryname: selectedSubCategory},
+                });
+                const locationData = {
+                  lat: 30.2672,
+                  long: -97.7431,
+                };
+                const result = await this.getTypes(
+                  placeType[0].googleCategory,
+                  locationData,
+                );
+                const placeArray: any = [];
+                await notificationData.map((type123: any) => {
+                  placeArray.push(type123.placeId);
+                });
+                console.log('placearray', placeArray);
+                console.log(result.length, 'klength');
+                console.log('Near preferences types : ', result);
+                if (placeArray.length === notificationData.length) {
+                  if (result.length !== 0) {
+                    await result.map((rating: any) => {
+                      console.log('rating_123', rating.place_id);
+                      if (placeArray.includes(rating.place_id)) {
+                        console.log('value exists');
+                      } else {
+                        placeArray.push(rating.place_id);
+                        if (budgetPerDay >= 100) {
+                          if (rating.rating >= 4) {
+                            finalResult = finalResult.concat(rating);
+                          }
+                        } else if (budgetPerDay < 100 && budgetPerDay >= 50) {
+                          if (rating.rating >= 3 && rating.rating < 4) {
+                            finalResult = finalResult.concat(rating);
+                          }
+                        } else if (budgetPerDay < 50) {
+                          if (rating.rating < 3) {
+                            finalResult = finalResult.concat(rating);
+                          }
+                        } else {
+                          console.log('error');
+                        }
+                      }
+                    });
+                  }
+                }
+                // console.log(' /********************* / ');
+                finalResult = await finalResult.slice(0, 1);
 
-  //               console.log('final result : ', finalResult);
-  //               const userInterest: any = finalResult.map(
-  //                 (type1: any) => type1.name,
-  //               );
-  //             }
-  //             finalResult = [];
-  //           });
-  //         }
-  //       });
-  //       body.push(userData);
-  //     }
-  //   });
+                console.log('final result : ', finalResult);
+                const userInterest: any = finalResult.map(
+                  (type1: any) => type1.name,
+                );
+              }
+              finalResult = [];
+            });
+          }
+        });
+        body.push(userData);
+      }
+    });
 
-  //   setTimeout(() => {
-  //     console.log('body', body);
-  //     console.log('response', response);
-  //     const set = new Set(response);
-  //     const response1 = [...set];
-  //     console.log('response1', response1);
+    setTimeout(() => {
+      const set = new Set(response);
+      const response1 = [...set];
 
-  //     body.map(async (user: any) => {
-  //       if (user !== undefined) {
-  //         const travelData: any = await this.travelPreferenceRepository.find(
-  //           {
-  //             where: {
-  //               userId: user.id,
-  //             },
-  //           },
-  //           {
-  //             strictObjectIDCoercion: true,
-  //           },
-  //         );
+      body.map(async (user: any) => {
+        if (user !== undefined) {
+          const travelData: any = await this.travelPreferenceRepository.find(
+            {
+              where: {
+                userId: user.id,
+              },
+            },
+            {
+              strictObjectIDCoercion: true,
+            },
+          );
 
-  //         const result = travelData.map((a: any) => a.id.toString());
-  //         let message = '';
-  //         if (Object.keys(response).length !== 0) {
-  //           message =
-  //             'Here are some suggestions based on your interests. Please check in  notifications';
-  //         } else {
-  //           message =
-  //             'Sorry, There are no suggestions based on your interest selection';
-  //         }
+          const result = travelData.map((a: any) => a.id.toString());
 
-  //         const data = await this.notifications(user.deviceId, message);
-  //         // console.log('data1', data);
+          let message = '';
+          if (Object.keys(response).length !== 0) {
+            message =
+              'Here are some suggestions based on your interests. Please check in  notifications';
+          } else {
+            message =
+              'Sorry, There are no suggestions based on your interest selection';
+          }
 
-  //         response1.map((res: any) => {
-  //           if (res['0'] !== undefined) {
-  //             if (result.includes(res.travelPreferenceId.toString())) {
-  //               // console.log('notificationIcon:', res['0']);
-  //               // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  //               this.notificationsRepository.create({
-  //                 date: Date.now(),
-  //                 notification:
-  //                   'Hello' +
-  //                   ' ' +
-  //                   user.firstname +
-  //                   ',' +
-  //                   ' ' +
-  //                   'here is a recommendation near you' +
-  //                   ' ' +
-  //                   '-' +
-  //                   ' ' +
-  //                   res['0'].name,
-  //                 placeId: res['0'].place_id,
-  //                 userId: user.id,
-  //                 lat: res['0'].geometry.location.lat,
-  //                 long: res['0'].geometry.location.lng,
-  //                 icon: res['0'].icon,
-  //                 name: res['0'].name,
-  //                 travelPreferenceId: res.travelPreferenceId,
-  //               });
-  //             }
-  //           }
-  //         });
-  //       }
-  //     });
-  //   }, 10000);
+          console.log('message', message);
 
-  //   if (Object.keys(response).length !== 0) {
-  //     return {
-  //       status: 'Success',
-  //       statuscode: 200,
-  //     };
-  //   } else {
-  //     return {
-  //       status: 'failure',
-  //       statuscode: '400',
-  //     };
-  //   }
-  // }
+          console.log('response', response);
+
+          response1.map(async (res: any) => {
+            if (res['0'] !== undefined) {
+              if (result.includes(res.travelPreferenceId.toString())) {
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                const notifyData: any = await this.notificationsRepository.find(
+                  {
+                    where: {
+                      travelPreferenceId: res.travelPreferenceId,
+                    },
+                  },
+                  {
+                    strictObjectIDCoercion: true,
+                  },
+                );
+                console.log('notify', notifyData);
+                const notifyPlaces: any = notifyData.map((test: any) => {
+                  return test.placeId;
+                });
+                if (notifyPlaces.length === notifyData.length) {
+                  console.log('notify places', notifyPlaces);
+                  console.log("res['0'].placeid", res['0'].place_id);
+                  if (notifyPlaces.includes(res['0'].place_id)) {
+                    console.log('duplicate data');
+                  } else {
+                    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                    this.notificationsRepository.create({
+                      date: Date.now(),
+                      notification:
+                        'Hello' +
+                        ' ' +
+                        user.firstname +
+                        ',' +
+                        ' ' +
+                        'here is a recommendation near you' +
+                        ' ' +
+                        '-' +
+                        ' ' +
+                        res['0'].name,
+                      placeId: res['0'].place_id,
+                      userId: user.id,
+                      lat: res['0'].geometry.location.lat,
+                      long: res['0'].geometry.location.lng,
+                      icon: res['0'].icon,
+                      name: res['0'].name,
+                      travelPreferenceId: res.travelPreferenceId,
+                    });
+                  }
+                }
+              }
+            }
+          });
+        }
+      });
+    }, 20000);
+
+    if (Object.keys(response).length !== 0) {
+      return {
+        status: 'Success',
+        statuscode: 200,
+      };
+    } else {
+      return {
+        status: 'failure',
+        statuscode: '400',
+      };
+    }
+  }
 
   @post('/users/login', {
     responses: {

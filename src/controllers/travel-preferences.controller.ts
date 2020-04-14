@@ -231,6 +231,7 @@ export class TravelPreferencesController {
   ): Promise<any> {
     console.log('post/travel-preference/update');
     console.log('**********');
+    console.log('request body', travelPreferences);
     const travelData = await this.travelPreferencesRepository.findById(
       travelPreferences.id,
     );
@@ -298,7 +299,10 @@ export class TravelPreferencesController {
     let finalList: Array<string> = [];
     let oldList: Array<string> = [];
     newPreferencesTypes.forEach((item: string) => {
-      if (oldPreferencesTypes.includes(item)) {
+      if (
+        oldPreferencesTypes.includes(item) &&
+        oldSelectedCategories !== null
+      ) {
         console.log('Old List : ', item);
         oldList = oldList.concat(item);
       } else {
@@ -348,6 +352,8 @@ export class TravelPreferencesController {
           where: {parentcategory: mainCategories[i].categoryname},
         });
         // console.log(subCategories, 'sub');
+        console.log(finalList);
+        console.log(oldList);
         console.log('sub categories', subCategories);
         categoriesList.push({
           id: mainCategories[i].id,
@@ -355,11 +361,16 @@ export class TravelPreferencesController {
           subCategories: subCategories,
         });
         if (i === mainCategories.length - 1) {
-          console.log('category', categoriesList);
+          const categoriesData: any = categoriesList.filter((data: any) => {
+            return data != null;
+          });
+          console.log('category', categoriesData);
+
+          console.log('status: id: ', tid);
           return {
             status: 'Success',
             id: tid,
-            categoriesList,
+            categoriesList: categoriesData,
           };
         }
       }
@@ -773,37 +784,62 @@ export class TravelPreferencesController {
   }
   public async notifications(data: any, text: any, parentCategory: any) {
     console.log('data information : ', data);
+    if (text.length !== 0) {
+      const information: any = {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
 
-    const information: any = {
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        include_player_ids: [data.id],
 
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      include_player_ids: [data.id],
-
-      contents: {
-        en:
-          'These are the famous' +
-          ' ' +
-          parentCategory +
-          ' ' +
-          'near you' +
-          ' ' +
-          text,
-      },
-    };
-    const details = await axios.post(
-      'https://onesignal.com/api/v1/notifications',
-      information,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization:
-            'Basic NDA5YWNmM2UtODFhZi00MzMzLTg0OTItYTFiODg0OTA4Njlk',
+        contents: {
+          en:
+            'These are the famous' +
+            ' ' +
+            parentCategory +
+            ' ' +
+            'near you' +
+            ' ' +
+            text,
         },
-      },
-    );
-    console.log('details', details);
+      };
+      const details = await axios.post(
+        'https://onesignal.com/api/v1/notifications',
+        information,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization:
+              'Basic NDA5YWNmM2UtODFhZi00MzMzLTg0OTItYTFiODg0OTA4Njlk',
+          },
+        },
+      );
+      console.log('details', details);
+    } else {
+      const information: any = {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        app_id: '8d39b7db-d029-4bbd-af58-20e3f53cc4a9',
+
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        include_player_ids: [data.id],
+
+        contents: {
+          en: 'We did not found any new suggestions for today',
+        },
+      };
+      const details = await axios.post(
+        'https://onesignal.com/api/v1/notifications',
+        information,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization:
+              'Basic NDA5YWNmM2UtODFhZi00MzMzLTg0OTItYTFiODg0OTA4Njlk',
+          },
+        },
+      );
+      console.log('details', details);
+    }
 
     // console.log(data, text, 'any');
   }

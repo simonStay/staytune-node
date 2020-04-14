@@ -7,3 +7,4 @@ export * from './travel-preference-types.model';
 export * from './budget-info.model';
 export * from './notifications.model';
 export * from './travel-guide.model';
+export * from './dummy-data.model';

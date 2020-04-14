@@ -8,3 +8,4 @@ export * from './travel-preferences-types.controller';
 export * from './budget-info.controller';
 export * from './notifications.controller';
 export * from './travel-guide.controller';
+export * from './dummy-data.controller';

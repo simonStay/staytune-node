@@ -24,6 +24,7 @@ import {
   NotificationsRepository,
   CategoriesRepository,
   TravelPreferencesRepository,
+  DummyDataRepository,
 } from '../repositories';
 
 import {
@@ -48,6 +49,7 @@ const app = express();
 
 import axios from 'axios';
 import {type} from 'os';
+import _ = require('lodash');
 // import {CategoriesController} from './categories.controller';
 // import {json} from 'express';
 
@@ -74,6 +76,8 @@ export class UserController {
     public notificationsRepository: NotificationsRepository,
     @repository(CategoriesRepository)
     public categoriesRepository: CategoriesRepository,
+    @repository(DummyDataRepository)
+    public dummyDataRepository: DummyDataRepository,
 
     @inject(TokenServiceBindings.TOKEN_SERVICE)
     public jwtService: TokenService,
@@ -707,7 +711,7 @@ export class UserController {
     let preferenceCategoriesLength = null;
 
     activePreferences.map(async (preference: any) => {
-      console.log('prefrence ', preference.id);
+      // console.log('prefrence ', preference.id);
       const notificationData: any = await this.notificationsRepository.find(
         {
           where: {
@@ -751,14 +755,15 @@ export class UserController {
               await notificationData.map((type123: any) => {
                 placeArray.push(type123.placeId);
               });
-              console.log('placearray', placeArray);
-              console.log(result.length, 'klength');
+
+              // console.log('placearray', placeArray);
+              // console.log(result.length, 'klength');
               if (placeArray.length === notificationData.length) {
                 if (result.length !== 0) {
                   await result.map((rating: any) => {
-                    console.log('rating_123', rating.place_id);
+                    //console.log('rating_123', rating.place_id);
                     if (placeArray.includes(rating.place_id)) {
-                      console.log('value exists');
+                      console.log('value exists', placeArray, rating.place_id);
                     } else {
                       placeArray.push(rating.place_id);
                       if (budgetPerDay >= 100) {
@@ -789,7 +794,7 @@ export class UserController {
                   travelPreferenceId: preference.id,
                 };
 
-                console.log('new result', newResult);
+                // console.log('new result', newResult);
 
                 response.push(newResult);
               }
@@ -802,9 +807,26 @@ export class UserController {
     });
 
     setTimeout(() => {
-      const set = new Set(response);
-      const response1 = [...set];
+      // const set = new Set(response);
+      // const response1 = [...set];
+      // const response1: any = [];
+      // const uniq: any = {};
+      // // const arr = [{id: '1'}, {id: '1'}, {id: '2'}];
+      // const response1 = response.filter(
+      //   (obj: any) => !uniq[obj.place_id] && (uniq[obj.place_id] = true),
+      // );
+      // console.log('arrFiltered', response1);
 
+      // const objects = [
+      //   {x: 1, y: 2},
+      //   {x: 2, y: 1},
+      //   {x: 1, y: 2},
+      // ];
+
+      const response1: any = _.uniqWith(response, _.isEqual);
+      console.log('response1', response1);
+      // => [{ 'x': 1, 'y': 2 }, { 'x': 2, 'y': 1 }]
+      let length = 0;
       body.map(async (user: any) => {
         if (user !== undefined) {
           const travelData: any = await this.travelPreferenceRepository.find(
@@ -817,10 +839,12 @@ export class UserController {
               strictObjectIDCoercion: true,
             },
           );
+          length = length + 1;
 
           const result = travelData.map((a: any) => a.id.toString());
 
           let message = '';
+
           if (Object.keys(response).length !== 0) {
             message =
               'Here are some suggestions based on your interests. Please check in  notifications';
@@ -830,11 +854,14 @@ export class UserController {
           }
 
           console.log('message', message);
-
-          console.log('response', response);
+          console.log('length', body.length, length);
+          if (length === body.length) {
+            await this.notifications(user.deviceId, message);
+          }
 
           response1.map(async (res: any) => {
             if (res['0'] !== undefined) {
+              console.log('Resplace_id', res.travelPreferenceId);
               if (result.includes(res.travelPreferenceId.toString())) {
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 const notifyData: any = await this.notificationsRepository.find(
@@ -848,15 +875,25 @@ export class UserController {
                   },
                 );
                 console.log('notify', notifyData);
+
                 const notifyPlaces: any = notifyData.map((test: any) => {
                   return test.placeId;
                 });
+                const notifyNames: any = notifyData.map((test: any) => {
+                  return test.name;
+                });
+                console.log('placessss', notifyPlaces, notifyNames);
+                // const notifyTravel: any = notifyData.map((test: any) => {
+                //   return test.travelPreferenceId;
+                // });
+
                 if (notifyPlaces.length === notifyData.length) {
-                  console.log('notify places', notifyPlaces);
-                  console.log("res['0'].placeid", res['0'].place_id);
-                  if (notifyPlaces.includes(res['0'].place_id)) {
+                  // console.log('notify places', notifyPlaces);
+                  // console.log("res['0'].placeid", res['0'].place_id);
+                  if (notifyPlaces.includes(res['0'].place_id.toString())) {
                     console.log('duplicate data');
                   } else {
+                    console.log('create data');
                     // eslint-disable-next-line @typescript-eslint/no-floating-promises
                     this.notificationsRepository.create({
                       date: Date.now(),
@@ -886,7 +923,7 @@ export class UserController {
           });
         }
       });
-    }, 20000);
+    }, 10000);
 
     if (Object.keys(response).length !== 0) {
       return {
@@ -981,7 +1018,7 @@ export class UserController {
                 if (placeArray.length === notificationData.length) {
                   if (result.length !== 0) {
                     await result.map((rating: any) => {
-                      console.log('rating_123', rating.place_id);
+                      // console.log('rating_123', rating.place_id);
                       if (placeArray.includes(rating.place_id)) {
                         console.log('value exists');
                       } else {
@@ -1009,9 +1046,9 @@ export class UserController {
                 finalResult = await finalResult.slice(0, 1);
 
                 console.log('final result : ', finalResult);
-                const userInterest: any = finalResult.map(
-                  (type1: any) => type1.name,
-                );
+                // const userInterest: any = finalResult.map(
+                //   (type1: any) => type1.name,
+                // );
               }
               finalResult = [];
             });
@@ -1022,8 +1059,11 @@ export class UserController {
     });
 
     setTimeout(() => {
-      const set = new Set(response);
-      const response1 = [...set];
+      // const set = new Set(response);
+      // const response1 = [...set];
+      const response1: any = _.uniqWith(response, _.isEqual);
+      console.log('response1', response1);
+      let length = 0;
 
       body.map(async (user: any) => {
         if (user !== undefined) {
@@ -1037,6 +1077,7 @@ export class UserController {
               strictObjectIDCoercion: true,
             },
           );
+          length = length + 1;
 
           const result = travelData.map((a: any) => a.id.toString());
 
@@ -1052,6 +1093,9 @@ export class UserController {
           console.log('message', message);
 
           console.log('response', response);
+          if (length === body.length) {
+            await this.notifications(user.deviceId, message);
+          }
 
           response1.map(async (res: any) => {
             if (res['0'] !== undefined) {
@@ -1078,7 +1122,7 @@ export class UserController {
                     console.log('duplicate data');
                   } else {
                     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                    this.notificationsRepository.create({
+                    const data: any = this.notificationsRepository.create({
                       date: Date.now(),
                       notification:
                         'Hello' +
@@ -1099,6 +1143,7 @@ export class UserController {
                       name: res['0'].name,
                       travelPreferenceId: res.travelPreferenceId,
                     });
+                    console.log('data', data);
                   }
                 }
               }
@@ -1106,7 +1151,7 @@ export class UserController {
           });
         }
       });
-    }, 20000);
+    }, 10000);
 
     if (Object.keys(response).length !== 0) {
       return {
@@ -1200,6 +1245,12 @@ export class UserController {
         let id = '';
         id = user.id;
         await this.userRepository.updateById(id, user);
+        const value: any = {
+          email: extUser.email,
+          deviceId: extUser.deviceId,
+        };
+        const data: any = await this.dummyDataRepository.create(value);
+        console.log('data', data);
         const userData = await this.userRepository.findById(id);
         console.log('user Data', userData);
 

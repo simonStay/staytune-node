@@ -238,7 +238,9 @@ export class TravelPreferencesController {
     let tid = '';
     tid = travelData.id;
     let oldSelectedCategories = {};
+    console.log('travel data', travelData.selectedTravelPreferences);
     oldSelectedCategories = await travelData.selectedCategories;
+    console.log('old selected data', oldSelectedCategories);
 
     const Business: Array<string> = ['Culinary'];
     const Foodie: Array<string> = ['Culinary'];
@@ -299,15 +301,24 @@ export class TravelPreferencesController {
     let finalList: Array<string> = [];
     let oldList: Array<string> = [];
     newPreferencesTypes.forEach((item: string) => {
+      console.log('item', item);
       if (
         oldPreferencesTypes.includes(item) &&
         oldSelectedCategories !== null
       ) {
         console.log('Old List : ', item);
-        oldList = oldList.concat(item);
+        if (oldList.includes(item)) {
+          console.log('duplicate data');
+        } else {
+          oldList = oldList.concat(item);
+        }
       } else {
         console.log('New list : ', item);
-        finalList = finalList.concat(item);
+        if (finalList.includes(item)) {
+          console.log('duplicate data');
+        } else {
+          finalList = finalList.concat(item);
+        }
       }
     });
 
@@ -328,10 +339,10 @@ export class TravelPreferencesController {
       travelPreferences,
     );
 
-    console.log(finalList);
-    console.log(oldList);
-    let categoriesList: Array<object> = [];
-    if (oldList) {
+    console.log('finallist', finalList);
+    console.log('old list', oldList);
+    let categoriesList: any = [];
+    if (oldList.length > 0) {
       categoriesList = categoriesList.concat(oldSelectedCategories);
     }
     if (JSON.stringify(finalList) === JSON.stringify([])) {
@@ -341,12 +352,13 @@ export class TravelPreferencesController {
         id: tid,
         categoriesList,
       };
-    } else if (finalList) {
+    } else if (finalList.length > 0) {
       const mainCategories = await this.categoriesRepository.find({
         where: {categoryname: {inq: finalList}},
       });
 
       let i: any;
+      console.log('mainCategories', mainCategories);
       for (i = 0; i < mainCategories.length; i++) {
         const subCategories = await this.categoriesRepository.find({
           where: {parentcategory: mainCategories[i].categoryname},
@@ -355,16 +367,18 @@ export class TravelPreferencesController {
         console.log(finalList);
         console.log(oldList);
         console.log('sub categories', subCategories);
+        console.log('before category list', categoriesList);
         categoriesList.push({
           id: mainCategories[i].id,
           categoryname: mainCategories[i].categoryname,
           subCategories: subCategories,
         });
+        console.log('categoriesList', categoriesList);
         if (i === mainCategories.length - 1) {
           const categoriesData: any = categoriesList.filter((data: any) => {
             return data != null;
           });
-          console.log('category', categoriesData);
+          console.log('categories', categoriesData);
 
           console.log('status: id: ', tid);
           return {

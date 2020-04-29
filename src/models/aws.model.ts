@@ -21,6 +21,18 @@ export class Aws extends Entity {
   })
   secretKey?: string;
 
+  @property({
+    type: 'string',
+    default:
+      'https://stay-tune-avatars.s3-us-west-2.amazonaws.com/profile-pictures/',
+  })
+  URL?: string;
+
+  @property({
+    type: 'string',
+    default: 'stay-tune-avatars',
+  })
+  bucketName?: string;
   // Define well-known properties here
 
   // Indexer property to allow additional data

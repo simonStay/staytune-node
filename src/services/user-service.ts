@@ -36,7 +36,7 @@ export class MyUserService implements UserService<User, Credentials> {
     return foundUser;
   }
 
-  convertToUserProfile(user: User): UserProfile {
+  convertToUserProfile(user: any): any {
     // since first name and lastName are optional, no error is thrown if not provided
     let userName = '';
     if (user.firstName) userName = `${user.firstName}`;

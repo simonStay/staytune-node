@@ -8,3 +8,4 @@ export * from './budget-info.model';
 export * from './notifications.model';
 export * from './travel-guide.model';
 export * from './dummy-data.model';
+export * from './aws.model';

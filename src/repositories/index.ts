@@ -8,3 +8,4 @@ export * from './budget-info.repository';
 export * from './notifications.repository';
 export * from './travel-guide.repository';
 export * from './dummy-data.repository';
+export * from './aws.repository';

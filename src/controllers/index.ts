@@ -9,3 +9,4 @@ export * from './budget-info.controller';
 export * from './notifications.controller';
 export * from './travel-guide.controller';
 export * from './dummy-data.controller';
+export * from './aws.controller';

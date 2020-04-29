@@ -110,7 +110,7 @@ export class User extends Entity {
   @property({
     type: 'number',
   })
-  age: number;
+  TravelPreferencesRepository: number;
 
   @property({
     type: 'string',

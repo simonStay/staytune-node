@@ -13,7 +13,7 @@ import {
   UserServiceBindings,
   TokenServiceConstants,
 } from './keys';
-// import {JWTService} from './services/jwt-services';
+import {JWTService} from './services/jwt-services';
 import {MyUserService} from './services/user-service';
 
 import * as path from 'path';
@@ -23,7 +23,7 @@ import {
 } from '@loopback/authentication';
 // import {PasswordHasherBindings} from './keys';
 // import {BcryptHasher} from './services/hash.password.bcryptjs';
-// import {JWTAuthenticationStrategy} from './authentication-strategies/jwt-strategy';
+import {JWTAuthenticationStrategy} from './authentication-strategies/jwt-strategy';
 
 /**
  * Information from package.json
@@ -48,7 +48,7 @@ export class StayTuneApplication extends BootMixin(
     // Bind authentication component related elements
     this.component(AuthenticationComponent);
 
-    // registerAuthenticationStrategy(this, JWTAuthenticationStrategy);
+    registerAuthenticationStrategy(this, JWTAuthenticationStrategy);
 
     // Set up the custom sequence
     this.sequence(MyAuthenticationSequence);
@@ -98,7 +98,7 @@ export class StayTuneApplication extends BootMixin(
     //   TokenServiceConstants.TOKEN_EXPIRES_IN_VALUE,
     // );
 
-    // this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
+    this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
 
     // // Bind bcrypt hash services
     // this.bind(PasswordHasherBindings.ROUNDS).to(10);

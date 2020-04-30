@@ -135,7 +135,7 @@ export class UserController {
           '<br>',
       };
 
-      transporter.sendMail(mailOptions, function(error, info) {
+      transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
           console.log(error);
         } else {
@@ -190,7 +190,7 @@ export class UserController {
       },
     },
   })
-  // @authenticate('jwt')
+  @authenticate('jwt')
   async find(
     @inject(SecurityBindings.USER)
     currentUserProfile: UserProfile,
@@ -1225,7 +1225,7 @@ export class UserController {
             '<br>',
         };
 
-        transporter.sendMail(mailOptions, function(error, info) {
+        transporter.sendMail(mailOptions, function (error, info) {
           if (error) {
             console.log(error);
           } else {

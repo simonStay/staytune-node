@@ -117,8 +117,7 @@ export class UserController {
       };
     } else {
       const link =
-        'https://staytune.austinconversionoptimization.com/email-verification/?email=' +
-        user.email;
+        'https://admin.statytune.co/email-verification/?email=' + user.email;
       const id = Math.random() * 10000;
       const otp = Math.floor(id);
       const mailOptions = {

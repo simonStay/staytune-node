@@ -56,33 +56,6 @@ export class AdminController {
   ): Promise<Count> {
     return this.adminRepository.count(where);
   }
-  // @authenticate('jwt')
-  // @get('/admins/{name}/', {
-  //   responses: {
-  //     '200': {
-  //       description: 'Array of Admin model instances',
-  //       content: {
-  //         'application/json': {
-  //           schema: {type: 'array', items: getModelSchemaRef(Admin)},
-  //         },
-  //       },
-  //     },
-  //   },
-  // })
-  // async find(@param.path.string('name') name: string): Promise<object> {
-  //   const data = await this.adminRepository.find({
-  //     where: {name: name},
-  //   });
-  //   if (Object.keys(data).length === 0) {
-  //     return {
-  //       response: 'fail',
-  //     };
-  //   } else {
-  //     return {
-  //       response: 'sucess',
-  //     };
-  //   }
-  // }
 
   @patch('/admins', {
     responses: {

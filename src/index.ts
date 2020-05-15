@@ -7,7 +7,7 @@ import axios from 'axios';
 cron.schedule('0 17 * * *', async () => {
   // console.log('running a task every day at 1 pm');
   const result = await axios.get(
-    'https://staytune.austinconversionoptimization.com/users/push-notifications',
+    'https://api.staytune.co/users/push-notifications',
   );
   console.log('cron result : ', result);
 });
@@ -15,7 +15,7 @@ cron.schedule('0 17 * * *', async () => {
 cron.schedule('0 22 * * *', async () => {
   // console.log('running a task every day at 1 pm');
   const result = await axios.get(
-    'https://staytune.austinconversionoptimization.com/users/push-notifications-for-culniry',
+    'https://api.staytune.co/users/push-notifications-for-culniry',
   );
   console.log('cron result : ', result);
 });
